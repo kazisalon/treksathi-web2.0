@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  phone     String?
+  image     String?
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings     Booking[]
+  reviews      Review[]
+  posts        Post[]
+  favorites    Favorite[]
+}
+
+model Destination {
+  id          String   @id @default(cuid())
+  name        String
+  nameNepali  String
+  description String
+  location    String
+  latitude    Float
+  longitude   Float
+  images      String   // Comma-separated image URLs
+  category    String
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tours     Tour[]
+  hotels    Hotel[]
+  reviews   Review[]
+  favorites Favorite[]
+}
+
+model Tour {
+  id            String      @id @default(cuid())
+  title         String
+  titleNepali   String
+  description   String
+  duration      Int
+  price         Float
+  maxGroupSize  Int
+  difficulty    String       // EASY, MODERATE, HARD, EXTREME
+  includes      String       // Comma-separated included items
+  excludes      String       // Comma-separated excluded items
+  itinerary     String       // JSON string
+  images        String       // Comma-separated image URLs
+  featured      Boolean     @default(false)
+  available     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  destination   Destination @relation(fields: [destinationId], references: [id])
+  destinationId String
+
+  bookings Booking[]
+  reviews  Review[]
+}
+
+model Hotel {
+  id          String   @id @default(cuid())
+  name        String
+  nameNepali  String
+  description String
+  address     String
+  rating      Float    @default(0)
+  pricePerNight Float
+  amenities   String   // Comma-separated amenities
+  images      String   // Comma-separated image URLs
+  rooms       String   // JSON string
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  destination   Destination @relation(fields: [destinationId], references: [id])
+  destinationId String
+
+  bookings Booking[]
+  reviews  Review[]
+}
+
+model Flight {
+  id          String   @id @default(cuid())
+  airline     String
+  flightNumber String
+  from        String
+  to          String
+  departure   DateTime
+  arrival     DateTime
+  price       Float
+  seats       Int
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings Booking[]
+}
+
+model Booking {
+  id          String      @id @default(cuid())
+  type        String        // TOUR, HOTEL, FLIGHT
+  status      String        @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  totalAmount Float
+  paymentStatus String      @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  checkIn     DateTime?
+  checkOut    DateTime?
+  guests      Int         @default(1)
+  specialRequests String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+
+  tour     Tour?   @relation(fields: [tourId], references: [id])
+  tourId   String?
+
+  hotel    Hotel?  @relation(fields: [hotelId], references: [id])
+  hotelId  String?
+
+  flight   Flight? @relation(fields: [flightId], references: [id])
+  flightId String?
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  destination   Destination? @relation(fields: [destinationId], references: [id])
+  destinationId String?
+
+  tour   Tour?   @relation(fields: [tourId], references: [id])
+  tourId String?
+
+  hotel   Hotel?  @relation(fields: [hotelId], references: [id])
+  hotelId String?
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  images      String   // Comma-separated image URLs
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  tags        String   // Comma-separated tags
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  destination   Destination @relation(fields: [destinationId], references: [id])
+  destinationId String
+
+  @@unique([userId, destinationId])
+}
+
+// Enums converted to String fields with comments indicating valid values
+// Role: USER, ADMIN
+// Difficulty: EASY, MODERATE, HARD, EXTREME  
+// BookingType: TOUR, HOTEL, FLIGHT
+// BookingStatus: PENDING, CONFIRMED, CANCELLED, COMPLETED
+// PaymentStatus: PENDING, PAID, FAILED, REFUNDED
