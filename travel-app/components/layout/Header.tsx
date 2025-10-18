@@ -15,7 +15,10 @@ import {
   Heart,
   Settings,
   LogOut,
-  Globe
+  Globe,
+  Home,
+  Mountain,
+  Compass
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -40,11 +43,11 @@ const Header = () => {
   };
 
   const navItems = [
-    { name: 'गृहपृष्ठ', nameEn: 'Home', href: '/', icon: Globe },
-    { name: 'गन्तव्यहरू', nameEn: 'Destinations', href: '/destinations', icon: MapPin },
-    { name: 'टुरहरू', nameEn: 'Tours', href: '/tours', icon: Camera },
-    { name: 'होटलहरू', nameEn: 'Hotels', href: '/hotels', icon: Hotel },
-    { name: 'उडानहरू', nameEn: 'Flights', href: '/flights', icon: Plane },
+    { name: 'Home', nameNp: 'गृहपृष्ठ', href: '/', icon: Home },
+    { name: 'Destinations', nameNp: 'गन्तव्यहरू', href: '/destinations', icon: MapPin },
+    { name: 'Trekking', nameNp: 'ट्रेकिङ', href: '/trekking', icon: Mountain },
+    { name: 'Cultural Tours', nameNp: 'सांस्कृतिक भ्रमण', href: '/cultural', icon: Camera },
+    { name: 'Adventure', nameNp: 'साहसिक', href: '/adventure', icon: Compass },
   ];
 
   return (
@@ -54,13 +57,13 @@ const Header = () => {
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-white" />
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">ट</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold text-gray-900">TrekSathi</span>
-              <span className="text-xs text-gray-600 nepali-text">ट्रेकसाथी</span>
+              <span className="text-xs text-emerald-600">ट्रेकसाथी</span>
             </div>
           </Link>
 
@@ -70,13 +73,13 @@ const Header = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className="group flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors duration-200"
+                className="group flex items-center space-x-1 text-gray-700 hover:text-emerald-600 transition-colors duration-200"
               >
                 <item.icon className="w-4 h-4" />
-                <span className="font-medium">{item.nameEn}</span>
-                <span className="text-xs nepali-text text-gray-500 group-hover:text-blue-500">
-                  {item.name}
-                </span>
+                <div className="flex flex-col">
+                  <span className="font-medium">{item.name}</span>
+                  <span className="text-xs opacity-70">नेपाली</span>
+                </div>
               </Link>
             ))}
           </div>
@@ -186,13 +189,13 @@ const Header = () => {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg"
+                    className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <item.icon className="w-5 h-5" />
                     <div className="flex flex-col">
-                      <span className="font-medium">{item.nameEn}</span>
-                      <span className="text-sm nepali-text text-gray-500">{item.name}</span>
+                      <span className="font-medium">{item.name}</span>
+                      <span className="text-sm text-gray-500 opacity-70">नेपाली</span>
                     </div>
                   </Link>
                 ))}

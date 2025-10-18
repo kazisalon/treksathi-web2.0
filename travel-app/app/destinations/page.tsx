@@ -29,12 +29,12 @@ export default function DestinationsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const categories = [
-    { id: 'all', name: 'सबै', nameEn: 'All' },
-    { id: 'mountain', name: 'पहाड', nameEn: 'Mountains' },
-    { id: 'cultural', name: 'सांस्कृतिक', nameEn: 'Cultural' },
-    { id: 'adventure', name: 'साहसिक', nameEn: 'Adventure' },
-    { id: 'religious', name: 'धार्मिक', nameEn: 'Religious' },
-    { id: 'wildlife', name: 'वन्यजन्तु', nameEn: 'Wildlife' },
+    { id: 'all', name: 'All', nameEn: 'All' },
+    { id: 'mountain', name: 'Mountains', nameEn: 'Mountains' },
+    { id: 'cultural', name: 'Cultural', nameEn: 'Cultural' },
+    { id: 'adventure', name: 'Adventure', nameEn: 'Adventure' },
+    { id: 'religious', name: 'Religious', nameEn: 'Religious' },
+    { id: 'wildlife', name: 'Wildlife', nameEn: 'Wildlife' },
   ];
 
   // Mock data - replace with actual API call
@@ -57,8 +57,8 @@ export default function DestinationsPage() {
         id: '2',
         name: 'Pokhara',
         nameNepali: 'पोखरा',
-        description: 'तालहरूको शहर र अन्नपूर्ण हिमालको सुन्दर दृश्य',
-        location: 'गण्डकी प्रदेश',
+        description: 'City of lakes with stunning Annapurna mountain views and adventure activities',
+        location: 'Gandaki Province',
         images: ['https://images.unsplash.com/photo-1605640840605-14ac1855827b'],
         category: 'cultural',
         featured: true,
@@ -70,8 +70,8 @@ export default function DestinationsPage() {
         id: '3',
         name: 'Chitwan National Park',
         nameNepali: 'चितवन राष्ट्रिय निकुञ्ज',
-        description: 'गैंडा र बाघ देख्न सकिने नेपालको पहिलो राष्ट्रिय निकुञ्ज',
-        location: 'चितवन',
+        description: 'Nepal\'s first national park, home to rhinos, tigers, and diverse wildlife',
+        location: 'Chitwan District',
         images: ['https://images.unsplash.com/photo-1549366021-9f761d040a94'],
         category: 'wildlife',
         featured: true,
@@ -83,8 +83,8 @@ export default function DestinationsPage() {
         id: '4',
         name: 'Lumbini',
         nameNepali: 'लुम्बिनी',
-        description: 'भगवान बुद्धको जन्मस्थान र विश्व सम्पदा सूचीमा सूचीकृत',
-        location: 'लुम्बिनी प्रदेश',
+        description: 'Birthplace of Lord Buddha and UNESCO World Heritage Site',
+        location: 'Lumbini Province',
         images: ['https://images.unsplash.com/photo-1544735716-392fe2489ffa'],
         category: 'religious',
         featured: true,
@@ -163,25 +163,25 @@ export default function DestinationsPage() {
 
         <div className="flex items-center text-gray-600 mb-3">
           <MapPin className="w-4 h-4 mr-1" />
-          <span className="text-sm nepali-text">{destination.location}</span>
+          <span className="text-sm">{destination.location}</span>
         </div>
 
-        <p className="text-gray-700 mb-4 nepali-text line-clamp-2">
+        <p className="text-gray-700 mb-4 line-clamp-2">
           {destination.description}
         </p>
 
         <div className="flex items-center justify-between">
           <div>
             <span className="text-2xl font-bold text-blue-600">
-              रू {destination.price.toLocaleString()}
+              ${Math.round(destination.price / 130)}
             </span>
-            <span className="text-sm text-gray-500 nepali-text"> प्रति व्यक्ति</span>
+            <span className="text-sm text-gray-500"> per person</span>
           </div>
           <Link
             href={`/destinations/${destination.id}`}
-            className="btn-primary"
+            className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-2 px-4 rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 inline-block text-center"
           >
-            <span className="nepali-text">विवरण हेर्नुहोस्</span>
+            <span>View Details / विवरण हेर्नुहोस्</span>
           </Link>
         </div>
       </div>
@@ -194,11 +194,17 @@ export default function DestinationsPage() {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4 nepali-text">
-              गन्तव्यहरू अन्वेषण गर्नुहोस्
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Explore Nepal's Destinations
             </h1>
-            <p className="text-xl text-gray-600 nepali-text">
-              नेपालका सुन्दर ठाउँहरू खोज्नुहोस् र आफ्नो अर्को यात्राको योजना बनाउनुहोस्
+            <h2 className="text-2xl font-semibold text-emerald-600 mb-4">
+              नेपालका गन्तव्यहरू अन्वेषण गर्नुहोस्
+            </h2>
+            <p className="text-xl text-gray-600 mb-2">
+              Discover Nepal's breathtaking landscapes and plan your next adventure in the Himalayas
+            </p>
+            <p className="text-lg text-emerald-700">
+              नेपालका मनमोहक दृश्यहरू खोज्नुहोस् र हिमालयमा आफ्नो अर्को साहसिक यात्राको योजना बनाउनुहोस्
             </p>
           </div>
 
@@ -208,7 +214,7 @@ export default function DestinationsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="गन्तव्य खोज्नुहोस्..."
+                placeholder="Search destinations... / गन्तव्य खोज्नुहोस्..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="input-field pl-10 nepali-text"
@@ -290,11 +296,11 @@ export default function DestinationsPage() {
                 <div className="text-gray-400 mb-4">
                   <MapPin className="w-16 h-16 mx-auto" />
                 </div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2 nepali-text">
-                  कुनै गन्तव्य फेला परेन
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  No destinations found
                 </h3>
-                <p className="text-gray-600 nepali-text">
-                  कृपया आफ्नो खोज शब्द परिवर्तन गर्नुहोस् वा फिल्टर हटाउनुहोस्
+                <p className="text-gray-600">
+                  Please try different search terms or remove filters
                 </p>
               </div>
             )}

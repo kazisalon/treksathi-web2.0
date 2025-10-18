@@ -19,10 +19,11 @@ const Newsletter = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-12">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Never Miss an Adventure
+            Stay Connected to Nepal
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Subscribe to our newsletter and be the first to know about exclusive deals, new destinations, and travel tips from our experts.
+            Get exclusive Nepal travel insights, seasonal trekking updates, cultural festival alerts, 
+            and special offers delivered to your inbox monthly.
           </p>
 
           {!isSubscribed ? (
@@ -57,18 +58,18 @@ const Newsletter = () => {
           </p>
 
           {/* Social Proof */}
-          <div className="mt-8 flex justify-center items-center space-x-8">
+          <div className="mt-8 flex justify-center items-center space-x-8 flex-wrap gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">25K+</div>
-              <div className="text-white/80 text-sm">Newsletter Subscribers</div>
+              <div className="text-2xl font-bold text-white">3K+</div>
+              <div className="text-white/80 text-sm">Nepal Enthusiasts</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">Weekly</div>
-              <div className="text-white/80 text-sm">Travel Inspiration</div>
+              <div className="text-2xl font-bold text-white">Monthly</div>
+              <div className="text-white/80 text-sm">Trek Updates</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">Exclusive</div>
-              <div className="text-white/80 text-sm">Deals & Offers</div>
+              <div className="text-2xl font-bold text-white">Insider</div>
+              <div className="text-white/80 text-sm">Nepal Tips</div>
             </div>
           </div>
         </div>

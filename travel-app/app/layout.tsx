@@ -15,13 +15,13 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "TrekSathi - तपाईंको अर्को साहसिक यात्रा खोज्नुहोस्",
-  description: "नेपालको सुन्दर गन्तव्यहरू अन्वेषण गर्नुहोस्, अविस्मरणीय यात्राहरूको योजना बनाउनुहोस्, र TrekSathi - तपाईंको अन्तिम यात्रा साथीसँग जीवनभरका सम्झनाहरू सिर्जना गर्नुहोस्।",
-  keywords: "यात्रा, साहसिक, गन्तव्य, छुट्टी, पर्यटन, अन्वेषण, नेपाल, travel, adventure, nepal, tourism",
+  title: "TrekSathi - ट्रेकसाथी | Nepal Adventures & Himalayan Trekking",
+  description: "Explore Nepal's breathtaking destinations and plan unforgettable Himalayan adventures. नेपालका सुन्दर गन्तव्यहरू अन्वेषण गर्नुहोस् र अविस्मरणीय हिमालयी साहसिक यात्राहरूको योजना बनाउनुहोस्।",
+  keywords: "nepal travel, himalayan trekking, everest base camp, annapurna circuit, nepal tours, adventure travel, cultural tours, nepal tourism, नेपाल यात्रा, हिमालयी ट्रेकिङ, एभरेस्ट बेस क्याम्प",
   authors: [{ name: "TrekSathi Team" }],
   openGraph: {
-    title: "TrekSathi - तपाईंको अर्को साहसिक यात्रा खोज्नुहोस्",
-    description: "नेपालको सुन्दर गन्तव्यहरू अन्वेषण गर्नुहोस् र अविस्मरणीय यात्राहरूको योजना बनाउनुहोस्",
+    title: "TrekSathi - ट्रेकसाथी | Nepal Adventures",
+    description: "Explore Nepal's stunning destinations and plan unforgettable Himalayan adventures | नेपालका सुन्दर गन्तव्यहरू अन्वेषण गर्नुहोस्",
     type: "website",
   },
 };
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ne">
+    <html lang="en">
       <body
         className={`${inter.variable} ${notoSansDevanagari.variable} antialiased`}
       >

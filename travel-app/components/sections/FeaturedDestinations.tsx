@@ -1,39 +1,47 @@
 const destinations = [
   {
     id: 1,
-    name: "Santorini, Greece",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='santorini' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2387CEEB;stop-opacity:1' /><stop offset='100%' style='stop-color:%234169E1;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23santorini)'/><path d='M0,200 Q100,150 200,180 T400,160 L400,300 L0,300 Z' fill='%23FFFFFF'/><circle cx='80' cy='120' r='15' fill='%23FFFFFF'/><rect x='70' y='105' width='20' height='30' fill='%23FFFFFF'/><circle cx='320' cy='100' r='12' fill='%23FFFFFF'/><rect x='312' y='88' width='16' height='24' fill='%23FFFFFF'/></svg>",
-    price: "From $1,299",
-    duration: "7 days",
+    name: "Everest Base Camp",
+    nameNp: "एभरेस्ट बेस क्याम्प",
+    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='everest' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2310B981;stop-opacity:1' /><stop offset='100%' style='stop-color:%23059669;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23everest)'/><polygon points='200,50 150,200 250,200' fill='%23FFFFFF'/><polygon points='100,80 50,200 150,200' fill='%23F0FDF4'/><polygon points='300,70 250,200 350,200' fill='%23F0FDF4'/><path d='M0,200 Q200,180 400,200 L400,300 L0,300 Z' fill='%2315803D'/><circle cx='80' cy='40' r='15' fill='%23FFD700'/></svg>",
+    price: "From $1,899",
+    duration: "14 days",
     rating: 4.9,
-    description: "Stunning sunsets and white-washed buildings"
+    description: "World's highest peak base camp trek",
+    descriptionNp: "संसारको सबैभन्दा अग्लो पर्वतको आधार शिविर ट्रेक"
   },
   {
     id: 2,
-    name: "Bali, Indonesia",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='bali' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2332CD32;stop-opacity:1' /><stop offset='100%' style='stop-color:%23228B22;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23bali)'/><path d='M0,250 Q100,200 200,220 T400,200 L400,300 L0,300 Z' fill='%2387CEEB'/><polygon points='150,100 170,140 190,100' fill='%23654321'/><polygon points='250,80 270,120 290,80' fill='%23654321'/><circle cx='100' cy='50' r='25' fill='%23FFD700'/></svg>",
-    price: "From $899",
-    duration: "10 days",
+    name: "Pokhara Valley",
+    nameNp: "पोखरा उपत्यका",
+    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='pokhara' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2314B8A6;stop-opacity:1' /><stop offset='100%' style='stop-color:%230D9488;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23pokhara)'/><ellipse cx='200' cy='200' rx='150' ry='50' fill='%23F0FDFA'/><polygon points='50,150 100,50 150,150' fill='%23FFFFFF'/><polygon points='250,140 300,40 350,140' fill='%23F0FDF4'/><circle cx='100' cy='30' r='20' fill='%23FFD700'/></svg>",
+    price: "From $699",
+    duration: "7 days",
     rating: 4.8,
-    description: "Tropical paradise with rich culture"
+    description: "Serene lakes with Himalayan backdrop",
+    descriptionNp: "शान्त तालहरू र पहाडी दृश्यहरू"
   },
   {
     id: 3,
-    name: "Swiss Alps",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='alps' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2387CEEB;stop-opacity:1' /><stop offset='100%' style='stop-color:%234682B4;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23alps)'/><polygon points='50,200 150,50 250,200' fill='%23FFFFFF'/><polygon points='200,180 300,30 400,180' fill='%23F0F8FF'/><polygon points='0,220 100,80 200,220' fill='%23E6E6FA'/><path d='M0,250 Q200,230 400,250 L400,300 L0,300 Z' fill='%2332CD32'/></svg>",
-    price: "From $1,599",
-    duration: "8 days",
-    rating: 4.9,
-    description: "Majestic mountains and pristine lakes"
+    name: "Chitwan National Park",
+    nameNp: "चितवन राष्ट्रिय निकुञ्ज",
+    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='chitwan' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2316A34A;stop-opacity:1' /><stop offset='100%' style='stop-color:%2315803D;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23chitwan)'/><circle cx='100' cy='150' r='20' fill='%23654321'/><rect x='90' y='140' width='20' height='30' fill='%23654321'/><circle cx='300' cy='180' r='15' fill='%23D2691E'/><rect x='292' y='170' width='16' height='25' fill='%23D2691E'/><path d='M0,250 Q200,230 400,250 L400,300 L0,300 Z' fill='%2315803D'/></svg>",
+    price: "From $599",
+    duration: "4 days",
+    rating: 4.7,
+    description: "Wildlife safari and jungle adventures",
+    descriptionNp: "वन्यजन्तु सफारी र जंगली साहसिक"
   },
   {
     id: 4,
-    name: "Tokyo, Japan",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='tokyo' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23FF69B4;stop-opacity:1' /><stop offset='100%' style='stop-color:%23FF1493;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23tokyo)'/><rect x='50' y='100' width='20' height='100' fill='%23808080'/><rect x='100' y='80' width='25' height='120' fill='%23696969'/><rect x='150' y='60' width='30' height='140' fill='%23778899'/><rect x='200' y='90' width='20' height='110' fill='%23708090'/><rect x='250' y='70' width='25' height='130' fill='%23696969'/><rect x='300' y='50' width='35' height='150' fill='%23778899'/><circle cx='80' cy='40' r='8' fill='%23FFB6C1'/><circle cx='180' cy='30' r='6' fill='%23FFB6C1'/></svg>",
-    price: "From $1,199",
-    duration: "6 days",
-    rating: 4.7,
-    description: "Modern metropolis meets ancient tradition"
+    name: "Kathmandu Heritage",
+    nameNp: "काठमाडौं सम्पदा",
+    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='kathmandu' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23059669;stop-opacity:1' /><stop offset='100%' style='stop-color:%23047857;stop-opacity:1' /></linearGradient></defs><rect width='400' height='300' fill='url(%23kathmandu)'/><rect x='150' y='80' width='100' height='120' fill='%23CD853F'/><polygon points='150,80 200,40 250,80' fill='%23A0522D'/><rect x='170' y='120' width='15' height='30' fill='%23654321'/><rect x='215' y='120' width='15' height='30' fill='%23654321'/><rect x='190' y='160' width='20' height='40' fill='%23654321'/><circle cx='80' cy='50' r='20' fill='%23FFD700'/></svg>",
+    price: "From $499",
+    duration: "5 days",
+    rating: 4.6,
+    description: "Ancient temples and cultural wonders",
+    descriptionNp: "पुरातन मन्दिरहरू र सांस्कृतिक अजूबाहरू"
   }
 ];
 
@@ -42,11 +50,18 @@ const FeaturedDestinations = () => {
     <section className="py-20 bg-gray-50 dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Featured Destinations
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
+            Explore Nepal's Wonders
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Discover the world's most breathtaking destinations, carefully curated for unforgettable experiences
+          <h3 className="text-2xl md:text-3xl font-semibold text-emerald-600 dark:text-emerald-400 mb-4">
+            नेपालका अजूबाहरू अन्वेषण गर्नुहोस्
+          </h3>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-2">
+            From the world's highest peaks to ancient temples and wildlife sanctuaries - 
+            discover Nepal's most iconic destinations that will leave you breathless
+          </p>
+          <p className="text-lg text-emerald-700 dark:text-emerald-300 max-w-3xl mx-auto">
+            संसारका सबैभन्दा अग्लो शिखरहरूदेखि पुरातन मन्दिरहरू र वन्यजन्तु अभयारण्यहरूसम्म
           </p>
         </div>
 

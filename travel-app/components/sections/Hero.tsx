@@ -21,12 +21,14 @@ const Hero = () => {
   ];
 
   const destinations = [
-    'काठमाडौं (Kathmandu)',
-    'पोखरा (Pokhara)', 
-    'चितवन (Chitwan)',
-    'लुम्बिनी (Lumbini)',
-    'एभरेस्ट (Everest)',
-    'अन्नपूर्ण (Annapurna)',
+    'Kathmandu Valley',
+    'Pokhara Lake City', 
+    'Chitwan National Park',
+    'Lumbini - Birthplace of Buddha',
+    'Everest Base Camp',
+    'Annapurna Circuit',
+    'Bandipur Heritage Town',
+    'Mustang - Upper Mustang',
   ];
 
   useEffect(() => {
@@ -73,13 +75,22 @@ const Hero = () => {
           className="max-w-4xl mx-auto"
         >
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
-            <span className="block">तपाईंको सपनाको</span>
-            <span className="block text-yellow-400">यात्रा सुरु गर्नुहोस्</span>
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            Discover Nepal's
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">
+              Hidden Treasures
+            </span>
+            <span className="block text-3xl md:text-4xl mt-2 text-emerald-200">
+              नेपालका लुकेका खजानाहरू खोज्नुहोस्
+            </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-            नेपालका अद्भुत गन्तव्यहरू अन्वेषण गर्नुहोस् र अविस्मरणीय अनुभवहरू सिर्जना गर्नुहोस्
+          <p className="text-xl md:text-2xl text-white/90 mb-4 max-w-3xl mx-auto leading-relaxed">
+            Embark on extraordinary adventures through the majestic Himalayas, 
+            ancient temples, and vibrant cultures of Nepal
+          </p>
+          <p className="text-lg md:text-xl text-emerald-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+            हिमालयका अद्भुत साहसिक यात्राहरू, पुरातन मन्दिरहरू र नेपालको जीवन्त संस्कृतिमा डुब्नुहोस्
           </p>
 
           {/* Search Form */}
@@ -94,16 +105,16 @@ const Hero = () => {
               {/* Destination */}
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  गन्तव्य (Destination)
+                  Destination / गन्तव्य
                 </label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <select
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
-                    className="input-field pl-10 appearance-none"
+                    className="input-field pl-10 appearance-none focus:ring-emerald-500"
                   >
-                    <option value="">गन्तव्य छान्नुहोस्</option>
+                    <option value="">Choose your destination / गन्तव्य छान्नुहोस्</option>
                     {destinations.map((dest) => (
                       <option key={dest} value={dest}>{dest}</option>
                     ))}
@@ -114,15 +125,16 @@ const Hero = () => {
               {/* Check-in Date */}
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  मिति (Date)
+                  Travel Date / यात्रा मिति
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
                   <input
                     type="date"
                     value={checkIn}
                     onChange={(e) => setCheckIn(e.target.value)}
-                    className="input-field pl-10"
+                    className="input-field pl-10 focus:ring-emerald-500 focus:border-emerald-500"
+                    min={new Date().toISOString().split('T')[0]}
                   />
                 </div>
               </div>
@@ -130,17 +142,17 @@ const Hero = () => {
               {/* Guests */}
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  यात्रुहरू (Guests)
+                  Travelers / यात्रुहरू
                 </label>
                 <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
                   <select
                     value={guests}
                     onChange={(e) => setGuests(e.target.value)}
-                    className="input-field pl-10"
+                    className="input-field pl-10 focus:ring-emerald-500 focus:border-emerald-500"
                   >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                      <option key={num} value={num}>{num} जना</option>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                      <option key={num} value={num}>{num} {num === 1 ? 'Traveler / यात्रु' : 'Travelers / यात्रुहरू'}</option>
                     ))}
                   </select>
                 </div>
@@ -150,10 +162,10 @@ const Hero = () => {
               <div className="flex items-end">
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 group"
+                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 group shadow-lg hover:shadow-xl"
                 >
                   <Search className="w-5 h-5" />
-                  <span>खोज्नुहोस्</span>
+                  <span>Search Adventures / साहसिक खोज्नुहोस्</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
@@ -168,15 +180,16 @@ const Hero = () => {
             className="mt-8 flex flex-wrap justify-center gap-4"
           >
             {[
-              { name: 'एभरेस्ट ट्रेक', href: '/tours/everest' },
-              { name: 'पोखरा टुर', href: '/tours/pokhara' },
-              { name: 'चितवन सफारी', href: '/tours/chitwan' },
-              { name: 'लुम्बिनी यात्रा', href: '/tours/lumbini' },
+              { name: '🏔️ Everest Trek / एभरेस्ट ट्रेक', href: '/tours/everest' },
+              { name: '🏞️ Pokhara Lakes / पोखराका तालहरू', href: '/tours/pokhara' },
+              { name: '🐘 Chitwan Safari / चितवन सफारी', href: '/tours/chitwan' },
+              { name: '🕉️ Lumbini Pilgrimage / लुम्बिनी तीर्थयात्रा', href: '/tours/lumbini' },
+              { name: '🏛️ Kathmandu Heritage / काठमाडौं सम्पदा', href: '/tours/kathmandu' },
             ].map((action) => (
               <button
                 key={action.name}
                 onClick={() => router.push(action.href)}
-                className="bg-white/20 backdrop-blur-md text-white px-6 py-2 rounded-full hover:bg-white/30 transition-all duration-200 border border-white/30"
+                className="bg-emerald-500/20 backdrop-blur-md text-white px-6 py-3 rounded-full hover:bg-emerald-500/30 transition-all duration-200 border border-emerald-300/30 hover:scale-105 font-medium"
               >
                 {action.name}
               </button>

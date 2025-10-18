@@ -1,39 +1,39 @@
 const tours = [
   {
     id: 1,
-    title: "European Grand Tour",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><defs><linearGradient id='europe' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%234169E1;stop-opacity:1' /><stop offset='100%' style='stop-color:%236495ED;stop-opacity:1' /></linearGradient></defs><rect width='400' height='250' fill='url(%23europe)'/><rect x='50' y='100' width='80' height='60' fill='%23DEB887'/><rect x='60' y='80' width='60' height='20' fill='%23CD853F'/><rect x='200' y='120' width='60' height='40' fill='%23F5DEB3'/><rect x='210' y='100' width='40' height='20' fill='%23DEB887'/><rect x='300' y='90' width='70' height='70' fill='%23FFEFD5'/><rect x='310' y='70' width='50' height='20' fill='%23F5DEB3'/></svg>",
+    title: "Everest Base Camp Trek",
+    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><defs><linearGradient id='everest' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2387CEEB;stop-opacity:1' /><stop offset='100%' style='stop-color:%234169E1;stop-opacity:1' /></linearGradient></defs><rect width='400' height='250' fill='url(%23everest)'/><polygon points='200,30 150,180 250,180' fill='%23FFFFFF'/><polygon points='100,50 50,180 150,180' fill='%23F0F8FF'/><polygon points='300,40 250,180 350,180' fill='%23E6E6FA'/><path d='M0,180 Q200,160 400,180 L400,250 L0,250 Z' fill='%2332CD32'/><circle cx='80' cy='20' r='15' fill='%23FFD700'/></svg>",
     duration: "14 days",
-    price: "$2,499",
-    originalPrice: "$2,999",
-    countries: ["France", "Italy", "Germany", "Spain"],
+    price: "$1,899",
+    originalPrice: "$2,299",
+    regions: ["Khumbu Valley", "Sagarmatha National Park"],
     rating: 4.9,
-    reviews: 234,
-    highlights: ["Eiffel Tower", "Colosseum", "Neuschwanstein Castle"]
+    reviews: 342,
+    highlights: ["Everest Base Camp", "Sherpa Culture", "Himalayan Views"]
   },
   {
     id: 2,
-    title: "Southeast Asia Adventure",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><defs><linearGradient id='asia' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2332CD32;stop-opacity:1' /><stop offset='100%' style='stop-color:%23228B22;stop-opacity:1' /></linearGradient></defs><rect width='400' height='250' fill='url(%23asia)'/><polygon points='100,50 120,90 140,50' fill='%23654321'/><polygon points='200,40 220,80 240,40' fill='%238B4513'/><polygon points='300,60 320,100 340,60' fill='%23A0522D'/><path d='M0,200 Q200,180 400,200 L400,250 L0,250 Z' fill='%2387CEEB'/><circle cx='80' cy='30' r='20' fill='%23FFD700'/></svg>",
-    duration: "12 days",
-    price: "$1,899",
-    originalPrice: "$2,299",
-    countries: ["Thailand", "Vietnam", "Cambodia"],
+    title: "Annapurna Circuit Trek",
+    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><defs><linearGradient id='annapurna' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2332CD32;stop-opacity:1' /><stop offset='100%' style='stop-color:%23228B22;stop-opacity:1' /></linearGradient></defs><rect width='400' height='250' fill='url(%23annapurna)'/><polygon points='100,40 80,160 120,160' fill='%23FFFFFF'/><polygon points='200,30 180,150 220,150' fill='%23F0F8FF'/><polygon points='300,50 280,170 320,170' fill='%23E6E6FA'/><path d='M0,170 Q200,150 400,170 L400,250 L0,250 Z' fill='%2332CD32'/><circle cx='350' cy='25' r='18' fill='%23FFD700'/></svg>",
+    duration: "16 days",
+    price: "$1,599",
+    originalPrice: "$1,999",
+    regions: ["Annapurna Conservation Area", "Mustang District"],
     rating: 4.8,
-    reviews: 189,
-    highlights: ["Angkor Wat", "Ha Long Bay", "Bangkok Temples"]
+    reviews: 267,
+    highlights: ["Thorong La Pass", "Muktinath Temple", "Diverse Landscapes"]
   },
   {
     id: 3,
-    title: "African Safari Experience",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><defs><linearGradient id='africa' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23FF8C00;stop-opacity:1' /><stop offset='100%' style='stop-color:%23FF4500;stop-opacity:1' /></linearGradient></defs><rect width='400' height='250' fill='url(%23africa)'/><circle cx='100' cy='150' r='15' fill='%23654321'/><circle cx='120' cy='140' r='8' fill='%23654321'/><circle cx='250' cy='160' r='12' fill='%23696969'/><circle cx='270' cy='150' r='6' fill='%23696969'/><circle cx='320' cy='170' r='10' fill='%23D2691E'/><path d='M0,200 Q200,190 400,200 L400,250 L0,250 Z' fill='%23DAA520'/><circle cx='350' cy='40' r='25' fill='%23FFD700'/></svg>",
-    duration: "10 days",
-    price: "$3,299",
-    originalPrice: "$3,799",
-    countries: ["Kenya", "Tanzania"],
-    rating: 4.9,
-    reviews: 156,
-    highlights: ["Serengeti", "Masai Mara", "Ngorongoro Crater"]
+    title: "Nepal Cultural Heritage Tour",
+    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><defs><linearGradient id='heritage' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23DAA520;stop-opacity:1' /><stop offset='100%' style='stop-color:%23B8860B;stop-opacity:1' /></linearGradient></defs><rect width='400' height='250' fill='url(%23heritage)'/><rect x='150' y='60' width='100' height='120' fill='%238B4513'/><polygon points='150,60 200,20 250,60' fill='%23654321'/><rect x='170' y='100' width='15' height='30' fill='%23654321'/><rect x='215' y='100' width='15' height='30' fill='%23654321'/><rect x='190' y='140' width='20' height='40' fill='%23654321'/><circle cx='80' cy='30' r='20' fill='%23FFD700'/></svg>",
+    duration: "8 days",
+    price: "$899",
+    originalPrice: "$1,199",
+    regions: ["Kathmandu Valley", "Pokhara", "Lumbini"],
+    rating: 4.7,
+    reviews: 198,
+    highlights: ["UNESCO World Heritage Sites", "Buddhist Temples", "Local Markets"]
   }
 ];
 
@@ -42,11 +42,18 @@ const PopularTours = () => {
     <section className="py-20 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Popular Tours
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
+            Most Popular Nepal Adventures
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Join thousands of travelers on our most loved adventures around the globe
+          <h3 className="text-2xl md:text-3xl font-semibold text-emerald-600 dark:text-emerald-400 mb-4">
+            सबैभन्दा लोकप्रिय नेपाली साहसिक यात्राहरू
+          </h3>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-2">
+            Experience the best of Nepal with our top-rated treks and cultural tours, 
+            loved by thousands of international travelers
+          </p>
+          <p className="text-lg text-emerald-700 dark:text-emerald-300 max-w-3xl mx-auto">
+            हजारौं अन्तर्राष्ट्रिय यात्रुहरूले मन पराएका उत्कृष्ट ट्रेक र सांस्कृतिक भ्रमणहरू
           </p>
         </div>
 
@@ -85,14 +92,14 @@ const PopularTours = () => {
                 </div>
                 
                 <div className="mb-4">
-                  <span className="text-gray-600 dark:text-gray-300 block mb-2">Countries:</span>
+                  <span className="text-gray-600 dark:text-gray-300 block mb-2">Regions:</span>
                   <div className="flex flex-wrap gap-2">
-                    {tour.countries.map((country, index) => (
+                    {tour.regions.map((region, index) => (
                       <span
                         key={index}
                         className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm"
                       >
-                        {country}
+                        {region}
                       </span>
                     ))}
                   </div>

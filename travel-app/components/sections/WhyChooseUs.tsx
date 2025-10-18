@@ -1,33 +1,33 @@
 const features = [
   {
-    icon: "🌟",
-    title: "Expert Guides",
-    description: "Our certified local guides provide authentic insights and ensure your safety throughout your journey."
+    icon: "🏔️",
+    title: "Local Sherpa Guides",
+    description: "Experienced Sherpa and local guides with deep knowledge of Nepal's mountains, culture, and hidden gems."
   },
   {
     icon: "🛡️",
-    title: "24/7 Support",
-    description: "Round-the-clock assistance wherever you are in the world. We're always here when you need us."
+    title: "Safety First",
+    description: "Comprehensive safety protocols, emergency evacuation insurance, and 24/7 support throughout your Nepal adventure."
   },
   {
-    icon: "💎",
-    title: "Premium Experiences",
-    description: "Carefully curated experiences that go beyond typical tourist attractions for truly memorable adventures."
+    icon: "🏛️",
+    title: "Cultural Immersion",
+    description: "Authentic experiences with local families, monastery visits, and traditional ceremonies you won't find elsewhere."
   },
   {
-    icon: "🌍",
-    title: "Sustainable Travel",
-    description: "We're committed to responsible tourism that benefits local communities and preserves natural environments."
+    icon: "🌱",
+    title: "Eco-Responsible",
+    description: "Supporting local communities and environmental conservation while minimizing our footprint in the Himalayas."
   },
   {
     icon: "💰",
-    title: "Best Price Guarantee",
-    description: "Find a lower price elsewhere? We'll match it and give you an additional 5% discount."
+    title: "Transparent Pricing",
+    description: "No hidden fees. All permits, guides, accommodation, and meals clearly outlined with best value guarantee."
   },
   {
     icon: "🎯",
-    title: "Personalized Itineraries",
-    description: "Every trip is tailored to your preferences, interests, and travel style for a unique experience."
+    title: "Custom Adventures",
+    description: "From gentle cultural tours to extreme mountain expeditions - every itinerary crafted for your fitness and interests."
   }
 ];
 
@@ -67,34 +67,34 @@ const WhyChooseUs = () => {
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
             <div className="text-4xl md:text-5xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-              50K+
+              2,500+
             </div>
             <div className="text-gray-600 dark:text-gray-300 font-semibold">
-              Happy Travelers
+              Trekkers Guided
             </div>
           </div>
           <div className="text-center">
             <div className="text-4xl md:text-5xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-              150+
+              25+
             </div>
             <div className="text-gray-600 dark:text-gray-300 font-semibold">
-              Destinations
+              Nepal Destinations
             </div>
           </div>
           <div className="text-center">
             <div className="text-4xl md:text-5xl font-bold text-green-600 dark:text-green-400 mb-2">
-              15+
+              8+
             </div>
             <div className="text-gray-600 dark:text-gray-300 font-semibold">
-              Years Experience
+              Years in Nepal
             </div>
           </div>
           <div className="text-center">
             <div className="text-4xl md:text-5xl font-bold text-orange-600 dark:text-orange-400 mb-2">
-              4.9★
+              4.8★
             </div>
             <div className="text-gray-600 dark:text-gray-300 font-semibold">
-              Average Rating
+              TripAdvisor Rating
             </div>
           </div>
         </div>

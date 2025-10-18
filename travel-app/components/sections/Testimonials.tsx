@@ -1,30 +1,30 @@
 const testimonials = [
   {
     id: 1,
-    name: "Sarah Johnson",
-    location: "New York, USA",
+    name: "James Mitchell",
+    location: "Melbourne, Australia",
     image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23FF69B4'/><circle cx='35' cy='40' r='3' fill='%23FFF'/><circle cx='65' cy='40' r='3' fill='%23FFF'/><path d='M35,65 Q50,75 65,65' stroke='%23FFF' stroke-width='2' fill='none'/></svg>",
     rating: 5,
-    text: "TrekSathi made our European honeymoon absolutely magical! Every detail was perfectly planned, and our guide Maria was incredible. We'll definitely book with them again!",
-    trip: "European Grand Tour"
+    text: "The Everest Base Camp trek with TrekSathi was life-changing! Our Sherpa guide Pemba was incredible - so knowledgeable about the mountains and culture. The views were absolutely breathtaking!",
+    trip: "Everest Base Camp Trek"
   },
   {
     id: 2,
-    name: "Michael Chen",
-    location: "Toronto, Canada",
+    name: "Lisa Rodriguez",
+    location: "Barcelona, Spain",
     image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%234169E1'/><circle cx='35' cy='40' r='3' fill='%23FFF'/><circle cx='65' cy='40' r='3' fill='%23FFF'/><path d='M35,65 Q50,75 65,65' stroke='%23FFF' stroke-width='2' fill='none'/></svg>",
     rating: 5,
-    text: "The African safari exceeded all expectations. Seeing the Big Five in their natural habitat was a dream come true. The accommodations were luxurious and the service was top-notch.",
-    trip: "African Safari Experience"
+    text: "Nepal's cultural heritage tour exceeded all my expectations. From the ancient temples of Kathmandu to the peaceful atmosphere of Lumbini, every moment was magical. The local insights were invaluable!",
+    trip: "Nepal Cultural Heritage Tour"
   },
   {
     id: 3,
-    name: "Emma Williams",
-    location: "London, UK",
+    name: "David Thompson",
+    location: "Vancouver, Canada",
     image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%2332CD32'/><circle cx='35' cy='40' r='3' fill='%23FFF'/><circle cx='65' cy='40' r='3' fill='%23FFF'/><path d='M35,65 Q50,75 65,65' stroke='%23FFF' stroke-width='2' fill='none'/></svg>",
     rating: 5,
-    text: "Southeast Asia was an adventure of a lifetime! From the temples of Angkor Wat to the bustling streets of Bangkok, every moment was perfectly curated. Highly recommended!",
-    trip: "Southeast Asia Adventure"
+    text: "The Annapurna Circuit was the adventure of a lifetime! Crossing Thorong La Pass was challenging but so rewarding. The diverse landscapes and warm hospitality of the Nepali people made this unforgettable.",
+    trip: "Annapurna Circuit Trek"
   }
 ];
 
@@ -89,13 +89,13 @@ const Testimonials = () => {
         {/* Trust Indicators */}
         <div className="mt-16 text-center">
           <p className="text-gray-600 dark:text-gray-300 mb-8">
-            Trusted by travelers worldwide and featured in:
+            Certified by Nepal Tourism Board and recognized by:
           </p>
-          <div className="flex justify-center items-center space-x-8 opacity-60">
-            <div className="text-2xl font-bold text-gray-400">CNN Travel</div>
-            <div className="text-2xl font-bold text-gray-400">Lonely Planet</div>
-            <div className="text-2xl font-bold text-gray-400">Travel + Leisure</div>
-            <div className="text-2xl font-bold text-gray-400">National Geographic</div>
+          <div className="flex justify-center items-center space-x-8 opacity-60 flex-wrap gap-4">
+            <div className="text-lg font-bold text-gray-400">Nepal Tourism Board</div>
+            <div className="text-lg font-bold text-gray-400">TripAdvisor</div>
+            <div className="text-lg font-bold text-gray-400">Trekking Agencies Association</div>
+            <div className="text-lg font-bold text-gray-400">Lonely Planet</div>
           </div>
         </div>
       </div>

@@ -14,7 +14,8 @@ const Footer = () => {
               <span className="text-xl font-bold">TrekSathi</span>
             </Link>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Your trusted companion for extraordinary adventures around the globe. Creating memories that last a lifetime since 2009.
+              Your trusted guide to Nepal's majestic mountains, rich culture, and unforgettable adventures. 
+              Creating authentic Himalayan experiences since 2016.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -42,25 +43,25 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4">Explore Nepal</h3>
             <ul className="space-y-2">
-              <li><Link href="/destinations" className="text-gray-300 hover:text-white transition-colors">Destinations</Link></li>
-              <li><Link href="/tours" className="text-gray-300 hover:text-white transition-colors">Tours</Link></li>
-              <li><Link href="/about" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/blog" className="text-gray-300 hover:text-white transition-colors">Travel Blog</Link></li>
+              <li><Link href="/trekking" className="text-gray-300 hover:text-white transition-colors">Trekking Routes</Link></li>
+              <li><Link href="/cultural-tours" className="text-gray-300 hover:text-white transition-colors">Cultural Tours</Link></li>
+              <li><Link href="/adventure" className="text-gray-300 hover:text-white transition-colors">Adventure Sports</Link></li>
+              <li><Link href="/about" className="text-gray-300 hover:text-white transition-colors">About Nepal</Link></li>
+              <li><Link href="/blog" className="text-gray-300 hover:text-white transition-colors">Nepal Travel Blog</Link></li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <h3 className="text-lg font-semibold mb-4">Travel Support</h3>
             <ul className="space-y-2">
-              <li><Link href="/help" className="text-gray-300 hover:text-white transition-colors">Help Center</Link></li>
-              <li><Link href="/booking-policy" className="text-gray-300 hover:text-white transition-colors">Booking Policy</Link></li>
-              <li><Link href="/cancellation" className="text-gray-300 hover:text-white transition-colors">Cancellation</Link></li>
-              <li><Link href="/travel-insurance" className="text-gray-300 hover:text-white transition-colors">Travel Insurance</Link></li>
-              <li><Link href="/safety" className="text-gray-300 hover:text-white transition-colors">Safety Guidelines</Link></li>
+              <li><Link href="/help" className="text-gray-300 hover:text-white transition-colors">Travel Guide</Link></li>
+              <li><Link href="/visa-info" className="text-gray-300 hover:text-white transition-colors">Visa Information</Link></li>
+              <li><Link href="/packing-list" className="text-gray-300 hover:text-white transition-colors">Packing Lists</Link></li>
+              <li><Link href="/altitude-sickness" className="text-gray-300 hover:text-white transition-colors">Altitude Guide</Link></li>
+              <li><Link href="/emergency" className="text-gray-300 hover:text-white transition-colors">Emergency Contacts</Link></li>
             </ul>
           </div>
 
@@ -94,7 +95,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 TrekSathi. All rights reserved.
+            © 2024 Nepal Adventures. All rights reserved. | Licensed by Nepal Tourism Board
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
