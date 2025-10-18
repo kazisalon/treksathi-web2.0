@@ -8,6 +8,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Modern Nepali Travel Website - Himalayan Theme (Top to Bottom Structure)
+        
+        // Navbar Colors
+        'navbar-white': 'rgba(255, 255, 255, 0.9)',  // Semi-transparent white with blur
+        'navbar-highlight': '#3A86FF',                // Blue highlight for active links
+        
+        // Hero Section Colors
+        'hero-overlay-dark': '#0B132B',               // Dark navy overlay start
+        'hero-overlay-transparent': 'transparent',    // Overlay end
+        'hero-accent-gold': '#FDCB6E',               // Golden-yellow heading accents (sunrise)
+        
+        // Search Section Colors
+        'search-glass': 'rgba(255, 255, 255, 0.1)',  // Glassmorphism background
+        'search-border': 'rgba(255, 255, 255, 0.2)', // Soft glass borders
+        
+        // Body Section Colors
+        'body-bg': '#F8F9FA',                        // Light, airy off-white background
+        'card-white': '#FFFFFF',                     // White cards
+        'forest-green': '#1B4332',                   // Primary accent - forest green
+        'sky-blue': '#3A86FF',                       // Primary accent - sky blue
+        'bright-teal': '#00B4D8',                    // Gradient end for buttons
+        
+        // Text Colors
+        'text-header': '#1E293B',                    // Dark slate gray for headers
+        'text-body': '#475569',                      // Muted gray for paragraphs
+        
+        // Footer Colors
+        'footer-everest': '#1E3A5F',                 // Calming Everest blue-gray
+        'footer-highlight': '#3A86FF',               // Blue highlights in footer
+        
+        // Keep existing primary/secondary for compatibility
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -32,6 +63,10 @@ module.exports = {
           800: '#166534',
           900: '#14532d',
         },
+      },
+      backgroundImage: {
+        'gradient-search-button': 'linear-gradient(90deg, #3A86FF, #00B4D8)',
+        'gradient-hero-overlay': 'linear-gradient(to bottom, #0B132B, transparent)',
       },
       fontFamily: {
         sans: ['Inter', 'Noto Sans Devanagari', 'sans-serif'],

@@ -1,4 +1,10 @@
-const destinations = [
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useDestinations } from '../../hooks/useApi';
+
+// Fallback destinations for when API is loading or fails
+const fallbackDestinations = [
   {
     id: 1,
     name: "Everest Base Camp",
@@ -46,30 +52,71 @@ const destinations = [
 ];
 
 const FeaturedDestinations = () => {
+  const { data: apiDestinations, loading, error, getDestinations } = useDestinations();
+  const [destinations, setDestinations] = useState(fallbackDestinations);
+
+  useEffect(() => {
+    // Fetch destinations from API
+    getDestinations({ featured: true, limit: 4 });
+  }, [getDestinations]);
+
+  useEffect(() => {
+    // Use API data if available, otherwise use fallback
+    if (apiDestinations && Array.isArray(apiDestinations) && apiDestinations.length > 0) {
+      // Map API data to component format
+      const mappedDestinations = apiDestinations.map((dest: any) => ({
+        id: dest.id,
+        name: dest.name || dest.title,
+        nameNp: dest.nameNepali || dest.nameNp || dest.name,
+        image: dest.images?.[0] || dest.image || fallbackDestinations[0].image,
+        price: dest.price ? `From ${dest.price}` : "Contact for price",
+        duration: dest.duration ? `${dest.duration} days` : "Varies",
+        rating: dest.rating || 4.5,
+        description: dest.description || "Amazing destination",
+        descriptionNp: dest.descriptionNepali || dest.descriptionNp || "अद्भुत गन्तव्य"
+      }));
+      setDestinations(mappedDestinations);
+    }
+  }, [apiDestinations]);
+
+  const displayDestinations = destinations.slice(0, 4);
   return (
-    <section className="py-20 bg-gray-50 dark:bg-gray-800">
+    <section className="py-20 bg-body-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-4xl md:text-5xl font-bold text-text-header mb-2">
             Explore Nepal's Wonders
           </h2>
-          <h3 className="text-2xl md:text-3xl font-semibold text-emerald-600 dark:text-emerald-400 mb-4">
+          <h3 className="text-2xl md:text-3xl font-semibold text-forest-green mb-4">
             नेपालका अजूबाहरू अन्वेषण गर्नुहोस्
           </h3>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-2">
+          <p className="text-xl text-text-body max-w-3xl mx-auto mb-2">
             From the world's highest peaks to ancient temples and wildlife sanctuaries - 
             discover Nepal's most iconic destinations that will leave you breathless
           </p>
-          <p className="text-lg text-emerald-700 dark:text-emerald-300 max-w-3xl mx-auto">
+          <p className="text-lg text-sky-blue max-w-3xl mx-auto">
             संसारका सबैभन्दा अग्लो शिखरहरूदेखि पुरातन मन्दिरहरू र वन्यजन्तु अभयारण्यहरूसम्म
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {destinations.map((destination) => (
+        {loading && (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+            <p className="mt-2 text-gray-600">Loading destinations...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="text-center py-4 text-amber-600">
+            <p>Using cached destinations (API temporarily unavailable)</p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {displayDestinations.map((destination) => (
             <div
               key={destination.id}
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
+              className="bg-card-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group"
             >
               <div className="relative overflow-hidden">
                 <img

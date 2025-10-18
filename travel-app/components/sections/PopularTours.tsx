@@ -1,4 +1,10 @@
-const tours = [
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useTours } from '../../hooks/useApi';
+
+// Fallback tours for when API is loading or fails
+const fallbackTours = [
   {
     id: 1,
     title: "Everest Base Camp Trek",
@@ -38,6 +44,35 @@ const tours = [
 ];
 
 const PopularTours = () => {
+  const { data: apiTours, loading, error, getTours } = useTours();
+  const [tours, setTours] = useState(fallbackTours);
+
+  useEffect(() => {
+    // Fetch tours from API
+    getTours({ popular: true, limit: 3 });
+  }, [getTours]);
+
+  useEffect(() => {
+    // Use API data if available, otherwise use fallback
+    if (apiTours && Array.isArray(apiTours) && apiTours.length > 0) {
+      // Map API data to component format
+      const mappedTours = apiTours.map((tour: any) => ({
+        id: tour.id,
+        title: tour.name || tour.title,
+        image: tour.images?.[0] || tour.image || fallbackTours[0].image,
+        duration: tour.duration ? `${tour.duration} days` : "Varies",
+        price: tour.price ? `${tour.price}` : "Contact for price",
+        originalPrice: tour.originalPrice ? `${tour.originalPrice}` : tour.price ? `${Math.round(tour.price * 1.2)}` : "$999",
+        regions: tour.regions || tour.locations || [tour.location || "Nepal"],
+        rating: tour.rating || 4.5,
+        reviews: tour.reviewCount || tour.reviews || Math.floor(Math.random() * 300) + 50,
+        highlights: tour.highlights || tour.features || ["Amazing Experience", "Professional Guide", "Memorable Journey"]
+      }));
+      setTours(mappedTours);
+    }
+  }, [apiTours]);
+
+  const displayTours = tours.slice(0, 3);
   return (
     <section className="py-20 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,8 +92,21 @@ const PopularTours = () => {
           </p>
         </div>
 
+        {loading && (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">Loading tours...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="text-center py-4 text-amber-600">
+            <p>Using cached tours (API temporarily unavailable)</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {tours.map((tour) => (
+          {displayTours.map((tour) => (
             <div
               key={tour.id}
               className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"

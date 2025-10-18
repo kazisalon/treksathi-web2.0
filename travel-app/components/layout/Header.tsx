@@ -30,10 +30,20 @@ const Header = () => {
   const router = useRouter();
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrolled = window.scrollY > 10;
+          setIsScrolled(prev => prev !== scrolled ? scrolled : prev);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -52,33 +62,45 @@ const Header = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-    }`}>
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-xl shadow-xl border-b border-gray-200' 
+          : 'bg-white backdrop-blur-md'
+      }`}>
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">ट</span>
+          <Link href="/" className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 via-blue-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-lg border-2 border-white/50">
+              <span className="text-white font-bold text-2xl drop-shadow-lg">ट</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-gray-900">TrekSathi</span>
-              <span className="text-xs text-emerald-600">ट्रेकसाथी</span>
+              <span className={`text-2xl font-bold transition-colors duration-300 ${
+                isScrolled ? 'text-gray-800' : 'text-gray-800'
+              }`}>TrekSathi</span>
+              <span className={`text-sm font-medium transition-colors duration-300 ${
+                isScrolled ? 'text-blue-600' : 'text-blue-600'
+              }`}>ट्रेकसाथी</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+          <div className="hidden lg:flex items-center space-x-1">
+            {navItems.map((item, index) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="group flex items-center space-x-1 text-gray-700 hover:text-emerald-600 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-300 border border-transparent ${
+                  isScrolled 
+                    ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200' 
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200'
+                }`}
               >
-                <item.icon className="w-4 h-4" />
-                <div className="flex flex-col">
-                  <span className="font-medium">{item.name}</span>
-                  <span className="text-xs opacity-70">नेपाली</span>
+                <item.icon className="w-4 h-4 flex-shrink-0" />
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-medium leading-tight">{item.name}</span>
+                  <span className={`text-xs transition-colors duration-300 ${
+                    isScrolled ? 'text-gray-500' : 'text-gray-500'
+                  }`}>{item.nameNp}</span>
                 </div>
               </Link>
             ))}
@@ -92,12 +114,18 @@ const Header = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                  className={`flex items-center space-x-2 p-2 rounded-lg transition-colors duration-200 ${
+                    isScrolled 
+                      ? 'hover:bg-gray-100' 
+                      : 'hover:bg-gray-100'
+                  }`}
                 >
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
-                  <span className="font-medium text-gray-700">{session.user?.name}</span>
+                  <span className={`font-medium transition-colors duration-200 ${
+                    isScrolled ? 'text-gray-700' : 'text-gray-700'
+                  }`}>{session.user?.name}</span>
                 </button>
 
                 <AnimatePresence>
@@ -113,28 +141,28 @@ const Header = () => {
                         className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50"
                       >
                         <User className="w-4 h-4" />
-                        <span>प्रोफाइल</span>
+                        <span>Profile</span>
                       </Link>
                       <Link
                         href="/bookings"
                         className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50"
                       >
                         <Heart className="w-4 h-4" />
-                        <span>मेरो बुकिङहरू</span>
+                        <span>My Bookings</span>
                       </Link>
                       <Link
                         href="/favorites"
                         className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50"
                       >
                         <Heart className="w-4 h-4" />
-                        <span>मनपर्ने</span>
+                        <span>Favorites</span>
                       </Link>
                       <Link
                         href="/settings"
                         className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50"
                       >
                         <Settings className="w-4 h-4" />
-                        <span>सेटिङहरू</span>
+                        <span>Settings</span>
                       </Link>
                       <hr className="my-2" />
                       <button
@@ -142,7 +170,7 @@ const Header = () => {
                         className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 w-full text-left"
                       >
                         <LogOut className="w-4 h-4" />
-                        <span>लग आउट</span>
+                        <span>Sign Out</span>
                       </button>
                     </motion.div>
                   )}
@@ -152,15 +180,21 @@ const Header = () => {
               <div className="flex items-center space-x-3">
                 <Link
                   href="/auth/signin"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+                  className={`font-medium transition-colors duration-200 ${
+                    isScrolled ? 'text-gray-800 hover:text-blue-600' : 'text-gray-800 hover:text-blue-600'
+                  }`}
                 >
-                  लग इन
+                  Sign In
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="btn-primary"
+                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 border-2 ${
+                    isScrolled 
+                      ? 'bg-gradient-to-r from-green-500 via-blue-500 to-yellow-500 hover:from-green-600 hover:via-blue-600 hover:to-yellow-600 text-white border-transparent shadow-lg hover:shadow-xl transform hover:scale-105' 
+                      : 'bg-gradient-to-r from-green-500 via-blue-500 to-yellow-500 hover:from-green-600 hover:via-blue-600 hover:to-yellow-600 text-white border-transparent shadow-lg hover:shadow-xl transform hover:scale-105'
+                  }`}
                 >
-                  साइन अप
+                  Sign Up
                 </Link>
               </div>
             )}
@@ -169,7 +203,11 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            className={`md:hidden p-2 rounded-lg transition-colors duration-200 ${
+              isScrolled 
+                ? 'text-gray-700 hover:bg-gray-100' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -207,14 +245,14 @@ const Header = () => {
                       className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg"
                     >
                       <User className="w-5 h-5" />
-                      <span>प्रोफाइल</span>
+                      <span>Profile</span>
                     </Link>
                     <button
                       onClick={handleSignOut}
                       className="flex items-center space-x-3 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg w-full text-left"
                     >
                       <LogOut className="w-5 h-5" />
-                      <span>लग आउट</span>
+                      <span>Sign Out</span>
                     </button>
                   </div>
                 ) : (
@@ -223,13 +261,13 @@ const Header = () => {
                       href="/auth/signin"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg"
                     >
-                      लग इन
+                      Sign In
                     </Link>
                     <Link
                       href="/auth/signup"
                       className="block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                      साइन अप
+                      Sign Up
                     </Link>
                   </div>
                 )}
