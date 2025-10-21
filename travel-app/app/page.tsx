@@ -1,6 +1,7 @@
 // ... existing code ...
 import Header from '../components/layout/Header';
 import Hero from '../components/sections/Hero';
+import NearbyDestinations from '../components/sections/NearbyDestinations';
 import FeaturedDestinations from '../components/sections/FeaturedDestinations';
 import PopularTours from '../components/sections/PopularTours';
 import WhyChooseUs from '../components/sections/WhyChooseUs';
@@ -14,6 +15,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
+        <NearbyDestinations />
         <FeaturedDestinations />
         <PopularTours />
         <WhyChooseUs />
