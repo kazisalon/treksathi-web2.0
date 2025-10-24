@@ -1,296 +1,331 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { Star, MapPin, Clock, Users, Heart, Share2, Camera } from 'lucide-react';
 
-// Premium destinations data with enhanced structure for immersive experience
+// Featured destinations data matching the design
 const destinations = [
   {
     id: 1,
-    name: "Mustang",
-    region: "Upper Mustang",
-    description: "Ride through the desert trails of the last forbidden kingdom.",
-    poeticTagline: "Where ancient winds whisper forgotten tales",
-    poeticSubtitle: "Desert kingdom where time stands still",
-    tag: "Hidden Gem",
-    tagColor: "emerald",
+    name: "Himayaram Trunings",
+    location: "Kathmandu, Nepal",
+    region: "Kathmandu Valley",
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop",
-    experiences: ["Cultural", "Adventure", "Offbeat"],
-    topExperience: "Desert Trekking",
-    difficulty: "Moderate",
-    bestTime: "Mar-Nov",
-    elevation: "3,840m",
+    rating: 4.5,
+    reviews: 89,
+    duration: "3 days",
+    groupSize: "2-8",
+    price: "$299",
+    category: "Cultural",
+    difficulty: "Easy",
+    highlights: ["Ancient temples", "Local culture", "Traditional crafts"],
+    description: "Explore the ancient temples and rich cultural heritage of Kathmandu valley with expert local guides.",
+    photos: 15,
+    badge: "Popular",
+    experiences: ["Cultural", "Spiritual"],
     recommended: true,
     nearby: false,
-    rating: 4.9,
-    duration: "12-15 days",
-    activities: ["🏔️", "🐎", "🏛️", "📸"],
-    seasonalHighlight: "Spring Desert Blooms",
+    isSeasonalFeatured: false,
+    bestTime: "Oct-Dec",
+    elevation: "1,400m",
+    topExperience: "Temple Tours",
+    activities: ["🏛️", "🙏", "📿"],
+    poeticSubtitle: "Where ancient whispers meet modern souls",
     seasonalIcon: "🌸",
-    isSeasonalFeatured: true,
+    seasonalHighlight: "Spring Festival Season",
     travelerStories: [
-      { avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop", review: "Life-changing experience!" },
-      { avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop", review: "Absolutely magical" }
+      {
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+        review: "The temples here changed my perspective on life completely."
+      }
     ],
-    localLegend: "Ancient legends speak of Mustang as the last kingdom where the wind carries prayers to the heavens, and every stone tells a story of resilience."
+    localLegend: "Legend says that the gods themselves blessed this valley with eternal peace."
   },
   {
     id: 2,
-    name: "Everest Base Camp",
-    region: "Khumbu Valley", 
-    description: "Stand where legends are born, beneath the roof of the world.",
-    poeticTagline: "Every step echoes with mountaineer dreams",
-    poeticSubtitle: "Where legends touch the sky",
-    tag: "Adventure Hotspot",
-    tagColor: "blue",
+    name: "Deer Mountain Plashing",
+    location: "Pokhara, Nepal",
+    region: "Pokhara Valley",
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-    experiences: ["Adventure", "Spiritual"],
-    topExperience: "High Altitude Trekking",
-    difficulty: "Challenging",
-    bestTime: "Mar-May, Sep-Nov",
-    elevation: "5,364m",
+    rating: 4.8,
+    reviews: 156,
+    duration: "5 days",
+    groupSize: "4-12",
+    price: "$599",
+    category: "Adventure",
+    difficulty: "Moderate",
+    highlights: ["Mountain views", "Lake activities", "Sunrise trek"],
+    description: "Experience breathtaking mountain views and serene lake activities in the beautiful Pokhara valley.",
+    photos: 23,
+    badge: "Best Seller",
+    experiences: ["Adventure"],
     recommended: true,
     nearby: true,
-    rating: 4.8,
-    duration: "14-16 days",
-    activities: ["🏔️", "🥾", "📷", "🧗"],
-    seasonalHighlight: "Clear Mountain Views",
-    seasonalIcon: "❄️",
-    isSeasonalFeatured: false,
+    isSeasonalFeatured: true,
+    bestTime: "Sep-Nov",
+    elevation: "800m",
+    topExperience: "Lake Adventures",
+    activities: ["🏔️", "🚣", "🌅"],
+    poeticSubtitle: "Where mountains kiss the sky",
+    seasonalIcon: "🍂",
+    seasonalHighlight: "Perfect autumn weather",
     travelerStories: [
-      { avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop", review: "Dream come true!" },
-      { avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop", review: "Incredible journey" }
+      {
+        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+        review: "The sunrise over the Himalayas was absolutely magical."
+      }
     ],
-    localLegend: "The Sherpa people believe that Everest, known as Chomolungma, is the goddess mother of the world, watching over all who dare to approach her sacred summit."
+    localLegend: "Local fishermen believe the lake holds the tears of mountain spirits."
   },
   {
     id: 3,
-    name: "Annapurna Sanctuary",
-    region: "Annapurna Conservation Area",
-    description: "Walk into nature's amphitheater where rhododendrons bloom.",
-    poeticTagline: "A sacred circle where earth meets heaven",
-    poeticSubtitle: "Nature's amphitheater of wonder",
-    tag: "Nature's Paradise",
-    tagColor: "rose",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop",
-    experiences: ["Adventure", "Spiritual"],
-    topExperience: "Rhododendron Trails",
-    difficulty: "Moderate",
-    bestTime: "Mar-May, Sep-Nov",
-    elevation: "4,130m",
-    recommended: false,
-    nearby: true,
-    rating: 4.7,
-    duration: "10-12 days",
-    activities: ["🌸", "🏔️", "🥾", "🦋"],
-    seasonalHighlight: "Rhododendron Blooms",
-    seasonalIcon: "🌺",
-    isSeasonalFeatured: true,
+    name: "Deep Mountain Blue Hardy",
+    location: "Everest Region, Nepal",
+    region: "Everest Region",
+    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop",
+    rating: 4.9,
+    reviews: 234,
+    duration: "14 days",
+    groupSize: "6-15",
+    price: "$1,299",
+    category: "Trekking",
+    difficulty: "Challenging",
+    highlights: ["Everest views", "Sherpa culture", "High altitude"],
+    description: "Journey to the base of the world's highest peak and experience the legendary Sherpa hospitality.",
+    photos: 45,
+    badge: "Premium",
+    experiences: ["Adventure", "Cultural"],
+    recommended: true,
+    nearby: false,
+    isSeasonalFeatured: false,
+    bestTime: "Mar-May",
+    elevation: "5,364m",
+    topExperience: "Everest Base Camp",
+    activities: ["🏔️", "🥾", "📸"],
+    poeticSubtitle: "Touch the roof of the world",
+    seasonalIcon: "❄️",
+    seasonalHighlight: "Clear mountain views",
     travelerStories: [
-      { avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop", review: "Breathtaking beauty!" },
-      { avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop", review: "Pure serenity" }
+      {
+        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+        review: "Standing at base camp was the most humbling experience of my life."
+      }
     ],
-    localLegend: "The sanctuary is said to be blessed by the goddess Annapurna, who provides nourishment to all living beings in this sacred amphitheater."
+    localLegend: "Sherpas say Everest is the goddess mother of the world, Chomolungma."
   },
   {
     id: 4,
-    name: "Pokhara Valley",
-    region: "Gandaki Province",
-    description: "Mirror lakes reflect the soul of the Himalayas.",
-    poeticTagline: "Where tranquility finds perfect reflection",
-    poeticSubtitle: "Lake city of eternal peace",
-    tag: "Romantic Escape",
-    tagColor: "purple",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-    experiences: ["Romantic", "Adventure"],
-    topExperience: "Lake Boating",
-    difficulty: "Easy",
-    bestTime: "Oct-Apr",
-    elevation: "822m",
-    recommended: true,
-    nearby: false,
-    rating: 4.6,
-    duration: "3-5 days",
-    activities: ["🚤", "🏔️", "🌅", "💕"],
-    seasonalHighlight: "Perfect Weather",
-    seasonalIcon: "☀️",
-    isSeasonalFeatured: false,
+    name: "Adventure & Roughsinging",
+    location: "Annapurna Region, Nepal",
+    region: "Annapurna Region",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop",
+    rating: 4.7,
+    reviews: 178,
+    duration: "10 days",
+    groupSize: "4-10",
+    price: "$899",
+    category: "Adventure",
+    difficulty: "Moderate",
+    highlights: ["Diverse landscapes", "Hot springs", "Mountain villages"],
+    description: "Trek through diverse landscapes from subtropical forests to alpine meadows in the Annapurna region.",
+    photos: 32,
+    badge: "Recommended",
+    experiences: ["Adventure"],
+    recommended: false,
+    nearby: true,
+    isSeasonalFeatured: true,
+    bestTime: "Oct-Dec",
+    elevation: "4,130m",
+    topExperience: "Circuit Trek",
+    activities: ["🥾", "♨️", "🏘️"],
+    poeticSubtitle: "Journey through nature's symphony",
+    seasonalIcon: "🌿",
+    seasonalHighlight: "Rhododendron blooms",
     travelerStories: [
-      { avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop", review: "Perfect romantic getaway!" },
-      { avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop", review: "So peaceful and beautiful" }
+      {
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+        review: "The diversity of landscapes was absolutely  incredible."
+      }
     ],
-    localLegend: "Local fishermen believe that the lake holds the tears of joy from the mountain gods, blessing all lovers who visit with eternal happiness."
+    localLegend: "Ancient traders believed this route was blessed by mountain gods."
   },
   {
     id: 5,
-    name: "Kathmandu Valley",
-    region: "Central Nepal",
-    description: "Seven UNESCO sites cradle centuries of devotion and art.",
-    poeticTagline: "Living museum of gods and mortals",
-    poeticSubtitle: "Where ancient culture lives and breathes",
-    tag: "Cultural Heritage",
-    tagColor: "amber",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop",
+    name: "Unveil the Sctuning",
+    location: "Mustang, Nepal",
+    region: "Upper Mustang",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+    rating: 4.6,
+    reviews: 92,
+    duration: "12 days",
+    groupSize: "6-12",
+    price: "$1,099",
+    category: "Cultural",
+    difficulty: "Moderate",
+    highlights: ["Ancient kingdom", "Desert landscapes", "Tibetan culture"],
+    description: "Discover the hidden kingdom of Mustang with its unique desert landscapes and ancient Tibetan culture.",
+    photos: 28,
+    badge: "Hidden Gem",
     experiences: ["Cultural", "Spiritual"],
-    topExperience: "Temple Hopping",
-    difficulty: "Easy",
-    bestTime: "Oct-Apr",
-    elevation: "1,400m",
     recommended: false,
-    nearby: true,
-    rating: 4.5,
-    duration: "2-4 days",
-    activities: ["🏛️", "🙏", "🎨", "📿"],
-    seasonalHighlight: "Festival Season",
-    seasonalIcon: "🎊",
+    nearby: false,
     isSeasonalFeatured: true,
+    bestTime: "May-Oct",
+    elevation: "3,840m",
+    topExperience: "Forbidden Kingdom",
+    activities: ["🏰", "🐎", "📿"],
+    poeticSubtitle: "Step into a timeless realm",
+    seasonalIcon: "🏜️",
+    seasonalHighlight: "Desert kingdom exploration",
     travelerStories: [
-      { avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop", review: "Rich cultural experience!" },
-      { avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop", review: "Amazing temples and art" }
+      {
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+        review: "Felt like traveling back in time to an ancient civilization."
+      }
     ],
-    localLegend: "It is said that the valley was once a lake, drained by the sword of Manjushri to create a sacred space where gods and humans could coexist."
+    localLegend: "The last forbidden kingdom where time stands still."
   },
   {
     id: 6,
-    name: "Chitwan National Park",
-    region: "Terai Region",
-    description: "Where royal Bengal tigers roam through emerald jungles.",
-    poeticTagline: "Jungle symphony of the wild heart",
-    poeticSubtitle: "Where wildlife roams free",
-    tag: "Wildlife Safari",
-    tagColor: "green",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop",
-    experiences: ["Wildlife", "Adventure"],
-    topExperience: "Tiger Safari",
+    name: "Real Deeringean Plustions",
+    location: "Chitwan, Nepal",
+    region: "Chitwan National Park",
+    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop",
+    rating: 4.4,
+    reviews: 145,
+    duration: "3 days",
+    groupSize: "2-6",
+    price: "$399",
+    category: "Wildlife",
     difficulty: "Easy",
+    highlights: ["Tiger safari", "Elephant rides", "Bird watching"],
+    description: "Experience incredible wildlife encounters in Nepal's premier national park with expert naturalist guides.",
+    photos: 19,
+    badge: "Wildlife",
+    experiences: ["Wildlife"],
+    recommended: false,
+    nearby: true,
+    isSeasonalFeatured: false,
     bestTime: "Oct-Mar",
     elevation: "150m",
-    recommended: true,
-    nearby: false,
-    rating: 4.4,
-    duration: "2-3 days",
-    activities: ["🐅", "🐘", "🦏", "🌿"],
-    seasonalHighlight: "Wildlife Spotting",
-    seasonalIcon: "🦌",
-    isSeasonalFeatured: false,
+    topExperience: "Tiger Safari",
+    activities: ["🐅", "🐘", "🦅"],
+    poeticSubtitle: "Where wild hearts roam free",
+    seasonalIcon: "🌳",
+    seasonalHighlight: "Wildlife spotting season",
     travelerStories: [
-      { avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop", review: "Saw a tiger up close!" },
-      { avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop", review: "Amazing wildlife experience" }
+      {
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+        review: "Seeing a Bengal tiger in the wild was a dream come true."
+      }
     ],
-    localLegend: "The Tharu people believe that the jungle spirits protect all who respect the forest, and tigers are the guardians of ancient wisdom."
+    localLegend: "The jungle spirits protect all who respect the wild."
   }
 ];
 
-// Hidden Treasures data
+// Hidden treasures data
 const hiddenTreasures = [
   {
     id: 1,
-    name: "Rara Lake",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    description: "Nepal's largest lake, a pristine jewel in the remote wilderness",
-    location: "Mugu District",
-    difficulty: "Moderate"
+    name: "Secret Valley",
+    location: "Hidden Himalayas",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+    difficulty: "Moderate",
+    description: "A hidden valley where time stands still"
   },
   {
     id: 2,
-    name: "Tsum Valley",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=300&fit=crop",
-    description: "Sacred valley of ancient Buddhist culture and traditions",
-    location: "Gorkha District",
-    difficulty: "Challenging"
+    name: "Ancient Cave",
+    location: "Mustang Region",
+    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop",
+    difficulty: "Easy",
+    description: "Mysterious caves with ancient paintings"
   },
   {
     id: 3,
-    name: "Dolpo Region",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=400&h=300&fit=crop",
-    description: "Remote trans-Himalayan region with Tibetan culture",
-    location: "Dolpa District",
-    difficulty: "Expert"
+    name: "Lost Temple",
+    location: "Remote Peaks",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop",
+    difficulty: "Challenging",
+    description: "A forgotten temple in the clouds"
   },
   {
     id: 4,
-    name: "Khopra Ridge",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    description: "Off-the-beaten-path trek with stunning Annapurna views",
-    location: "Annapurna Region",
-    difficulty: "Moderate"
+    name: "Hidden Lake",
+    location: "Sacred Valley",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+    difficulty: "Moderate",
+    description: "Crystal clear waters in a secret location"
   }
 ];
 
-// Traveler Voices data
+// Traveler voices data
 const travelerVoices = [
   {
     id: 1,
     name: "Sarah Johnson",
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=60&h=60&fit=crop",
-    location: "New York, USA",
-    story: "Nepal changed my perspective on life. The warmth of the people and the majesty of the mountains created memories I'll treasure forever.",
-    trip: "Everest Base Camp Trek",
-    rating: 5,
-    date: "March 2024"
+    location: "California, USA",
+    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+    story: "Nepal changed my life completely. The mountains taught me what true peace means.",
+    trip: "Everest Base Camp",
+    date: "March 2024",
+    rating: 5
   },
   {
     id: 2,
     name: "Marco Rodriguez",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop",
-    location: "Barcelona, Spain",
-    story: "The spiritual energy in Kathmandu's temples and the adventure in the Himalayas made this the trip of a lifetime.",
-    trip: "Cultural Heritage Tour",
-    rating: 5,
-    date: "February 2024"
+    location: "Madrid, Spain",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+    story: "The hospitality of Nepali people is unmatched. Every moment was magical.",
+    trip: "Annapurna Circuit",
+    date: "October 2023",
+    rating: 5
   },
   {
     id: 3,
-    name: "Emma Thompson",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop",
-    location: "London, UK",
-    story: "From the bustling streets of Thamel to the serene lakes of Pokhara, every moment was magical.",
-    trip: "Nepal Highlights",
-    rating: 5,
-    date: "January 2024"
+    name: "Emma Chen",
+    location: "Singapore",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+    story: "From bustling Kathmandu to serene mountains, Nepal offers everything.",
+    trip: "Cultural Tour",
+    date: "December 2023",
+    rating: 5
   }
 ];
 
-// Cultural Insights data
+// Cultural insights data
 const culturalInsights = [
   {
-    id: 1,
-    title: "Festival of Lights",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=400&h=300&fit=crop",
-    description: "Experience Tihar, Nepal's festival of lights, where every home glows with oil lamps and marigold garlands",
-    category: "Festivals",
+    icon: "🏛️",
+    title: "Ancient Temples",
+    description: "Discover centuries-old temples that hold the secrets of Nepal's spiritual heritage.",
+    category: "Heritage",
     readTime: "5 min read",
-    author: "Local Expert",
-    icon: "🪔"
+    author: "Local Guide"
   },
   {
-    id: 2,
-    title: "Mountain Monasteries",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=300&fit=crop",
-    description: "Discover the ancient Buddhist monasteries perched high in the Himalayas, where monks preserve centuries-old traditions",
-    category: "Spirituality",
+    icon: "🎭",
+    title: "Living Traditions",
+    description: "Experience vibrant festivals and customs that have been passed down through generations.",
+    category: "Culture",
     readTime: "7 min read",
-    author: "Cultural Guide",
-    icon: "🏛️"
+    author: "Cultural Expert"
   },
   {
-    id: 3,
-    title: "Sherpa Heritage",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    description: "Learn about the legendary Sherpa people, their mountaineering culture, and their deep connection to the Himalayas",
-    category: "People",
+    icon: "🙏",
+    title: "Spiritual Practices",
+    description: "Learn about meditation, yoga, and spiritual practices in their birthplace.",
+    category: "Spirituality",
     readTime: "6 min read",
-    author: "Mountain Guide",
-    icon: "🏔️"
+    author: "Spiritual Guide"
   },
   {
-    id: 4,
-    title: "Traditional Crafts",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=400&h=300&fit=crop",
-    description: "Explore Nepal's rich tradition of handicrafts, from intricate wood carvings to beautiful handwoven textiles",
-    category: "Arts",
+    icon: "🍜",
+    title: "Culinary Heritage",
+    description: "Taste authentic flavors and learn the stories behind traditional Nepali cuisine.",
+    category: "Food",
     readTime: "4 min read",
-    author: "Artisan",
-    icon: "🎨"
+    author: "Food Expert"
   }
 ];
 
@@ -303,6 +338,7 @@ const FeaturedDestinations = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [showLegend, setShowLegend] = useState<number | null>(null);
   const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set());
+
 
   // Add CSS animations
   const styles = `
@@ -391,6 +427,8 @@ const FeaturedDestinations = () => {
         return destination.experiences.includes('Cultural');
       case 'spiritual':
         return destination.experiences.includes('Spiritual');
+      case 'wildlife':
+        return destination.experiences.includes('Wildlife');
       case 'seasonal':
         return destination.isSeasonalFeatured;
       default:
@@ -642,67 +680,78 @@ const FeaturedDestinations = () => {
         )}
 
         {/* Premium Destination Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20">
           {filteredDestinations.map((destination, index) => (
             <div
               key={destination.id}
               data-card-id={destination.id}
-              className={`group relative bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 h-[420px] flex flex-col ${
+              className={`group relative bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 min-h-[400px] max-h-[450px] flex flex-col ${
                 visibleCards.has(destination.id) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
                 animationDelay: `${index * 0.1}s`,
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.1)'
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.98) 100%)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.1)'
               }}
               onMouseEnter={() => setHoveredCard(destination.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
               {/* Image Container with Overlay */}
-              <div className="relative h-56 overflow-hidden">
+              <div className="relative h-56 overflow-hidden rounded-t-2xl">
                 <img
                   src={destination.image}
                   alt={destination.name}
                   className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+                  onError={(e) => {
+                    console.log(`❌ Featured destination image failed to load: ${destination.image}`);
+                    // Fallback to a default Nepal landscape image
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop';
+                  }}
+                  onLoad={() => {
+                    console.log(`✅ Featured destination image loaded: ${destination.name}`);
+                  }}
                 />
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+                {/* Single Gradient Overlay - Removed duplicate */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
                 
                 {/* Glowing Border Effect */}
-                <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-400/50 rounded-t-2xl transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"></div>
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-blue-400/50 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"></div>
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                
-                {/* Seasonal Highlight Badge */}
-                {destination.isSeasonalFeatured && (
-                  <div className="absolute top-4 left-4 flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse shadow-lg">
-                    <span>{destination.seasonalIcon}</span>
-                    <span>Seasonal Highlight</span>
-                  </div>
-                )}
-                
-                {/* Floating Info Pills */}
-                <div className={`absolute ${destination.isSeasonalFeatured ? 'top-16' : 'top-4'} left-4 flex flex-wrap gap-2`}>
-                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm border border-white/20">
-                    ✨ {destination.topExperience}
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-3 py-1 rounded-full text-xs font-medium shadow-lg border border-white/20">
-                    🏔️ {destination.elevation}
+                {/* Top Left Badges */}
+                <div className="absolute top-3 left-3 flex flex-col gap-2 max-w-[60%]">
+                  {/* Seasonal Highlight Badge */}
+                  {destination.isSeasonalFeatured && (
+                    <div className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-2 py-1 rounded-full text-xs font-medium animate-pulse shadow-lg">
+                      <span>{destination.seasonalIcon}</span>
+                      <span className="hidden sm:inline">Seasonal</span>
+                    </div>
+                  )}
+                  
+                  {/* Top Experience Badge */}
+                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm border border-white/20">
+                    <span className="hidden sm:inline">✨ </span>{destination.topExperience}
                   </div>
                 </div>
                 
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <div className="bg-blue-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg border border-white/20 group-hover:scale-105 transition-transform duration-300">
-                    📅 {destination.bestTime}
+                {/* Top Right Badges */}
+                <div className="absolute top-3 right-3 flex flex-col gap-2 max-w-[35%]">
+                  <div className="bg-blue-500/90 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg border border-white/20 group-hover:scale-105 transition-transform duration-300">
+                    <span className="hidden sm:inline">📅 </span>{destination.bestTime}
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm border border-white/20 group-hover:scale-105 transition-transform duration-300 ${
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm border border-white/20 group-hover:scale-105 transition-transform duration-300 ${
                     destination.difficulty === 'Easy' ? 'bg-green-500/90 text-white' :
                     destination.difficulty === 'Moderate' ? 'bg-yellow-500/90 text-white' :
                     'bg-red-500/90 text-white'
                   }`}>
-                    ⚡ {destination.difficulty}
+                    <span className="hidden sm:inline">⚡ </span>{destination.difficulty}
+                  </div>
+                </div>
+                
+                {/* Bottom Left Badge */}
+                <div className="absolute bottom-3 left-3">
+                  <div className="bg-white/90 backdrop-blur-sm text-slate-700 px-2 py-1 rounded-full text-xs font-medium shadow-lg border border-white/20">
+                    <span className="hidden sm:inline">🏔️ </span>{destination.elevation}
                   </div>
                 </div>
 

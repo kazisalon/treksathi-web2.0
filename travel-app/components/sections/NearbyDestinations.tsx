@@ -621,34 +621,60 @@ const NearbyDestinations = () => {
       
       console.log(`📤 EXACT PAYLOAD BEING SENT TO API:`, JSON.stringify(payload, null, 2));
       
-      // Use ONLY the external API - no local fallback
-      const apiUrl = 'https://travelguide-rttu.onrender.com/api/LocationDetection';
+      // Try external API first, then fallback to local API
+      const externalApiUrl = 'https://travelguide-rttu.onrender.com/api/LocationDetection';
+      const localApiUrl = '/api/LocationDetection';
       
-      console.log(`📡 Calling External API ONLY:`, {
-        url: apiUrl,
-        method: 'POST',
-        payload: payload,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      let response;
+      let apiUsed = '';
       
-      console.log(`🚀 Making API call to your external API...`);
-      console.log(`📤 Using payload:`, JSON.stringify(payload, null, 2));
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      
-      if (!response) {
-        throw new Error('No valid response received from API');
+      try {
+        console.log(`🚀 Trying external API first...`);
+        console.log(`📤 Using payload:`, JSON.stringify(payload, null, 2));
+        
+        response = await fetch(externalApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        
+        apiUsed = 'external';
+        console.log(`📊 External API Response Status: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+          throw new Error(`External API failed: ${response.status} ${response.statusText}`);
+        }
+        
+      } catch (externalError) {
+        console.warn(`⚠️ External API failed, trying local API:`, externalError);
+        
+        try {
+          response = await fetch(localApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+          
+          apiUsed = 'local';
+          console.log(`📊 Local API Response Status: ${response.status} ${response.statusText}`);
+          
+          if (!response.ok) {
+            throw new Error(`Local API failed: ${response.status} ${response.statusText}`);
+          }
+          
+        } catch (localError) {
+          console.error(`❌ Both APIs failed:`, { externalError, localError });
+          throw new Error(`Both external and local APIs failed`);
+        }
       }
 
-      console.log(`📊 External API Response Status: ${response.status} ${response.statusText}`);
-      
-      console.log(`📊 API Response Status: ${response.status} ${response.statusText}`);
+      if (!response) {
+        throw new Error('No valid response received from any API');
+      }
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -656,7 +682,7 @@ const NearbyDestinations = () => {
           status: response.status,
           statusText: response.statusText,
           errorText: errorText,
-          url: apiUrl,
+          apiUsed: apiUsed,
           sentPayload: payload
         });
         
@@ -672,25 +698,28 @@ const NearbyDestinations = () => {
       }
 
       const data = await response.json();
-      console.log('📊 Raw API Response:', data);
+      console.log(`📊 Raw API Response from ${apiUsed} API:`, data);
       console.log('🔍 Response structure analysis:', {
         isArray: Array.isArray(data),
         length: Array.isArray(data) ? data.length : 'N/A',
         firstItem: Array.isArray(data) && data.length > 0 ? data[0] : null,
-        keys: Array.isArray(data) ? 'Array' : Object.keys(data)
+        keys: Array.isArray(data) ? 'Array' : Object.keys(data),
+        hasDestinations: data.destinations ? true : false,
+        hasSuccess: data.success ? true : false
       });
       
-      // Your API returns a direct array of destinations
+      // Handle different API response formats
       let destinationsArray = [];
       
       if (Array.isArray(data)) {
-        // Direct array response (your API format)
+        // Direct array response (external API format)
         destinationsArray = data;
-        console.log('✅ Using direct array response from your API');
-      } else if (data.destinations) {
+        console.log('✅ Using direct array response from external API');
+      } else if (data.destinations && Array.isArray(data.destinations)) {
+        // Local API format with destinations property
         destinationsArray = data.destinations;
-        console.log('✅ Using data.destinations');
-      } else if (data.data) {
+        console.log('✅ Using data.destinations from local API');
+      } else if (data.data && Array.isArray(data.data)) {
         destinationsArray = data.data;
         console.log('✅ Using data.data');
       } else {
@@ -714,13 +743,79 @@ const NearbyDestinations = () => {
             extractedLng: destLng,
             originalDistance: dest.distanceInKm,
             calculatedDistance: calculateDistance(lat, lng, destLat, destLng),
-            finalDistance: distance
+            finalDistance: distance,
+            // Image debugging
+            imageFields: {
+              imageUrl: dest.imageUrl,
+              image: dest.image,
+              photo: dest.photo,
+              picture: dest.picture,
+              thumbnail: dest.thumbnail,
+              img: dest.img,
+              images: dest.images,
+              media: dest.media,
+              cover_image: dest.cover_image,
+              featured_image: dest.featured_image
+            }
           });
           
+          // Enhanced image handling with multiple field checks and better fallbacks
+          const getImageUrl = (destination: any) => {
+            // Check multiple possible image field names from your API
+            const possibleImageFields = [
+              destination.imageUrl,
+              destination.image,
+              destination.photo,
+              destination.picture,
+              destination.thumbnail,
+              destination.img,
+              destination.images?.[0], // If images is an array
+              destination.media?.image,
+              destination.cover_image,
+              destination.featured_image
+            ];
+            
+            // Find the first non-empty image URL
+            const imageUrl = possibleImageFields.find(url => 
+              url && typeof url === 'string' && url.trim() !== ''
+            );
+            
+            // If we have an image URL, validate it's properly formatted
+            if (imageUrl) {
+              // If it's a relative URL, you might need to prepend your API base URL
+              if (imageUrl.startsWith('/') || imageUrl.startsWith('./')) {
+                console.log(`🔗 Converting relative image URL: ${imageUrl}`);
+                // You can uncomment and modify this if your API returns relative URLs
+                // return `https://your-api-domain.com${imageUrl}`;
+              }
+              console.log(`🖼️ Using image from API: ${imageUrl}`);
+              return imageUrl;
+            }
+            
+            // Enhanced fallback images based on category
+            const categoryImages = {
+              'Temple': 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop',
+              'Lake': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop',
+              'Viewpoint': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+              'Waterfall': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+              'Mountain': 'https://images.unsplash.com/photo-1464822759844-d150baec0494?w=800&h=600&fit=crop',
+              'Park': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+              'Museum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&h=600&fit=crop',
+              'Adventure': 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=600&fit=crop',
+              'Nature': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+            };
+            
+            const category = destination.category || destination.type || 'Nature';
+            const fallbackImage = categoryImages[category as keyof typeof categoryImages] || categoryImages.Nature;
+            
+            console.log(`📷 No image found in API for "${destination.name}", using fallback for category "${category}"`);
+            return fallbackImage;
+          };
+
           return {
             id: dest.id || index + 1,
             name: dest.name || 'Unknown Destination',
-            image: dest.imageUrl || dest.image || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+            image: getImageUrl(dest),
             distance: typeof distance === 'number' ? Number(distance.toFixed(1)) : 0,
             category: dest.category || dest.type || 'Other',
             rating: dest.rating || (4.0 + Math.random() * 1.0),
@@ -765,21 +860,103 @@ const NearbyDestinations = () => {
           }));
         }
       } else {
-        console.warn('⚠️ No destinations found in API response');
+        console.warn('⚠️ No destinations found in external API response');
         console.log('📋 API response structure for debugging:', data);
-        console.log('🚫 NO FALLBACK - Only showing real API data');
+        console.log('🔄 Triggering local API fallback due to empty response...');
         
-        // Set empty destinations and show message
-        setDestinations([]);
-        setLocationError('No destinations found in your area from the API');
+        // Throw error to trigger fallback to local API
+        throw new Error('External API returned no destinations');
       }
     } catch (error) {
       console.error('❌ Error fetching nearby destinations from external API:', error);
-      console.log('🚫 NO FALLBACK - Only showing real API data');
+      console.log('🔄 Attempting fallback to local API...');
       
-      // Set error state instead of showing mock data
-      setDestinations([]);
-      setLocationError(`Failed to fetch destinations from API: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      try {
+        // Fallback to local API
+        const localApiUrl = '/api/LocationDetection';
+        console.log('🏠 Trying local API:', localApiUrl);
+        
+        const localResponse = await fetch(localApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ lat, lng, radius: 50 })
+        });
+
+        if (localResponse.ok) {
+          const localData = await localResponse.json();
+          console.log('✅ Local API response received:', localData);
+          
+          // Process local API response
+          let destinationsArray: any[] = [];
+          
+          if (Array.isArray(localData)) {
+            destinationsArray = localData;
+            console.log('✅ Using direct array from local API');
+          } else if (localData.destinations && Array.isArray(localData.destinations)) {
+            destinationsArray = localData.destinations;
+            console.log('✅ Using destinations array from local API');
+          } else if (localData.data && Array.isArray(localData.data)) {
+            destinationsArray = localData.data;
+            console.log('✅ Using data array from local API');
+          }
+          
+          if (destinationsArray.length > 0) {
+            const transformedDestinations = destinationsArray.map((dest: any, index: number) => {
+              const destLat = dest.latitude || dest.coordinates?.lat || dest.lat || lat;
+              const destLng = dest.longitude || dest.coordinates?.lng || dest.lng || lng;
+              const distance = dest.distanceInKm || dest.distance || calculateDistance(lat, lng, destLat, destLng);
+              
+              return {
+                id: dest.id || index + 1,
+                name: dest.name || 'Unknown Destination',
+                image: dest.imageUrl || dest.image || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+                distance: typeof distance === 'number' ? Number(distance.toFixed(1)) : 0,
+                category: dest.category || dest.type || 'Other',
+                rating: dest.rating || (4.0 + Math.random() * 1.0),
+                tagline: dest.description || dest.tagline || 'Discover this amazing destination',
+                tags: dest.tags || (dest.category ? [dest.category, 'Local'] : ['Adventure', 'Nature']),
+                coordinates: {
+                  lat: destLat,
+                  lng: destLng
+                },
+                weatherInfo: dest.weather || dest.weatherInfo || {
+                  temperature: Math.round(15 + Math.random() * 15),
+                  condition: 'Pleasant',
+                  emoji: '🌤️'
+                },
+                isFromAPI: true,
+                source: 'Local API'
+              };
+            });
+            
+            console.log('✅ Successfully using local API fallback:', transformedDestinations);
+            setDestinations(transformedDestinations);
+            
+            // Update location info if available
+            if (localData.location) {
+              setUserLocation(prev => ({
+                ...prev!,
+                city: localData.location.city || localData.location.name || 'Detected Location',
+                area: localData.location.area || localData.location.region || `${lat.toFixed(4)}, ${lng.toFixed(4)}`
+              }));
+            }
+            
+            return; // Successfully used local API
+          }
+        }
+        
+        // If local API also fails, show error
+        console.error('❌ Both external and local APIs failed');
+        setDestinations([]);
+        setLocationError(`Failed to fetch destinations: External API error - ${error instanceof Error ? error.message : 'Unknown error'}`);
+        
+      } catch (localError) {
+        console.error('❌ Local API fallback also failed:', localError);
+        setDestinations([]);
+        setLocationError(`Both APIs failed: External - ${error instanceof Error ? error.message : 'Unknown error'}, Local - ${localError instanceof Error ? localError.message : 'Unknown error'}`);
+      }
     }
   };
 
@@ -943,11 +1120,11 @@ const NearbyDestinations = () => {
 
         {/* Destinations Grid */}
         {destinations.length > 0 && viewMode === 'grid' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {destinations.map((destination, index) => (
               <div
                 key={destination.id}
-                className={`group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-500 overflow-hidden border border-white/20 ${
+                className={`group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-500 overflow-hidden border border-white/20 min-h-[400px] max-h-[450px] flex flex-col ${
                   isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
                 style={{ transitionDelay: `${index * 150}ms` }}
@@ -955,42 +1132,66 @@ const NearbyDestinations = () => {
                 onMouseLeave={() => setHoveredCard(null)}
               >
                 {/* Image Container */}
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-48 sm:h-52 lg:h-56 overflow-hidden flex-shrink-0">
                   <img
                     src={destination.image}
                     alt={destination.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    onError={(e) => {
+                      console.log(`❌ Image failed to load for "${destination.name}": ${destination.image}`);
+                      // Set a fallback image based on category
+                      const fallbackImages = {
+                        'Temple': 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop',
+                        'Lake': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop',
+                        'Viewpoint': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+                        'Waterfall': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+                        'Mountain': 'https://images.unsplash.com/photo-1464822759844-d150baec0494?w=800&h=600&fit=crop',
+                        'Park': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+                        'Museum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&h=600&fit=crop',
+                        'Adventure': 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=600&fit=crop',
+                        'Nature': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+                      };
+                      const fallback = fallbackImages[destination.category as keyof typeof fallbackImages] || fallbackImages.Nature;
+                      (e.target as HTMLImageElement).src = fallback;
+                      console.log(`🔄 Using fallback image for "${destination.name}": ${fallback}`);
+                    }}
+                    onLoad={() => {
+                      console.log(`✅ Image loaded successfully for "${destination.name}": ${destination.image}`);
+                    }}
                   />
                   
                   {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
                   
-                  {/* Distance Badge */}
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
-                    <span className="text-sm font-semibold text-gray-800">
-                      {destination.distance} km away
-                    </span>
+                  {/* Top Left Badges */}
+                  <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg">
+                      <span className="text-xs sm:text-sm font-semibold text-gray-800">
+                        {destination.distance} km
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Data Source Badge */}
-                  <div className={`absolute top-4 right-4 flex flex-col gap-1`}>
-                    <div className={`${getCategoryColor(destination.category)} text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg`}>
+                  {/* Top Right Badges */}
+                  <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
+                    <div className={`${getCategoryColor(destination.category)} text-white px-2 py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg`}>
                       {destination.category}
                     </div>
                     {(destination as any).isFromAPI !== undefined && (
                       <div className={`px-2 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm transition-all duration-300 ${
                         (destination as any).isFromAPI 
-                          ? 'bg-green-500/90 text-white border border-green-400/50 animate-pulse' 
-                          : 'bg-orange-500/90 text-white border border-orange-400/50'
+                          ? 'bg-green-500/95 text-white border border-green-400/50' 
+                          : 'bg-orange-500/95 text-white border border-orange-400/50'
                       }`}>
-                        {(destination as any).isFromAPI ? '🌐 Live API' : '📋 Demo'}
+                        <span className="hidden sm:inline">{(destination as any).isFromAPI ? '🌐 API' : '📋 Demo'}</span>
+                        <span className="sm:hidden">{(destination as any).isFromAPI ? '🌐' : '📋'}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Weather Info */}
+                  {/* Bottom Left Weather Info */}
                   {destination.weatherInfo && (
-                    <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-2 left-2 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <span className="text-sm font-medium text-gray-800">
                         {destination.weatherInfo.emoji} {destination.weatherInfo.temperature}°C
                       </span>
@@ -998,45 +1199,45 @@ const NearbyDestinations = () => {
                   )}
 
                   {/* View Details Button */}
-                  <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
-                      <Eye className="w-4 h-4" />
-                      View Details
+                  <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    <button className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-3 py-2 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
+                      <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="text-xs sm:text-sm">View</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300">
+                <div className="p-4 sm:p-5 lg:p-6 flex-1 flex flex-col">
+                  <div className="flex items-start justify-between mb-2 sm:mb-3">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300 line-clamp-2 flex-1 mr-2">
                       {destination.name}
                     </h3>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm font-medium text-gray-600">
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
+                      <span className="text-xs sm:text-sm font-medium text-gray-600">
                         {destination.rating}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-gray-600 mb-4 leading-relaxed">
+                  <p className="text-gray-600 mb-3 sm:mb-4 leading-relaxed text-sm sm:text-base line-clamp-2 flex-1">
                     {destination.tagline}
                   </p>
 
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1 sm:gap-2 mt-auto">
                     {destination.tags.slice(0, 2).map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className={`px-3 py-1 rounded-full text-xs font-medium border ${getTagColor(tag)}`}
+                        className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium border ${getTagColor(tag)}`}
                       >
                         {tag}
                       </span>
                     ))}
                     {destination.tags.length > 2 && (
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                        +{destination.tags.length - 2} more
+                      <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                        +{destination.tags.length - 2}
                       </span>
                     )}
                   </div>
