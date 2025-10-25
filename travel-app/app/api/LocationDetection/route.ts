@@ -59,7 +59,7 @@ const destinationsDatabase: (Destination & { baseCoordinates: { lat: number; lng
   {
     id: 3,
     name: "World Peace Pagoda",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
     distance: 0,
     category: "Temple",
     rating: 4.7,
@@ -124,7 +124,7 @@ const destinationsDatabase: (Destination & { baseCoordinates: { lat: number; lng
   {
     id: 8,
     name: "Kathmandu Durbar Square",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=800&h=600&fit=crop",
     distance: 0,
     category: "Heritage",
     rating: 4.3,

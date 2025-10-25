@@ -33,13 +33,27 @@ const features = [
 
 const WhyChooseUs = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 relative overflow-hidden">
+      {/* Sunrise Mountain Silhouettes */}
+      <div className="absolute inset-0 opacity-30">
+        <svg className="absolute bottom-0 w-full h-48" viewBox="0 0 1200 200" fill="none">
+          <path d="M0 200L100 150L200 180L300 120L400 160L500 100L600 140L700 80L800 120L900 60L1000 100L1100 40L1200 80V200H0Z" fill="currentColor"/>
+        </svg>
+      </div>
+      
+      {/* Sun Rays */}
+      <div className="absolute top-20 right-20 w-32 h-32 opacity-20">
+        <div className="absolute inset-0 bg-yellow-300 rounded-full"></div>
+        <div className="absolute inset-2 bg-yellow-200 rounded-full"></div>
+        <div className="absolute inset-4 bg-yellow-100 rounded-full"></div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 font-serif">
             Why Choose TrekSathi?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-white/90 max-w-3xl mx-auto">
             We're not just another travel company. We're your partners in creating extraordinary adventures that last a lifetime.
           </p>
         </div>
@@ -48,15 +62,15 @@ const WhyChooseUs = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group"
+              className="bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group border border-white/20"
             >
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-xl font-bold text-slate-800 mb-3">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 {feature.description}
               </p>
             </div>
@@ -66,34 +80,34 @@ const WhyChooseUs = () => {
         {/* Stats Section */}
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+            <div className="text-4xl md:text-5xl font-bold text-white mb-2">
               2,500+
             </div>
-            <div className="text-gray-600 dark:text-gray-300 font-semibold">
+            <div className="text-white/80 font-semibold">
               Trekkers Guided
             </div>
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+            <div className="text-4xl md:text-5xl font-bold text-white mb-2">
               25+
             </div>
-            <div className="text-gray-600 dark:text-gray-300 font-semibold">
+            <div className="text-white/80 font-semibold">
               Nepal Destinations
             </div>
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-bold text-green-600 dark:text-green-400 mb-2">
+            <div className="text-4xl md:text-5xl font-bold text-white mb-2">
               8+
             </div>
-            <div className="text-gray-600 dark:text-gray-300 font-semibold">
+            <div className="text-white/80 font-semibold">
               Years in Nepal
             </div>
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-bold text-orange-600 dark:text-orange-400 mb-2">
+            <div className="text-4xl md:text-5xl font-bold text-white mb-2">
               4.8★
             </div>
-            <div className="text-gray-600 dark:text-gray-300 font-semibold">
+            <div className="text-white/80 font-semibold">
               TripAdvisor Rating
             </div>
           </div>

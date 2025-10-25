@@ -1,106 +1,217 @@
-const testimonials = [
+'use client';
+
+import { useState } from 'react';
+import { BookOpen, MapPin, Calendar, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+
+const travelerStories = [
   {
     id: 1,
-    name: "James Mitchell",
-    location: "Melbourne, Australia",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23FF69B4'/><circle cx='35' cy='40' r='3' fill='%23FFF'/><circle cx='65' cy='40' r='3' fill='%23FFF'/><path d='M35,65 Q50,75 65,65' stroke='%23FFF' stroke-width='2' fill='none'/></svg>",
-    rating: 5,
-    text: "The Everest Base Camp trek with TrekSathi was life-changing! Our Sherpa guide Pemba was incredible - so knowledgeable about the mountains and culture. The views were absolutely breathtaking!",
-    trip: "Everest Base Camp Trek"
+    title: "Finding Peace in Dolpo's Silence",
+    author: "Sarah Chen",
+    location: "Upper Dolpo",
+    date: "March 2024",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=800&fit=crop",
+    quote: "I found peace in Dolpo's silence.",
+    preview: "Three weeks in the remote valleys taught me that sometimes the most profound conversations happen without words...",
+    category: "Spiritual Journey",
+    readTime: "8 min read"
   },
   {
     id: 2,
-    name: "Lisa Rodriguez",
-    location: "Barcelona, Spain",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%234169E1'/><circle cx='35' cy='40' r='3' fill='%23FFF'/><circle cx='65' cy='40' r='3' fill='%23FFF'/><path d='M35,65 Q50,75 65,65' stroke='%23FFF' stroke-width='2' fill='none'/></svg>",
-    rating: 5,
-    text: "Nepal's cultural heritage tour exceeded all my expectations. From the ancient temples of Kathmandu to the peaceful atmosphere of Lumbini, every moment was magical. The local insights were invaluable!",
-    trip: "Nepal Cultural Heritage Tour"
+    title: "Sunrise Over Everest",
+    author: "Marcus Rodriguez",
+    location: "Everest Base Camp",
+    date: "October 2023",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=600&fit=crop",
+    quote: "The mountain whispered secrets only dawn could hear.",
+    preview: "Standing at 5,364 meters, watching the first light kiss the world's highest peak...",
+    category: "Adventure",
+    readTime: "12 min read"
   },
   {
     id: 3,
-    name: "David Thompson",
-    location: "Vancouver, Canada",
-    image: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%2332CD32'/><circle cx='35' cy='40' r='3' fill='%23FFF'/><circle cx='65' cy='40' r='3' fill='%23FFF'/><path d='M35,65 Q50,75 65,65' stroke='%23FFF' stroke-width='2' fill='none'/></svg>",
-    rating: 5,
-    text: "The Annapurna Circuit was the adventure of a lifetime! Crossing Thorong La Pass was challenging but so rewarding. The diverse landscapes and warm hospitality of the Nepali people made this unforgettable.",
-    trip: "Annapurna Circuit Trek"
+    title: "Tea with Grandmother Pema",
+    author: "Emma Thompson",
+    location: "Langtang Valley",
+    date: "December 2023",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=700&fit=crop",
+    quote: "Her wrinkled hands held stories of a thousand seasons.",
+    preview: "In a small teahouse, an 82-year-old woman taught me more about life than any book ever could...",
+    category: "Cultural",
+    readTime: "6 min read"
+  },
+  {
+    id: 4,
+    title: "Rhino Encounter in Chitwan",
+    author: "David Park",
+    location: "Chitwan National Park",
+    date: "February 2024",
+    image: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=600&h=800&fit=crop",
+    quote: "Eye to eye with ancient wisdom.",
+    preview: "The one-horned rhinoceros stood just meters away, a living reminder of Nepal's wild heart...",
+    category: "Wildlife",
+    readTime: "10 min read"
+  },
+  {
+    id: 5,
+    title: "Prayer Flags and Promises",
+    author: "Lisa Wang",
+    location: "Gokyo Lakes",
+    date: "April 2024",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop",
+    quote: "Each flag carried a prayer to the wind.",
+    preview: "At 4,790 meters, surrounded by turquoise lakes and snow-capped peaks, I understood why this place is sacred...",
+    category: "Spiritual Journey",
+    readTime: "7 min read"
+  },
+  {
+    id: 6,
+    title: "The Last Honey Hunter",
+    author: "James Mitchell",
+    location: "Annapurna Region",
+    date: "May 2024",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=900&fit=crop",
+    quote: "Tradition hanging by a thread, 300 feet above the ground.",
+    preview: "Witnessing the ancient art of cliff honey hunting, where courage meets tradition in the most spectacular way...",
+    category: "Cultural",
+    readTime: "15 min read"
   }
 ];
 
-const Testimonials = () => {
+const StoriesFromNepal = () => {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      'Spiritual Journey': 'bg-purple-100 text-purple-800',
+      'Adventure': 'bg-orange-100 text-orange-800',
+      'Cultural': 'bg-blue-100 text-blue-800',
+      'Wildlife': 'bg-green-100 text-green-800'
+    };
+    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  };
+
   return (
-    <section className="py-20 bg-white dark:bg-gray-900">
+    <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+      {/* Cosmic Background */}
+      <div className="absolute inset-0">
+        {/* Stars */}
+        <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full animate-pulse"></div>
+        <div className="absolute top-20 right-20 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-20 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-40 left-1/3 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute bottom-40 right-1/3 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+        <div className="absolute top-60 right-1/4 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '2.5s' }}></div>
+        
+        {/* Nebula Effects */}
+        <div className="absolute top-20 right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            What Our Travelers Say
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-serif">
+            Stories from Nepal
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Don't just take our word for it. Here's what our amazing travelers have to say about their experiences with TrekSathi.
+          <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+            Real journeys, authentic experiences, and the moments that transform travelers into storytellers
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
+        {/* Masonry Grid */}
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+          {travelerStories.map((story, index) => (
             <div
-              key={testimonial.id}
-              className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+              key={story.id}
+              className={`break-inside-avoid bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group ${
+                index % 3 === 0 ? 'mb-8' : index % 3 === 1 ? 'mb-6' : 'mb-4'
+              }`}
+              onMouseEnter={() => setHoveredCard(story.id)}
+              onMouseLeave={() => setHoveredCard(null)}
             >
-              {/* Rating Stars */}
-              <div className="flex space-x-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <span key={i} className="text-yellow-500 text-xl">★</span>
-                ))}
-              </div>
-
-              {/* Testimonial Text */}
-              <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed italic">
-                "{testimonial.text}"
-              </p>
-
-              {/* Trip Info */}
-              <div className="mb-6">
-                <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-semibold">
-                  {testimonial.trip}
-                </span>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center space-x-4">
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  className="w-12 h-12 rounded-full"
+              {/* Image */}
+              <div className="relative overflow-hidden">
+                <Image
+                  src={story.image}
+                  alt={story.title}
+                  width={600}
+                  height={index % 4 === 0 ? 800 : index % 4 === 1 ? 600 : index % 4 === 2 ? 700 : 900}
+                  className="w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white">
-                    {testimonial.name}
-                  </h4>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    {testimonial.location}
-                  </p>
+                
+                {/* Overlay with Quote */}
+                <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 ${
+                  hoveredCard === story.id ? 'opacity-100' : 'opacity-0'
+                }`}>
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <blockquote className="text-white text-lg md:text-xl font-light italic leading-relaxed">
+                      "{story.quote}"
+                    </blockquote>
+                  </div>
+                </div>
+
+                {/* Category Badge */}
+                <div className="absolute top-4 left-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(story.category)}`}>
+                    {story.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6">
+                <div className="flex items-center text-sm text-slate-500 mb-3 space-x-4">
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    {story.location}
+                  </div>
+                  <div className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    {story.date}
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                  {story.title}
+                </h3>
+
+                <p className="text-slate-600 mb-4 leading-relaxed">
+                  {story.preview}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                      {story.author.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">{story.author}</p>
+                      <p className="text-xs text-slate-500">{story.readTime}</p>
+                    </div>
+                  </div>
+
+                  <button className="flex items-center text-orange-600 hover:text-orange-700 font-medium text-sm transition-colors duration-300 group">
+                    <BookOpen className="w-4 h-4 mr-1" />
+                    Read Story
+                    <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-300" />
+                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Trust Indicators */}
-        <div className="mt-16 text-center">
-          <p className="text-gray-600 dark:text-gray-300 mb-8">
-            Certified by Nepal Tourism Board and recognized by:
-          </p>
-          <div className="flex justify-center items-center space-x-8 opacity-60 flex-wrap gap-4">
-            <div className="text-lg font-bold text-gray-400">Nepal Tourism Board</div>
-            <div className="text-lg font-bold text-gray-400">TripAdvisor</div>
-            <div className="text-lg font-bold text-gray-400">Trekking Agencies Association</div>
-            <div className="text-lg font-bold text-gray-400">Lonely Planet</div>
-          </div>
+        {/* View All Stories CTA */}
+        <div className="text-center mt-16">
+          <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+            View All Stories
+          </button>
         </div>
       </div>
     </section>
   );
 };
 
-export default Testimonials;
+export default StoriesFromNepal;

@@ -64,7 +64,7 @@ const mockDestinations: Destination[] = [
   {
     id: 3,
     name: "World Peace Pagoda",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
     distance: 4.7,
     category: "Temple",
     rating: 4.7,
@@ -794,11 +794,11 @@ const NearbyDestinations = () => {
             
             // Enhanced fallback images based on category
             const categoryImages = {
-              'Temple': 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop',
-              'Lake': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop',
-              'Viewpoint': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
-              'Waterfall': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
-              'Mountain': 'https://images.unsplash.com/photo-1464822759844-d150baec0494?w=800&h=600&fit=crop',
+              'Temple': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    'Lake': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop',
+    'Viewpoint': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+    'Waterfall': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+    'Mountain': 'https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=800&h=600&fit=crop',
               'Park': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
               'Museum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&h=600&fit=crop',
               'Adventure': 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=600&fit=crop',
@@ -1141,11 +1141,11 @@ const NearbyDestinations = () => {
                       console.log(`❌ Image failed to load for "${destination.name}": ${destination.image}`);
                       // Set a fallback image based on category
                       const fallbackImages = {
-                        'Temple': 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop',
+                        'Temple': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
                         'Lake': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop',
                         'Viewpoint': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
                         'Waterfall': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
-                        'Mountain': 'https://images.unsplash.com/photo-1464822759844-d150baec0494?w=800&h=600&fit=crop',
+                        'Mountain': 'https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=800&h=600&fit=crop',
                         'Park': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
                         'Museum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&h=600&fit=crop',
                         'Adventure': 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=600&fit=crop',
