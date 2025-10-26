@@ -201,29 +201,19 @@ const PlanYourPath = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 relative overflow-hidden">
-      {/* Mountain Silhouettes */}
-      <div className="absolute inset-0 opacity-20">
-        <svg className="absolute bottom-0 w-full h-64" viewBox="0 0 1200 300" fill="none">
-          <path d="M0 300L50 250L100 280L150 200L200 240L250 180L300 220L350 160L400 200L450 140L500 180L550 120L600 160L650 100L700 140L750 80L800 120L850 60L900 100L950 40L1000 80L1050 20L1100 60L1150 0L1200 40V300H0Z" fill="currentColor"/>
-        </svg>
-      </div>
-      
-      {/* Geometric Patterns */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-32 h-32 border-2 border-white rotate-45 rounded-lg"></div>
-        <div className="absolute bottom-32 right-32 w-24 h-24 border-2 border-white rotate-12 rounded-full"></div>
-        <div className="absolute top-1/2 left-10 w-16 h-16 bg-white/20 rotate-45"></div>
-        <div className="absolute top-40 right-20 w-20 h-20 border border-white rounded-full"></div>
+    <section className="py-20 bg-gradient-to-b from-blue-50 to-teal-50 relative overflow-hidden">
+      {/* Clean Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-100/30 to-teal-100/30"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-serif">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">
             Plan Your Path
           </h2>
-          <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             What kind of traveler are you? Let us guide you to your perfect Nepal adventure
           </p>
         </div>
@@ -237,22 +227,22 @@ const PlanYourPath = () => {
                 <div
                   key={type.id}
                   onClick={() => handleTypeSelection(type.id)}
-                  className={`${type.bgColor} rounded-3xl p-8 text-center cursor-pointer transform hover:scale-105 transition-all duration-500 hover:shadow-2xl group border-2 border-transparent hover:border-white`}
+                  className="bg-white rounded-xl p-8 text-center cursor-pointer transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl group border border-gray-200 hover:border-blue-300 hover:bg-blue-50"
                 >
-                  <div className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br ${type.color} flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300`}>
+                  <div className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br ${type.color} flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 shadow-lg`}>
                     <IconComponent className="w-10 h-10 text-white" />
                   </div>
                   
-                  <h3 className={`text-2xl font-bold ${type.textColor} mb-3`}>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3">
                     {type.title}
                   </h3>
                   
-                  <p className="text-slate-600 leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed">
                     {type.description}
                   </p>
 
                   <div className="mt-6">
-                    <div className={`inline-flex items-center ${type.textColor} font-medium group-hover:translate-x-2 transition-transform duration-300`}>
+                    <div className="inline-flex items-center text-blue-600 font-medium group-hover:translate-x-2 transition-transform duration-300">
                       Explore
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </div>
@@ -268,7 +258,7 @@ const PlanYourPath = () => {
             <div className="text-center">
               <button
                 onClick={resetSelection}
-                className="text-slate-600 hover:text-slate-800 font-medium flex items-center mx-auto transition-colors duration-300"
+                className="text-blue-600 hover:text-blue-800 font-medium flex items-center mx-auto transition-colors duration-300"
               >
                 ← Back to traveler types
               </button>

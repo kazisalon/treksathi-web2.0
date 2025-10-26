@@ -97,24 +97,26 @@ const LocalsWhoInspire = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-orange-600 via-amber-500 to-yellow-400 relative overflow-hidden">
-      {/* Mountain Silhouettes */}
+    <section className="py-20 bg-gradient-to-br from-rose-900 via-orange-800 to-amber-700 relative overflow-hidden">
+      {/* Modern Gradient Overlays */}
       <div className="absolute inset-0 opacity-40">
-        <svg className="absolute bottom-0 w-full h-32" viewBox="0 0 1200 120" fill="none">
-          <path d="M0 120L80 90L160 110L240 70L320 100L400 60L480 90L560 50L640 80L720 40L800 70L880 30L960 60L1040 20L1120 50L1200 10V120H0Z" fill="currentColor"/>
-        </svg>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-pink-600/30 via-orange-500/30 to-yellow-500/30 blur-2xl"></div>
+        <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-rose-400/40 to-orange-600/40 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-br from-amber-400/40 to-yellow-600/40 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-orange-400/30 to-red-500/30 rounded-full blur-3xl"></div>
       </div>
       
-      {/* Warm Glow Effects */}
+      {/* Floating Particles */}
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 right-20 w-40 h-40 bg-yellow-300 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-60 h-60 bg-orange-400 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-amber-300/50 rounded-full blur-3xl"></div>
+        <div className="absolute top-32 left-32 w-3 h-3 bg-yellow-300 rounded-full animate-pulse"></div>
+        <div className="absolute top-60 right-40 w-4 h-4 bg-orange-300 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-40 left-40 w-2 h-2 bg-rose-300 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-40 left-1/3 w-3 h-3 bg-amber-300 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
         
-        {/* Traditional Pattern Elements */}
-        <div className="absolute top-32 left-32 w-8 h-8 border-2 border-white/30 rotate-45"></div>
-        <div className="absolute bottom-40 right-40 w-6 h-6 border-2 border-white/30 rounded-full"></div>
-        <div className="absolute top-60 left-20 w-4 h-4 bg-white/20 rotate-45"></div>
+        {/* Modern Geometric Elements */}
+        <div className="absolute top-20 right-20 w-16 h-16 border border-white/30 rotate-45 rounded-lg backdrop-blur-sm"></div>
+        <div className="absolute bottom-32 left-32 w-12 h-12 border border-white/30 rounded-full backdrop-blur-sm"></div>
+        <div className="absolute top-1/2 right-10 w-10 h-10 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rotate-12 rounded-lg backdrop-blur-sm"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -343,7 +345,7 @@ const LocalsWhoInspire = () => {
                 key={index}
                 onClick={() => setCurrentIndex(index)}
                 className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                  currentIndex === index ? 'bg-white' : 'bg-white/40'
+                  currentIndex === index ? 'bg-blue-600' : 'bg-gray-300'
                 }`}
               />
             ))}
@@ -352,10 +354,10 @@ const LocalsWhoInspire = () => {
 
         {/* CTA */}
         <div className="text-center mt-16">
-          <p className="text-lg text-white/90 mb-6 italic">
+          <p className="text-lg text-gray-600 mb-6 italic">
             "Travel is not just about places, it's about the people who make them special."
           </p>
-          <button className="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/30 transform hover:scale-105 transition-all duration-300 shadow-lg">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transform hover:scale-105 transition-all duration-300 shadow-lg">
             Meet Our Local Guides
           </button>
         </div>

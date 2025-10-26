@@ -71,20 +71,9 @@ const JoinOurCommunity = () => {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
-      {/* Stars Background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-1 h-1 bg-white rounded-full animate-pulse"></div>
-        <div className="absolute top-40 right-32 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-32 left-40 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-60 left-1/3 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-        <div className="absolute bottom-40 right-20 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-        <div className="absolute top-32 right-1/4 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '2.5s' }}></div>
-        <div className="absolute bottom-60 left-1/4 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '3s' }}></div>
-      </div>
-
-      {/* Prayer Flags */}
-      <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-r from-red-500/20 via-yellow-500/20 via-blue-500/20 via-white/20 to-green-500/20 opacity-30"></div>
+    <section className="py-20 bg-blue-900 relative overflow-hidden">
+      {/* Clean Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-900 to-blue-800"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Main CTA Section */}

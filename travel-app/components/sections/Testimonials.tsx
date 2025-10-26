@@ -93,29 +93,25 @@ const StoriesFromNepal = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-      {/* Cosmic Background */}
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+      {/* Clean Minimal Background */}
       <div className="absolute inset-0">
-        {/* Stars */}
-        <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full animate-pulse"></div>
-        <div className="absolute top-20 right-20 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-20 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-40 left-1/3 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-        <div className="absolute bottom-40 right-1/3 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-        <div className="absolute top-60 right-1/4 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '2.5s' }}></div>
+        {/* Subtle Blue/Gray Gradients */}
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-50/50 to-gray-100/30"></div>
+        <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-blue-100/20 to-gray-200/20 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-br from-gray-100/30 to-blue-50/20 rounded-full blur-2xl"></div>
         
-        {/* Nebula Effects */}
-        <div className="absolute top-20 right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
+        {/* Minimal Geometric Elements */}
+        <div className="absolute top-32 left-32 w-6 h-6 border border-blue-200/40 rotate-45 rounded-sm"></div>
+        <div className="absolute bottom-32 right-32 w-4 h-4 border border-gray-300/40 rounded-full"></div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-serif">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">
             Stories from Nepal
           </h2>
-          <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Real journeys, authentic experiences, and the moments that transform travelers into storytellers
           </p>
         </div>
@@ -125,7 +121,7 @@ const StoriesFromNepal = () => {
           {travelerStories.map((story, index) => (
             <div
               key={story.id}
-              className={`break-inside-avoid bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer group ${
+              className={`break-inside-avoid bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 cursor-pointer group border border-gray-100 ${
                 index % 3 === 0 ? 'mb-8' : index % 3 === 1 ? 'mb-6' : 'mb-4'
               }`}
               onMouseEnter={() => setHoveredCard(story.id)}
@@ -162,7 +158,7 @@ const StoriesFromNepal = () => {
 
               {/* Content */}
               <div className="p-6">
-                <div className="flex items-center text-sm text-slate-500 mb-3 space-x-4">
+                <div className="flex items-center text-sm text-gray-500 mb-3 space-x-4">
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-1" />
                     {story.location}
@@ -173,26 +169,26 @@ const StoriesFromNepal = () => {
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
                   {story.title}
                 </h3>
 
-                <p className="text-slate-600 mb-4 leading-relaxed">
+                <p className="text-gray-600 mb-4 leading-relaxed">
                   {story.preview}
                 </p>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                       {story.author.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-800">{story.author}</p>
-                      <p className="text-xs text-slate-500">{story.readTime}</p>
+                      <p className="text-sm font-medium text-gray-900">{story.author}</p>
+                      <p className="text-xs text-gray-500">{story.readTime}</p>
                     </div>
                   </div>
 
-                  <button className="flex items-center text-orange-600 hover:text-orange-700 font-medium text-sm transition-colors duration-300 group">
+                  <button className="flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-300 group">
                     <BookOpen className="w-4 h-4 mr-1" />
                     Read Story
                     <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-300" />
@@ -205,7 +201,7 @@ const StoriesFromNepal = () => {
 
         {/* View All Stories CTA */}
         <div className="text-center mt-16">
-          <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
             View All Stories
           </button>
         </div>

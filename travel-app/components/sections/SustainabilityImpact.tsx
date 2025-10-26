@@ -94,33 +94,19 @@ const initiatives = [
 
 const SustainabilityImpact = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800 relative overflow-hidden">
-      {/* Forest Silhouettes */}
-      <div className="absolute inset-0 opacity-30">
-        <svg className="absolute bottom-0 w-full h-40" viewBox="0 0 1200 160" fill="none">
-          <path d="M0 160L50 120L100 140L150 100L200 130L250 90L300 120L350 80L400 110L450 70L500 100L550 60L600 90L650 50L700 80L750 40L800 70L850 30L900 60L950 20L1000 50L1050 10L1100 40L1150 0L1200 30V160H0Z" fill="currentColor"/>
-        </svg>
-      </div>
-      
-      {/* Organic Shapes */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-green-400 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-32 right-32 w-40 h-40 bg-emerald-400 rounded-full blur-2xl"></div>
-        <div className="absolute top-1/2 left-10 w-24 h-24 bg-teal-400 rounded-full blur-xl"></div>
-        <div className="absolute top-40 right-20 w-28 h-28 bg-green-300 rounded-full blur-xl"></div>
-        
-        {/* Leaf Shapes */}
-        <div className="absolute top-32 left-1/3 w-16 h-8 bg-green-400/30 rounded-full rotate-45"></div>
-        <div className="absolute bottom-40 right-1/4 w-12 h-6 bg-emerald-400/30 rounded-full -rotate-12"></div>
+    <section className="py-20 bg-gradient-to-b from-green-50 to-blue-50 relative overflow-hidden">
+      {/* Clean Minimal Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-green-100/20 to-blue-100/20"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-serif">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">
             Sustainability & Impact
           </h2>
-          <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Travel responsibly with us. Every journey creates positive impact for Nepal's communities and environment
           </p>
         </div>
@@ -156,12 +142,12 @@ const SustainabilityImpact = () => {
         </div>
 
         {/* Initiatives Section */}
-        <div className="bg-white rounded-3xl p-8 md:p-12 shadow-lg mb-16">
+        <div className="bg-white rounded-3xl p-8 md:p-12 shadow-lg mb-16 border border-gray-100">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-slate-800 mb-4">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
               Our Green Initiatives
             </h3>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We're committed to making every adventure a force for good
             </p>
           </div>
@@ -172,18 +158,18 @@ const SustainabilityImpact = () => {
               return (
                 <div
                   key={index}
-                  className="flex items-start space-x-4 p-6 rounded-2xl hover:bg-slate-50 transition-colors duration-300"
+                  className="flex items-start space-x-4 p-6 rounded-2xl hover:bg-gray-50 transition-colors duration-300"
                 >
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                       <IconComponent className={`w-6 h-6 ${initiative.color}`} />
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-slate-800 mb-2">
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">
                       {initiative.title}
                     </h4>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed">
                       {initiative.description}
                     </p>
                   </div>
