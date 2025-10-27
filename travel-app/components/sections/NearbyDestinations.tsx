@@ -1004,7 +1004,7 @@ const NearbyDestinations = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden"
+      className="relative pt-72 pb-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden"
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">

@@ -2,13 +2,20 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, MapPin, Calendar, Users, Filter } from 'lucide-react';
 
 const Hero = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDestination, setSelectedDestination] = useState('Nepal');
   const [isCardVisible, setIsCardVisible] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Booking interface state
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
+  const [guestCount, setGuestCount] = useState(2);
+  const [selectedTripTypes, setSelectedTripTypes] = useState(['Wildlife']);
+  const [showFilters, setShowFilters] = useState(false);
 
   const backgroundImages = [
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
@@ -28,9 +35,41 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [backgroundImages.length]);
 
+  const tripTypes = [
+    { id: 'trekking', label: 'Trekking', icon: '🥾' },
+    { id: 'cultural', label: 'Cultural', icon: '🏛️' },
+    { id: 'adventure', label: 'Adventure', icon: '🏔️' },
+    { id: 'wildlife', label: 'Wildlife', icon: '🦌' }
+  ];
+
   const handleSearch = () => {
-    console.log('Searching for:', searchQuery);
+    const searchData = {
+      destination: searchQuery,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+      guests: guestCount,
+      tripTypes: selectedTripTypes
+    };
+    console.log('Searching with data:', searchData);
     // Add search functionality here
+  };
+
+  const toggleTripType = (typeId: string) => {
+    setSelectedTripTypes(prev => 
+      prev.includes(typeId) 
+        ? prev.filter(t => t !== typeId)
+        : [...prev, typeId]
+    );
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric' 
+    });
   };
 
   const destinationData = [
@@ -43,7 +82,7 @@ const Hero = () => {
   const currentDestination = destinationData.find(d => d.name === selectedDestination) || destinationData[0];
 
   return (
-    <section className="relative min-h-[80vh] flex items-center overflow-hidden py-20">
+    <section className="relative min-h-[80vh] flex items-center py-20">
       {/* Background Image Carousel */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-blue-400/20 z-10"></div>
@@ -91,26 +130,7 @@ const Hero = () => {
               </p>
             </div>
             
-            {/* Search Bar */}
-            <div className="bg-white rounded-full p-2 flex items-center space-x-4 shadow-lg mb-8 max-w-md">
-              <div className="flex items-center space-x-3 flex-1 px-4">
-                <Search className="w-5 h-5 text-gray-400" />
-                <input 
-                  type="text" 
-                  placeholder="Where's your dream destination?"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 outline-none text-gray-600 placeholder-gray-400"
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                />
-              </div>
-              <button 
-                onClick={handleSearch}
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300"
-              >
-                खोज्नुहोस्
-              </button>
-            </div>
+
           </motion.div>
 
           {/* Right Content - Travel Info Card */}
@@ -236,6 +256,119 @@ const Hero = () => {
               </div>
             </motion.div>
           )}
+        </div>
+      </div>
+
+      {/* Floating Booking Interface */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-[9999] w-full max-w-4xl px-4">
+        <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-100">
+          {/* Main booking row */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end mb-4">
+            {/* Destination */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input 
+                  type="text" 
+                  placeholder="Where to?"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Check-in */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input 
+                  type="date" 
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Check-out */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input 
+                  type="date" 
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Guests */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Guests</label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <select 
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(Number(e.target.value))}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm appearance-none bg-white"
+                >
+                  {[1,2,3,4,5,6,7,8].map(num => (
+                    <option key={num} value={num}>
+                      {num} Guest{num > 1 ? 's' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Search Button */}
+            <div>
+              <button 
+                onClick={handleSearch}
+                className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm"
+              >
+                <Search className="w-4 h-4" />
+                Search
+              </button>
+            </div>
+          </div>
+
+          {/* Trip Type Filters Row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-700">Trip Type:</span>
+              <div className="flex gap-2">
+                {tripTypes.map(type => (
+                  <button
+                    key={type.id}
+                    onClick={() => toggleTripType(type.id)}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
+                      selectedTripTypes.includes(type.id)
+                        ? 'bg-green-500 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-600 hover:bg-green-100'
+                    }`}
+                  >
+                    <span>{type.icon}</span>
+                    <span>{type.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Filters Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-3 py-1 text-sm text-blue-600 hover:text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 transition-all duration-300"
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+            </button>
+          </div>
         </div>
       </div>
 
