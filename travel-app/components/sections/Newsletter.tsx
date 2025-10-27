@@ -71,32 +71,32 @@ const JoinOurCommunity = () => {
   }
 
   return (
-    <section className="py-20 bg-blue-900 relative overflow-hidden">
+    <section className="py-20 bg-gray-50 relative overflow-hidden">
       {/* Clean Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-900 to-blue-800"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Main CTA Section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 font-serif leading-tight">
+          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-8 font-serif leading-tight">
             Join Our Community
           </h2>
           
           <div className="max-w-4xl mx-auto mb-12">
-            <blockquote className="text-2xl md:text-3xl font-serif text-white/90 italic leading-relaxed mb-6">
+            <blockquote className="text-2xl md:text-3xl font-serif text-gray-700 italic leading-relaxed mb-6">
               "The world waits, but Nepal whispers first."
             </blockquote>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Become part of a global family of adventurers, dreamers, and Nepal lovers. 
               Share stories, get inspired, and plan your next journey together.
             </p>
           </div>
 
           {/* Newsletter Signup */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 mb-12 max-w-2xl mx-auto">
+          <div className="bg-white rounded-3xl p-8 md:p-12 shadow-lg border border-gray-100 mb-12 max-w-2xl mx-auto">
             <div className="flex items-center justify-center mb-6">
-              <Mail className="w-8 h-8 text-white/80 mr-3" />
-              <h3 className="text-2xl font-bold text-white">Stay Connected</h3>
+              <Mail className="w-8 h-8 text-blue-600 mr-3" />
+              <h3 className="text-2xl font-bold text-gray-900">Stay Connected</h3>
             </div>
             
             <form onSubmit={handleSubmit} className="max-w-md mx-auto mb-6">
@@ -107,14 +107,14 @@ const JoinOurCommunity = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address"
-                    className="w-full px-6 py-4 rounded-full bg-white/20 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white placeholder-white/60 backdrop-blur-sm"
+                    className="w-full px-6 py-4 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-semibold hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-transparent transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                  className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -128,13 +128,13 @@ const JoinOurCommunity = () => {
               </div>
             </form>
 
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-gray-500">
               Join 10,000+ adventurers • No spam, unsubscribe anytime
             </p>
           </div>
 
           {/* Main CTA Button */}
-          <button className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-12 py-6 rounded-full font-bold text-xl hover:from-orange-600 hover:to-red-700 transform hover:scale-105 transition-all duration-300 shadow-2xl mb-16">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-6 rounded-lg font-bold text-xl transition-all duration-300 shadow-lg mb-16">
             Plan Your Journey
           </button>
         </div>
@@ -142,34 +142,34 @@ const JoinOurCommunity = () => {
         {/* Community Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           <div className="text-center">
-            <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-8 h-8 text-blue-400" />
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="w-8 h-8 text-blue-600" />
             </div>
-            <div className="text-3xl font-bold text-white mb-2">10,000+</div>
-            <div className="text-white/70">Community Members</div>
+            <div className="text-3xl font-bold text-gray-900 mb-2">10,000+</div>
+            <div className="text-gray-600">Community Members</div>
           </div>
           <div className="text-center">
-            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Heart className="w-8 h-8 text-red-400" />
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-8 h-8 text-red-600" />
             </div>
-            <div className="text-3xl font-bold text-white mb-2">5,000+</div>
-            <div className="text-white/70">Adventures Shared</div>
+            <div className="text-3xl font-bold text-gray-900 mb-2">5,000+</div>
+            <div className="text-gray-600">Adventures Shared</div>
           </div>
           <div className="text-center">
-            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Globe className="w-8 h-8 text-green-400" />
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Globe className="w-8 h-8 text-green-600" />
             </div>
-            <div className="text-3xl font-bold text-white mb-2">50+</div>
-            <div className="text-white/70">Countries Represented</div>
+            <div className="text-3xl font-bold text-gray-900 mb-2">50+</div>
+            <div className="text-gray-600">Countries Represented</div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="border-t border-white/20 pt-12">
+        <div className="border-t border-gray-200 pt-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Social Links */}
             <div className="text-center md:text-left">
-              <h4 className="text-lg font-semibold text-white mb-4">Follow Our Journey</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Follow Our Journey</h4>
               <div className="flex justify-center md:justify-start space-x-4">
                 {socialLinks.map((social, index) => {
                   const IconComponent = social.icon;
@@ -177,7 +177,7 @@ const JoinOurCommunity = () => {
                     <a
                       key={index}
                       href={social.href}
-                      className={`w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white/70 ${social.color} transition-colors duration-300`}
+                      className={`w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition-colors duration-300`}
                       aria-label={social.label}
                     >
                       <IconComponent className="w-5 h-5" />
@@ -189,13 +189,13 @@ const JoinOurCommunity = () => {
 
             {/* Quick Links */}
             <div className="text-center">
-              <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h4>
               <div className="grid grid-cols-2 gap-2">
                 {quickLinks.map((link, index) => (
                   <a
                     key={index}
                     href="#"
-                    className="text-white/70 hover:text-white transition-colors duration-300 text-sm"
+                    className="text-gray-600 hover:text-gray-900 transition-colors duration-300 text-sm"
                   >
                     {link}
                   </a>
@@ -205,8 +205,8 @@ const JoinOurCommunity = () => {
 
             {/* Contact Info */}
             <div className="text-center md:text-right">
-              <h4 className="text-lg font-semibold text-white mb-4">Get in Touch</h4>
-              <div className="space-y-2 text-white/70 text-sm">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Get in Touch</h4>
+              <div className="space-y-2 text-gray-600 text-sm">
                 <p>📧 hello@treksathi.com</p>
                 <p>📞 +977-1-4567890</p>
                 <p>📍 Thamel, Kathmandu, Nepal</p>
@@ -214,8 +214,8 @@ const JoinOurCommunity = () => {
             </div>
           </div>
 
-          <div className="text-center mt-8 pt-8 border-t border-white/10">
-            <p className="text-white/60 text-sm">
+          <div className="text-center mt-8 pt-8 border-t border-gray-200">
+            <p className="text-gray-500 text-sm">
               © 2024 TrekSathi. Made with ❤️ in Nepal. All rights reserved.
             </p>
           </div>
