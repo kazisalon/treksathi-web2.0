@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { MapPin, Navigation, Eye, Star, Clock, Thermometer, Filter, Search, X, ChevronDown } from 'lucide-react';
+import { MapPin, Navigation, Eye, Star, Clock, Thermometer, Filter, Search, X, ChevronDown, Sparkles, ArrowRight } from 'lucide-react';
 
 
 
@@ -42,57 +42,7 @@ interface SearchFilters {
   maxDistance: number;
 }
 
-// Mock data for nearby destinations
-const mockDestinations: Destination[] = [
-  {
-    id: 1,
-    name: "Sarangkot Viewpoint",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-    distance: 2.3,
-    category: "Viewpoint",
-    rating: 4.8,
-    tagline: "Sunrise views over the Annapurna range",
-    tags: ["Sunrise", "Mountain Views", "Photography"],
-    coordinates: { lat: 28.2096, lng: 83.9856 },
-    weatherInfo: { temperature: 18, condition: "Clear", emoji: "🌤️" }
-  },
-  {
-    id: 2,
-    name: "Phewa Lake",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop",
-    distance: 1.8,
-    category: "Lake",
-    rating: 4.6,
-    tagline: "Serene lake perfect for boating and reflection",
-    tags: ["Boating", "Peaceful", "Locals' Favorite"],
-    coordinates: { lat: 28.2096, lng: 83.9856 },
-    weatherInfo: { temperature: 22, condition: "Partly Cloudy", emoji: "⛅" }
-  },
-  {
-    id: 3,
-    name: "World Peace Pagoda",
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
-    distance: 4.7,
-    category: "Temple",
-    rating: 4.7,
-    tagline: "Buddhist stupa with panoramic valley views",
-    tags: ["Spiritual", "Hidden Gem", "Hiking"],
-    coordinates: { lat: 28.2096, lng: 83.9856 },
-    weatherInfo: { temperature: 16, condition: "Sunny", emoji: "☀️" }
-  },
-  {
-    id: 4,
-    name: "Devi's Fall",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-    distance: 3.2,
-    category: "Waterfall",
-    rating: 4.4,
-    tagline: "Mysterious waterfall that disappears underground",
-    tags: ["Nature", "Adventure", "Photography"],
-    coordinates: { lat: 28.2096, lng: 83.9856 },
-    weatherInfo: { temperature: 20, condition: "Misty", emoji: "🌫️" }
-  }
-];
+
 
 // Available categories for filtering
 const categories = [
@@ -109,10 +59,10 @@ const categories = [
 
 const NearbyDestinations = () => {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [destinations, setDestinations] = useState<Destination[]>(mockDestinations); // Initialize with mock data
+  const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
+
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // Track if component is mounted
@@ -189,7 +139,7 @@ const NearbyDestinations = () => {
       if (!navigator.geolocation || typeof navigator.geolocation.getCurrentPosition !== 'function') {
         const errorMsg = "Geolocation is not supported by this browser. Showing popular destinations instead.";
         setLocationError(errorMsg);
-        setDestinations(mockDestinations);
+        setDestinations([]);
         setLoading(false);
         setUserLocation({
           lat: 0,
@@ -333,8 +283,8 @@ const NearbyDestinations = () => {
             
             console.log(`Geolocation error [${errorCode}]: ${errorMessage}`);
             
-            // Fallback to mock destinations without location-based filtering
-            setDestinations(mockDestinations);
+            // Set empty destinations array when location fails
+            setDestinations([]);
             
             // Set a default location indicator
             setUserLocation({
@@ -351,7 +301,7 @@ const NearbyDestinations = () => {
         } catch (error) {
           console.error('Error in message handler:', error);
           setLoading(false);
-          setDestinations(mockDestinations);
+          setDestinations([]);
           reject(error);
         } finally {
           // Clean up message listener
@@ -590,7 +540,7 @@ const NearbyDestinations = () => {
         console.error('Browser extension interference detected:', extensionError);
         const errorMsg = "Location detection blocked by browser extension. Showing popular destinations instead.";
         setLocationError(errorMsg);
-        setDestinations(mockDestinations);
+        setDestinations([]);
         setLoading(false);
         setUserLocation({
           lat: 0,
@@ -1215,14 +1165,22 @@ const NearbyDestinations = () => {
     return Math.round(distance * 10) / 10; // Round to 1 decimal place
   };
 
-  // Get category color
+  // Get category color with enhanced travel-themed palette
   const getCategoryColor = (category: string) => {
     const colors = {
       'Viewpoint': 'bg-gradient-to-r from-orange-400 to-pink-400',
       'Lake': 'bg-gradient-to-r from-blue-400 to-cyan-400',
       'Temple': 'bg-gradient-to-r from-purple-400 to-indigo-400',
       'Waterfall': 'bg-gradient-to-r from-green-400 to-teal-400',
-      'default': 'bg-gradient-to-r from-gray-400 to-gray-500'
+      'Mountain': 'bg-gradient-to-r from-gray-600 to-slate-700',
+      'Park': 'bg-gradient-to-r from-emerald-500 to-green-600',
+      'Museum': 'bg-gradient-to-r from-purple-500 to-indigo-600',
+      'Adventure': 'bg-gradient-to-r from-red-500 to-pink-600',
+      'Nature': 'bg-gradient-to-r from-green-600 to-lime-600',
+      'Heritage': 'bg-gradient-to-r from-amber-500 to-orange-600',
+      'Trekking': 'bg-gradient-to-r from-emerald-600 to-teal-600',
+      'Wildlife': 'bg-gradient-to-r from-green-700 to-emerald-700',
+      'default': 'bg-blue-500'
     };
     return colors[category as keyof typeof colors] || colors.default;
   };
@@ -1257,256 +1215,494 @@ const NearbyDestinations = () => {
       <style jsx>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
-          height: 20px;
-          width: 20px;
+          height: 22px;
+          width: 22px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #f97316, #ec4899);
+          background: #10b981;
           cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border: 3px solid #ffffff;
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+          transition: all 0.2s ease;
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+          background: #059669;
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
         
         .slider::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
+          height: 22px;
+          width: 22px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #f97316, #ec4899);
+          background: #10b981;
           cursor: pointer;
-          border: none;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border: 3px solid #ffffff;
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
         }
         
         .slider::-webkit-slider-track {
-          background: linear-gradient(90deg, #f97316, #ec4899);
+          background: #f3f4f6;
           height: 4px;
           border-radius: 2px;
         }
         
         .slider::-moz-range-track {
-          background: linear-gradient(90deg, #f97316, #ec4899);
+          background: #f3f4f6;
           height: 4px;
           border-radius: 2px;
           border: none;
         }
+        
+        /* Text truncation utilities */
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        /* Card hover animations */
+        .destination-card {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .destination-card:hover {
+          transform: translateY(-4px);
+        }
       `}</style>
       <section 
         ref={sectionRef}
-        className="relative pt-72 pb-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden"
+        className="relative pt-32 pb-24 bg-white overflow-hidden"
       >
-      {/* Background decorative elements */}
+      {/* Subtle background pattern */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200/30 to-pink-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-200/30 to-cyan-200/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,0.02)_0%,transparent_50%)]"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-6xl mx-auto px-6 lg:px-8">
         {/* Header Section */}
-        <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Discover Near You
-            <span className="block text-lg md:text-xl font-normal text-gray-600 mt-2">
-              Find amazing places around your current location
-            </span>
-          </h2>
+        <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className="inline-flex items-center gap-2 bg-gray-50 rounded-full px-4 py-2 mb-6">
+            <Sparkles className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Discover</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 tracking-tight">
+            Near You
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
+            Discover hidden gems, popular attractions, and local favorites within your reach
+          </p>
+          
+          {/* Quick Stats/Features */}
+          <div className="flex flex-wrap justify-center gap-6 mt-8 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Real-time distances</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>Curated recommendations</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Local insights</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+              <span>Weather updates</span>
+            </div>
+          </div>
 
           {/* Location Status */}
           {userLocation && (
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border border-white/20 mb-6">
-              <MapPin className="w-5 h-5 text-orange-500" />
-              <span className="text-gray-700 font-medium">
-                You're in {userLocation.city} — here's what's nearby!
-              </span>
+            <div className="mt-8 mb-4">
+              <div className="inline-flex items-center gap-3 bg-gray-50 rounded-2xl px-6 py-4 border border-gray-100">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-gray-700 font-medium">
+                  {userLocation.city}
+                </span>
+                <ArrowRight className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-500">
+                  {destinations.length} places nearby
+                </span>
+              </div>
             </div>
           )}
 
           {/* Enable Location Button */}
           {!userLocation && !loading && (
-            <button
-              onClick={getCurrentLocation}
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-            >
-              <Navigation className="w-5 h-5" />
-              📍 Enable Location
-            </button>
+            <div className="mt-12">
+              <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 border border-gray-200 max-w-2xl mx-auto">
+                <div className="text-center space-y-6">
+                  {/* Icon and Title */}
+                  <div className="space-y-3">
+                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto">
+                      <Navigation className="w-8 h-8 text-blue-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900">Discover Places Near You</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Enable location access to find amazing destinations, hidden gems, and local favorites around you
+                    </p>
+                  </div>
+                  
+                  {/* Benefits */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="bg-white/60 rounded-xl p-4 border border-white/40">
+                      <div className="text-green-600 font-medium mb-1">🎯 Personalized</div>
+                      <div className="text-gray-600">Destinations matched to your location</div>
+                    </div>
+                    <div className="bg-white/60 rounded-xl p-4 border border-white/40">
+                      <div className="text-blue-600 font-medium mb-1">📍 Accurate</div>
+                      <div className="text-gray-600">Real distances and directions</div>
+                    </div>
+                    <div className="bg-white/60 rounded-xl p-4 border border-white/40">
+                      <div className="text-purple-600 font-medium mb-1">⚡ Instant</div>
+                      <div className="text-gray-600">Quick recommendations</div>
+                    </div>
+                  </div>
+                  
+                  {/* Action Button */}
+                  <button
+                    onClick={getCurrentLocation}
+                    className="group inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
+                  >
+                    <Navigation className="w-5 h-5 transition-transform group-hover:rotate-12" />
+                    Enable Location Access
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </button>
+                  
+                  {/* Privacy Note */}
+                  <p className="text-xs text-gray-500 max-w-md mx-auto">
+                    🔒 Your location is only used to find nearby destinations and is never stored or shared
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Loading State */}
           {loading && (
-            <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-2xl px-8 py-4 shadow-lg">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500"></div>
-              <span className="text-gray-700">Finding nearby destinations...</span>
-            </div>
-          )}
-
-          {/* Current Location Display */}
-          {userLocation && (
-            <div className="inline-flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-6 py-3 text-green-700">
-              <MapPin className="w-4 h-4" />
-              <span>📍 {userLocation.city}, {userLocation.area} ({userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)})</span>
-            </div>
-          )}
-
-          {/* Data Source Summary */}
-          {destinations.length > 0 && (
-            <div className={`inline-flex items-center gap-3 rounded-2xl px-6 py-3 transition-all duration-500 ${
-              destinations.some(d => (d as any).isFromAPI) 
-                ? 'bg-green-50 border border-green-200 text-green-700 shadow-lg' 
-                : 'bg-blue-50 border border-blue-200 text-blue-700'
-            }`}>
-              {destinations.some(d => (d as any).isFromAPI) ? (
-                <>
-                  <span className="text-green-600 animate-pulse">🌐</span>
-                  <span className="font-medium">
-                    ✅ Live API Data Active! Showing {destinations.filter(d => (d as any).isFromAPI).length} real destinations near you
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="text-orange-600">📋</span>
-                  <span>Showing demo destinations ({destinations.length} places) - API data will load when available</span>
-                </>
-              )}
+            <div className="mt-12">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-100">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  {/* Enhanced Loading Animation */}
+                  <div className="relative">
+                    <div className="animate-spin rounded-full h-8 w-8 border-3 border-blue-200 border-t-blue-600"></div>
+                    <div className="absolute inset-0 rounded-full border-2 border-blue-100 animate-pulse"></div>
+                  </div>
+                  
+                  {/* Main Loading Message */}
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-gray-900">🗺️ Discovering Amazing Places</h3>
+                    <p className="text-blue-700 font-medium">Finding the best destinations near you...</p>
+                  </div>
+                  
+                  {/* Progress Steps */}
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span>Getting your location</span>
+                    </div>
+                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <span>Searching nearby attractions</span>
+                    </div>
+                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                      <span>Curating recommendations</span>
+                    </div>
+                  </div>
+                  
+                  {/* Helpful Tip */}
+                  <div className="bg-white/60 rounded-2xl px-4 py-3 border border-white/40">
+                    <p className="text-sm text-gray-700">
+                      💡 <span className="font-medium">Tip:</span> We're finding places within your preferred distance and matching your interests
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           {/* Error Message */}
           {locationError && (
-            <div className="inline-flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-6 py-3 text-amber-700">
-              <span>{locationError}</span>
+            <div className="mt-8">
+              <div className="bg-red-50 border border-red-200 rounded-3xl p-6 max-w-2xl mx-auto">
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mx-auto">
+                    <X className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-red-900">Location Access Issue</h3>
+                    <p className="text-red-700 font-medium">{locationError}</p>
+                  </div>
+                  
+                  {/* Helpful Solutions */}
+                  <div className="bg-white/60 rounded-2xl p-4 border border-white/40 text-left">
+                    <p className="text-sm font-medium text-red-800 mb-2">💡 Try these solutions:</p>
+                    <ul className="text-sm text-red-700 space-y-1">
+                      <li>• Check if location services are enabled in your browser</li>
+                      <li>• Refresh the page and try again</li>
+                      <li>• Make sure you're using HTTPS (secure connection)</li>
+                    </ul>
+                  </div>
+                  
+                  {/* Retry Button */}
+                  <button
+                    onClick={getCurrentLocation}
+                    className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-3 rounded-xl transition-all duration-300"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    Try Again
+                  </button>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+        )}
+
+        {/* No Results State */}
+        {userLocation && !loading && destinations.length === 0 && (
+          <div className="text-center py-16">
+            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-12 max-w-2xl mx-auto border border-gray-200">
+              <div className="space-y-6">
+                {/* Icon */}
+                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto">
+                  <Search className="w-10 h-10 text-blue-600" />
+                </div>
+                
+                {/* Message */}
+                <div className="space-y-3">
+                  <h3 className="text-2xl font-semibold text-gray-900">No destinations found</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    We couldn't find any places matching your current filters. Try adjusting your search criteria.
+                  </p>
+                </div>
+                
+                {/* Suggestions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="bg-white/60 rounded-xl p-4 border border-white/40 text-left">
+                    <div className="text-blue-600 font-medium mb-2">🔍 Expand Search</div>
+                    <div className="text-gray-600">Increase distance radius or remove category filters</div>
+                  </div>
+                  <div className="bg-white/60 rounded-xl p-4 border border-white/40 text-left">
+                    <div className="text-green-600 font-medium mb-2">⭐ Lower Standards</div>
+                    <div className="text-gray-600">Try reducing the minimum rating requirement</div>
+                  </div>
+                </div>
+                
+                {/* Action Button */}
+                <button
+                  onClick={resetFilters}
+                  className="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg"
+                >
+                  <Search className="w-5 h-5" />
+                  Reset All Filters
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
 
         {/* Search Filters */}
         {userLocation && (
-          <div className={`mb-8 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+          <div className={`mb-16 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
               {/* Filter Toggle Button */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  <Filter className="w-5 h-5" />
-                  Search Filters
-                </h3>
+              <div className="flex items-center justify-between p-6 border-b border-gray-50 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Refine Search
+                  </h3>
+                  <span className="text-sm text-gray-500 bg-white px-2 py-1 rounded-full">
+                    {destinations.length} found
+                  </span>
+                </div>
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                    showFilters 
+                      ? 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg'
+                  }`}
                 >
-                  {showFilters ? <X className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  {showFilters ? 'Hide' : 'Show'} Filters
+                  {showFilters ? (
+                    <>
+                      <X className="w-4 h-4" />
+                      Close
+                    </>
+                  ) : (
+                    <>
+                      <Filter className="w-4 h-4" />
+                      Show Filters
+                    </>
+                  )}
                 </button>
               </div>
 
               {/* Filters Content */}
               {showFilters && (
-                <div className="space-y-6">
-                  {/* First Row: Radius and Category */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Radius Filter */}
+                <div className="p-6 bg-gray-50/30">{/* Filters Content */}
+                  <div className="space-y-8">
+                    {/* Category Selection */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Search Radius: {searchFilters.radiusInKm} km
-                      </label>
-                      <input
-                        type="range"
-                        min="5"
-                        max="200"
-                        step="5"
-                        value={searchFilters.radiusInKm}
-                        onChange={(e) => setSearchFilters(prev => ({ ...prev, radiusInKm: Number(e.target.value) }))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>5 km</span>
-                        <span>200 km</span>
+                      <div className="flex items-center gap-2 mb-4">
+                        <label className="text-sm font-semibold text-gray-900">
+                          Category
+                        </label>
+                        <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
+                        <span className="text-xs text-gray-500">Choose your interest</span>
+                      </div>
+                      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        <button
+                          onClick={() => setSearchFilters(prev => ({ ...prev, category: '' }))}
+                          className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                            searchFilters.category === '' 
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+                              : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                          }`}
+                        >
+                          🌍 All
+                        </button>
+                        {categories.map(category => {
+                          const categoryEmojis = {
+                            'Viewpoint': '🏔️',
+                            'Lake': '🏞️',
+                            'Temple': '🏛️',
+                            'Waterfall': '💧',
+                            'Trekking': '🥾',
+                            'Wildlife': '🦋',
+                            'Heritage': '🏺',
+                            'Adventure': '🎯',
+                            'Nature': '🌿'
+                          };
+                          return (
+                            <button
+                              key={category}
+                              onClick={() => setSearchFilters(prev => ({ ...prev, category }))}
+                              className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                                searchFilters.category === category 
+                                  ? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+                                  : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                              }`}
+                            >
+                              {categoryEmojis[category as keyof typeof categoryEmojis]} {category}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    {/* Category Filter */}
+                    {/* Distance Range */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Category
-                      </label>
-                      <select
-                        value={searchFilters.category}
-                        onChange={(e) => setSearchFilters(prev => ({ ...prev, category: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      >
-                        <option value="">All Categories</option>
-                        {categories.map(category => (
-                          <option key={category} value={category}>{category}</option>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-semibold text-gray-900">
+                            Distance
+                          </label>
+                          <div className="w-1 h-1 bg-green-400 rounded-full"></div>
+                        </div>
+                        <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                          {searchFilters.radiusInKm} km radius
+                        </div>
+                      </div>
+                      <div className="relative bg-white rounded-xl p-4 border border-gray-200">
+                        <input
+                          type="range"
+                          min="5"
+                          max="200"
+                          step="5"
+                          value={searchFilters.radiusInKm}
+                          onChange={(e) => setSearchFilters(prev => ({ ...prev, radiusInKm: Number(e.target.value) }))}
+                          className="w-full h-2 bg-gray-100 rounded-full appearance-none cursor-pointer slider"
+                          style={{
+                            background: `linear-gradient(to right, #10b981 0%, #10b981 ${((searchFilters.radiusInKm - 5) / 195) * 100}%, #f3f4f6 ${((searchFilters.radiusInKm - 5) / 195) * 100}%, #f3f4f6 100%)`
+                          }}
+                        />
+                        <div className="flex justify-between text-xs text-gray-500 mt-2">
+                          <span>🚶 5 km</span>
+                          <span>🚗 200 km</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rating Filter */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <label className="text-sm font-semibold text-gray-900">
+                          Minimum Rating
+                        </label>
+                        <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
+                        <span className="text-xs text-gray-500">
+                          {searchFilters.minRating > 0 ? `${searchFilters.minRating}+ stars` : 'Any rating'}
+                        </span>
+                      </div>
+                      <div className="flex gap-2 flex-wrap">
+                        {[0, 3, 4, 4.5, 5].map(rating => (
+                          <button
+                            key={rating}
+                            onClick={() => setSearchFilters(prev => ({ ...prev, minRating: rating }))}
+                            className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                              searchFilters.minRating === rating 
+                                ? 'bg-yellow-500 text-white border-yellow-500 shadow-md' 
+                                : 'bg-white text-gray-700 border-gray-200 hover:border-yellow-300 hover:bg-yellow-50'
+                            }`}
+                          >
+                            {rating === 0 ? '⭐ Any' : `⭐ ${rating}+`}
+                          </button>
                         ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Second Row: Rating and Max Distance */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Minimum Rating Filter */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Minimum Rating: {searchFilters.minRating > 0 ? `${searchFilters.minRating}+ stars` : 'Any rating'}
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="5"
-                        step="0.5"
-                        value={searchFilters.minRating}
-                        onChange={(e) => setSearchFilters(prev => ({ ...prev, minRating: Number(e.target.value) }))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>Any</span>
-                        <span>5★</span>
                       </div>
                     </div>
 
-                    {/* Max Distance Filter */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Maximum Distance: {searchFilters.maxDistance} km
-                      </label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="500"
-                        step="5"
-                        value={searchFilters.maxDistance}
-                        onChange={(e) => setSearchFilters(prev => ({ ...prev, maxDistance: Number(e.target.value) }))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>1 km</span>
-                        <span>500 km</span>
-                      </div>
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 pt-6 border-t border-gray-200">
+                      <button
+                        onClick={handleSearch}
+                        disabled={isSearching || !userLocation}
+                        className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                      >
+                        {isSearching ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-white"></div>
+                            Searching...
+                          </>
+                        ) : (
+                          <>
+                            <Search className="w-4 h-4" />
+                            Find Destinations
+                          </>
+                        )}
+                      </button>
+                      
+                      <button
+                        onClick={resetFilters}
+                        className="px-6 py-4 bg-white text-gray-700 border border-gray-200 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-medium"
+                      >
+                        🔄 Reset
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
-                    <button
-                      onClick={handleSearch}
-                      disabled={isSearching || !userLocation}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg hover:from-orange-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium"
-                    >
-                      {isSearching ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          Searching...
-                        </>
-                      ) : (
-                        <>
-                          <Search className="w-4 h-4" />
-                          Search Destinations
-                        </>
-                      )}
-                    </button>
                     
-                    <button
-                      onClick={resetFilters}
-                      className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                    >
-                      Reset Filters
-                    </button>
+                    {/* Quick Filter Tips */}
+                    <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+                        <div>
+                          <p className="text-sm font-medium text-blue-900 mb-1">💡 Quick Tips</p>
+                          <p className="text-xs text-blue-700 leading-relaxed">
+                            Use category filters to find specific types of places. Adjust distance for nearby or distant adventures. Higher ratings ensure quality experiences.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1514,53 +1710,43 @@ const NearbyDestinations = () => {
           </div>
         )}
 
-        {/* View Mode Toggle */}
-        {destinations.length > 0 && (
-          <div className={`flex justify-center mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-white/20">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-6 py-2 rounded-xl font-medium transition-all duration-300 ${
-                  viewMode === 'grid' 
-                    ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-md' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Grid View
-              </button>
-              <button
-                onClick={() => setViewMode('map')}
-                className={`px-6 py-2 rounded-xl font-medium transition-all duration-300 ${
-                  viewMode === 'map' 
-                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Map View
-              </button>
-            </div>
-          </div>
-        )}
 
-        {/* Destinations Grid */}
-        {destinations.length > 0 && viewMode === 'grid' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+
+        {/* Destinations Section */}
+        {destinations.length > 0 && (
+          <div className="space-y-8">
+            {/* Section Header */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl px-6 py-3 border border-blue-100 mb-4">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-blue-700 font-semibold">
+                  {destinations.length} Amazing Places Discovered
+                </span>
+                <Sparkles className="w-4 h-4 text-blue-500" />
+              </div>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Handpicked destinations that match your preferences, sorted by distance and quality
+              </p>
+            </div>
+
+            {/* Destinations Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {destinations.map((destination, index) => (
               <div
                 key={destination.id}
-                className={`group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-500 overflow-hidden border border-white/20 min-h-[400px] max-h-[450px] flex flex-col ${
+                className={`destination-card group relative bg-white rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${
                   isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
-                style={{ transitionDelay: `${index * 150}ms` }}
+                style={{ transitionDelay: `${index * 80}ms` }}
                 onMouseEnter={() => setHoveredCard(destination.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
                 {/* Image Container */}
-                <div className="relative h-48 sm:h-52 lg:h-56 overflow-hidden flex-shrink-0">
+                <div className="relative aspect-[5/4] overflow-hidden">
                   <img
                     src={destination.image}
                     alt={destination.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     onError={(e) => {
                       console.log(`❌ Image failed to load for "${destination.name}": ${destination.image}`);
                       // Set a fallback image based on category
@@ -1585,118 +1771,98 @@ const NearbyDestinations = () => {
                   />
                   
                   {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
-                  {/* Top Left Badges */}
-                  <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg">
-                      <span className="text-xs sm:text-sm font-semibold text-gray-800">
+                  {/* Distance Badge */}
+                  <div className="absolute top-3 left-3">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm">
+                      <span className="text-xs font-semibold text-gray-800">
                         {destination.distance} km
                       </span>
                     </div>
                   </div>
 
-                  {/* Top Right Badges */}
-                  <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
-                    <div className={`${getCategoryColor(destination.category)} text-white px-2 py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg`}>
-                      {destination.category}
-                    </div>
-                    {(destination as any).isFromAPI !== undefined && (
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm transition-all duration-300 ${
-                        (destination as any).isFromAPI 
-                          ? 'bg-green-500/95 text-white border border-green-400/50' 
-                          : 'bg-orange-500/95 text-white border border-orange-400/50'
-                      }`}>
-                        <span className="hidden sm:inline">{(destination as any).isFromAPI ? '🌐 API' : '📋 Demo'}</span>
-                        <span className="sm:hidden">{(destination as any).isFromAPI ? '🌐' : '📋'}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Bottom Left Weather Info */}
-                  {destination.weatherInfo && (
-                    <div className="absolute bottom-2 left-2 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <span className="text-sm font-medium text-gray-800">
-                        {destination.weatherInfo.emoji} {destination.weatherInfo.temperature}°C
+                  {/* Category Badge */}
+                  <div className="absolute top-3 right-3">
+                    <div className={`${getCategoryColor(destination.category)} backdrop-blur-sm text-white px-2 py-1 rounded-lg shadow-sm`}>
+                      <span className="text-xs font-semibold">
+                        {destination.category}
                       </span>
                     </div>
-                  )}
+                  </div>
 
-                  {/* View Details Button */}
-                  <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                    <button className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-3 py-2 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
-                      <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="text-xs sm:text-sm">View</span>
+                  {/* Favorite Button */}
+                  <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors">
+                      <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
                     </button>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-4 sm:p-5 lg:p-6 flex-1 flex flex-col">
-                  <div className="flex items-start justify-between mb-2 sm:mb-3">
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors duration-300 line-clamp-2 flex-1 mr-2">
+                <div className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-base font-bold text-gray-900 leading-tight line-clamp-2 flex-1">
                       {destination.name}
                     </h3>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
-                      <span className="text-xs sm:text-sm font-medium text-gray-600">
+                    <div className="flex items-center ml-2 flex-shrink-0 bg-yellow-50 rounded-lg px-2 py-1">
+                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                      <span className="text-xs font-bold text-yellow-700 ml-1">
                         {destination.rating}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-gray-600 mb-3 sm:mb-4 leading-relaxed text-sm sm:text-base line-clamp-2 flex-1">
-                    {destination.tagline}
+                  <p className="text-gray-600 text-xs mb-3 leading-relaxed line-clamp-2">
+                    {destination.tagline && destination.tagline.length > 60 
+                      ? `${destination.tagline.substring(0, 60)}...` 
+                      : destination.tagline}
                   </p>
 
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-1 sm:gap-2 mt-auto">
+                  <div className="flex flex-wrap gap-1 mb-3">
                     {destination.tags.slice(0, 2).map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium border ${getTagColor(tag)}`}
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100"
                       >
                         {tag}
                       </span>
                     ))}
                     {destination.tags.length > 2 && (
-                      <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-50 text-gray-500 border border-gray-100">
                         +{destination.tags.length - 2}
                       </span>
                     )}
                   </div>
+
+                  {/* Weather Info */}
+                  {destination.weatherInfo && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-xs text-gray-600">
+                        <span className="mr-1">{destination.weatherInfo.emoji}</span>
+                        <span className="font-medium">{destination.weatherInfo.temperature}°C</span>
+                        <span className="mx-1">•</span>
+                        <span>{destination.weatherInfo.condition}</span>
+                      </div>
+                      <button className="text-xs text-blue-600 font-semibold hover:text-blue-700 transition-colors flex items-center">
+                        Explore
+                        <ArrowRight className="w-3 h-3 ml-1" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Map View Placeholder */}
-        {destinations.length > 0 && viewMode === 'map' && (
-          <div className={`bg-white rounded-3xl shadow-lg p-8 text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="w-full h-96 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Interactive Map</h3>
-                <p className="text-gray-600">Map integration coming soon!</p>
-                <p className="text-sm text-gray-500 mt-2">Will show your location and nearby destinations</p>
-              </div>
             </div>
           </div>
         )}
 
-        {/* Mini Map Preview (when in grid mode) */}
-        {destinations.length > 0 && viewMode === 'grid' && userLocation && (
-          <div className="fixed bottom-6 right-6 w-48 h-32 bg-white rounded-2xl shadow-lg border border-white/20 overflow-hidden z-10 opacity-80 hover:opacity-100 transition-opacity duration-300">
-            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-8 h-8 text-blue-500 mx-auto mb-1" />
-                <p className="text-xs text-gray-600">Mini Map</p>
-                <p className="text-xs text-gray-500">{destinations.length} nearby</p>
-              </div>
-            </div>
-          </div>
-        )}
+
+
+
       </div>
 
       </section>
