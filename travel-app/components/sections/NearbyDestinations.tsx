@@ -78,6 +78,10 @@ const NearbyDestinations = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Pagination state
+  const [displayedCount, setDisplayedCount] = useState(6);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   // Test API connectivity
   const testExternalAPI = async () => {
     console.log('🧪 Testing external API connectivity...');
@@ -1024,6 +1028,7 @@ const NearbyDestinations = () => {
         }));
         
         setDestinations(apiDestinations);
+        setDisplayedCount(6); // Reset to show first 6 destinations
         
         // Update user location with any location info from API response
         if (data.location) {
@@ -1107,6 +1112,7 @@ const NearbyDestinations = () => {
             
             console.log('✅ Successfully using local API fallback:', transformedDestinations);
             setDestinations(transformedDestinations);
+            setDisplayedCount(6); // Reset to show first 6 destinations
             
             // Update location info if available
             if (localData.location) {
@@ -1817,41 +1823,83 @@ const NearbyDestinations = () => {
 
 
 
-        {/* Destinations Section */}
+        {/* Premium Destinations Section */}
         {destinations.length > 0 && (
-          <div className="space-y-8">
-            {/* Section Header */}
-            <div className="text-center">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl px-6 py-3 border border-blue-100 mb-4">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="text-blue-700 font-semibold">
-                  {destinations.length} Amazing Places Discovered
-                </span>
-                <Sparkles className="w-4 h-4 text-blue-500" />
+          <div className="space-y-12 mt-20">
+            {/* Premium Section Header */}
+            <div className="text-center relative">
+              {/* Background Effects */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-96 h-32 bg-gradient-to-r from-blue-100/30 via-purple-100/30 to-pink-100/30 rounded-full blur-3xl"></div>
               </div>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Handpicked destinations that match your preferences, sorted by distance and quality
-              </p>
+              
+              <div className="relative space-y-6">
+                {/* Premium Discovery Badge */}
+                <div className="inline-flex items-center gap-4 bg-gradient-to-r from-white via-blue-50/50 to-purple-50/50 backdrop-blur-sm rounded-3xl px-8 py-4 border border-blue-200/50 shadow-xl">
+                  <div className="relative">
+                    <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 w-4 h-4 bg-blue-400 rounded-full animate-ping"></div>
+                  </div>
+                  <span className="text-xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+                    {destinations.length} Amazing Places Discovered
+                  </span>
+                  <div className="relative">
+                    <Sparkles className="w-6 h-6 text-blue-500 animate-spin" style={{animationDuration: '4s'}} />
+                    <div className="absolute inset-0 w-6 h-6 text-purple-400 animate-pulse">
+                      <Sparkles className="w-6 h-6" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Enhanced Description */}
+                <div className="max-w-3xl mx-auto space-y-3">
+                  <p className="text-lg text-gray-700 font-medium leading-relaxed">
+                    Handpicked destinations that match your preferences, sorted by distance and quality
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Each destination is carefully curated with real-time data, local insights, and weather updates
+                  </p>
+                </div>
+                
+                {/* Premium Stats */}
+                <div className="flex flex-wrap justify-center gap-6 mt-8">
+                  <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50 shadow-sm">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-gray-700">Live Updates</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50 shadow-sm">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-gray-700">Verified Reviews</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50 shadow-sm">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-gray-700">Weather Ready</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Destinations Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {destinations.map((destination, index) => (
+            {/* Premium Destinations Grid - 3 Cards Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 xl:gap-12 max-w-7xl mx-auto">
+            {destinations.slice(0, displayedCount).map((destination, index) => (
               <div
                 key={destination.id}
-                className={`destination-card group relative bg-white rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${
+                className={`destination-card group relative bg-white rounded-3xl border border-gray-200/50 hover:border-blue-300/50 hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:scale-[1.02] hover:-translate-y-2 ${
                   isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
-                style={{ transitionDelay: `${index * 80}ms` }}
+                style={{ 
+                  transitionDelay: `${index * 100}ms`,
+                  boxShadow: hoveredCard === destination.id ? '0 25px 50px -12px rgba(0, 0, 0, 0.15)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}
                 onMouseEnter={() => setHoveredCard(destination.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
-                {/* Image Container */}
-                <div className="relative aspect-[5/4] overflow-hidden">
+                {/* Premium Image Container */}
+                <div className="relative aspect-[4/3] overflow-hidden rounded-t-3xl">
                   <img
                     src={destination.image}
                     alt={destination.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
                     onError={(e) => {
                       console.log(`❌ Image failed to load for "${destination.name}": ${destination.image}`);
                       // Set a fallback image based on category
@@ -1875,86 +1923,87 @@ const NearbyDestinations = () => {
                     }}
                   />
                   
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
                   
-                  {/* Distance Badge */}
-                  <div className="absolute top-3 left-3">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm">
-                      <span className="text-xs font-semibold text-gray-800">
+                  {/* Premium Distance Badge */}
+                  <div className="absolute top-4 left-4">
+                    <div className="bg-white/95 backdrop-blur-md rounded-2xl px-3 py-2 shadow-lg border border-white/20">
+                      <span className="text-sm font-bold text-gray-800">
                         {destination.distance} km
                       </span>
                     </div>
                   </div>
 
-                  {/* Category Badge */}
-                  <div className="absolute top-3 right-3">
-                    <div className={`${getCategoryColor(destination.category)} backdrop-blur-sm text-white px-2 py-1 rounded-lg shadow-sm`}>
-                      <span className="text-xs font-semibold">
+                  {/* Premium Category Badge */}
+                  <div className="absolute top-4 right-4">
+                    <div className={`${getCategoryColor(destination.category)} backdrop-blur-md text-white px-3 py-2 rounded-2xl shadow-lg border border-white/20`}>
+                      <span className="text-sm font-bold">
                         {destination.category}
                       </span>
                     </div>
                   </div>
 
-                  {/* Favorite Button */}
-                  <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors">
-                      <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {/* Premium Favorite Button */}
+                  <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+                    <button className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl hover:bg-white hover:scale-110 transition-all duration-300 border border-white/20">
+                      <svg className="w-5 h-5 text-red-500 hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
                     </button>
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-base font-bold text-gray-900 leading-tight line-clamp-2 flex-1">
+                {/* Premium Content */}
+                <div className="p-8">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight line-clamp-2 flex-1 group-hover:text-blue-700 transition-colors duration-300">
                       {destination.name}
                     </h3>
-                    <div className="flex items-center ml-2 flex-shrink-0 bg-yellow-50 rounded-lg px-2 py-1">
-                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                      <span className="text-xs font-bold text-yellow-700 ml-1">
+                    <div className="flex items-center ml-3 flex-shrink-0 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl px-3 py-2 border border-yellow-200/50">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      <span className="text-sm font-bold text-yellow-700 ml-1">
                         {destination.rating}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-gray-600 text-xs mb-3 leading-relaxed line-clamp-2">
-                    {destination.tagline && destination.tagline.length > 60 
-                      ? `${destination.tagline.substring(0, 60)}...` 
+                  <p className="text-gray-600 text-sm mb-6 leading-relaxed line-clamp-2">
+                    {destination.tagline && destination.tagline.length > 80 
+                      ? `${destination.tagline.substring(0, 80)}...` 
                       : destination.tagline}
                   </p>
 
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1 mb-3">
+                  {/* Premium Tags */}
+                  <div className="flex flex-wrap gap-2 mb-6">
                     {destination.tags.slice(0, 2).map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100"
+                        className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200/50 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 cursor-pointer"
                       >
                         {tag}
                       </span>
                     ))}
                     {destination.tags.length > 2 && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-50 text-gray-500 border border-gray-100">
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-gray-50 to-slate-50 text-gray-600 border border-gray-200/50 hover:from-gray-100 hover:to-slate-100 transition-all duration-300 cursor-pointer">
                         +{destination.tags.length - 2}
                       </span>
                     )}
                   </div>
 
-                  {/* Weather Info */}
+                  {/* Premium Weather Info */}
                   {destination.weatherInfo && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-xs text-gray-600">
-                        <span className="mr-1">{destination.weatherInfo.emoji}</span>
-                        <span className="font-medium">{destination.weatherInfo.temperature}°C</span>
-                        <span className="mx-1">•</span>
-                        <span>{destination.weatherInfo.condition}</span>
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                      <div className="flex items-center bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl px-3 py-2 border border-blue-100/50">
+                        <span className="text-lg mr-2">{destination.weatherInfo.emoji}</span>
+                        <div className="text-sm">
+                          <span className="font-bold text-gray-800">{destination.weatherInfo.temperature}°C</span>
+                          <span className="text-gray-500 mx-2">•</span>
+                          <span className="text-gray-600 font-medium">{destination.weatherInfo.condition}</span>
+                        </div>
                       </div>
-                      <button className="text-xs text-blue-600 font-semibold hover:text-blue-700 transition-colors flex items-center">
-                        Explore
-                        <ArrowRight className="w-3 h-3 ml-1" />
+                      <button className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-4 py-2 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                        <span className="text-sm">Explore</span>
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                       </button>
                     </div>
                   )}
@@ -1962,6 +2011,45 @@ const NearbyDestinations = () => {
               </div>
             ))}
             </div>
+
+            {/* Load More Button */}
+            {destinations.length > displayedCount && (
+              <div className="flex justify-center mt-12">
+                <button
+                  onClick={() => {
+                    setIsLoadingMore(true);
+                    setTimeout(() => {
+                      setDisplayedCount(prev => Math.min(prev + 6, destinations.length));
+                      setIsLoadingMore(false);
+                    }, 800);
+                  }}
+                  disabled={isLoadingMore}
+                  className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  <div className="flex items-center gap-3">
+                    {isLoadingMore ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Loading More...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Load More Destinations</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm bg-white/20 rounded-full px-2 py-1">
+                            +{Math.min(6, destinations.length - displayedCount)}
+                          </span>
+                          <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Premium background effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
