@@ -654,38 +654,39 @@ const NearbyDestinations = () => {
 
   // Fetch nearby destinations using coordinates and filtersand filters
   const fetchNearbyDestinations = useCallback(async (lat: number, lng: number, filters?: SearchFilters) => {
+    console.log(`🌍 Fetching destinations for coordinates: ${lat}, ${lng}`);
+    
+    // Validate coordinates before sending
+    const isValidLat = typeof lat === 'number' && !isNaN(lat) && lat >= -90 && lat <= 90;
+    const isValidLng = typeof lng === 'number' && !isNaN(lng) && lng >= -180 && lng <= 180;
+    
+    console.log(`🔍 Coordinate Validation:`, {
+      lat: { value: lat, type: typeof lat, isValid: isValidLat },
+      lng: { value: lng, type: typeof lng, isValid: isValidLng },
+      isNaN_lat: isNaN(lat),
+      isNaN_lng: isNaN(lng)
+    });
+    
+    if (!isValidLat || !isValidLng) {
+      throw new Error(`Invalid coordinates: lat=${lat} (valid: ${isValidLat}), lng=${lng} (valid: ${isValidLng})`);
+    }
+    
+    // Prepare the API payload according to the external API specification
+    const currentFilters = filters || searchFilters;
+    
+    // Ensure category is properly formatted - use empty string if "All" or empty
+    const categoryValue = currentFilters.category === "All" || !currentFilters.category ? "" : currentFilters.category;
+    
+    const payload = {
+      latitude: Number(lat),
+      longitude: Number(lng),
+      radiusInKm: Number(currentFilters.radiusInKm),
+      category: categoryValue,
+      minRating: Number(currentFilters.minRating),
+      maxDistance: Number(currentFilters.maxDistance)
+    };
+
     try {
-      console.log(`🌍 Fetching destinations for coordinates: ${lat}, ${lng}`);
-      
-      // Validate coordinates before sending
-      const isValidLat = typeof lat === 'number' && !isNaN(lat) && lat >= -90 && lat <= 90;
-      const isValidLng = typeof lng === 'number' && !isNaN(lng) && lng >= -180 && lng <= 180;
-      
-      console.log(`🔍 Coordinate Validation:`, {
-        lat: { value: lat, type: typeof lat, isValid: isValidLat },
-        lng: { value: lng, type: typeof lng, isValid: isValidLng },
-        isNaN_lat: isNaN(lat),
-        isNaN_lng: isNaN(lng)
-      });
-      
-      if (!isValidLat || !isValidLng) {
-        throw new Error(`Invalid coordinates: lat=${lat} (valid: ${isValidLat}), lng=${lng} (valid: ${isValidLng})`);
-      }
-      
-      // Prepare the API payload according to the external API specification
-      const currentFilters = filters || searchFilters;
-      
-      // Ensure category is properly formatted - use empty string if "All" or empty
-      const categoryValue = currentFilters.category === "All" || !currentFilters.category ? "" : currentFilters.category;
-      
-      const payload = {
-        latitude: Number(lat),
-        longitude: Number(lng),
-        radiusInKm: Number(currentFilters.radiusInKm),
-        category: categoryValue,
-        minRating: Number(currentFilters.minRating),
-        maxDistance: Number(currentFilters.maxDistance)
-      };
       
       console.log(`🔍 Payload Validation:`, {
         originalFilters: currentFilters,
@@ -1052,7 +1053,7 @@ const NearbyDestinations = () => {
         });
         
         // Verify no destinations have invalid data
-        const invalidDestinations = transformedDestinations.filter(dest => 
+        const invalidDestinations = transformedDestinations.filter((dest: Destination) => 
           !dest.name || dest.name === 'Destination 1' || 
           dest.distance === 0 || 
           dest.category === 'Other' ||
