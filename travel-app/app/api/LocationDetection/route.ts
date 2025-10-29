@@ -215,7 +215,19 @@ function generateWeatherInfo(lat: number, lng: number): { temperature: number; c
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { lat, lng, radius = 50 } = body; // Default radius 50km
+    const { 
+      latitude, 
+      longitude, 
+      radiusInKm = 50, 
+      category = "", 
+      minRating = 0, 
+      maxDistance = 1000 
+    } = body;
+
+    // Support both new and old parameter names for backward compatibility
+    const lat = latitude || body.lat;
+    const lng = longitude || body.lng;
+    const radius = radiusInKm || body.radius || 50;
 
     if (!lat || !lng) {
       return NextResponse.json(
@@ -224,11 +236,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate parameters
+    if (typeof lat !== 'number' || typeof lng !== 'number') {
+      return NextResponse.json(
+        { error: 'Latitude and longitude must be numbers' },
+        { status: 400 }
+      );
+    }
+
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return NextResponse.json(
+        { error: 'Invalid latitude or longitude values' },
+        { status: 400 }
+      );
+    }
+
+    console.log('🔍 API Request Parameters:', {
+      latitude: lat,
+      longitude: lng,
+      radiusInKm: radius,
+      category,
+      minRating,
+      maxDistance
+    });
+
     // Get location information
     const locationInfo = await reverseGeocode(lat, lng);
 
-    // Calculate distances and filter nearby destinations
-    const nearbyDestinations = destinationsDatabase
+    // Calculate distances and apply all filters
+    let filteredDestinations = destinationsDatabase
       .map(destination => {
         const distance = calculateDistance(lat, lng, destination.baseCoordinates.lat, destination.baseCoordinates.lng);
         return {
@@ -237,12 +273,72 @@ export async function POST(request: NextRequest) {
           weatherInfo: generateWeatherInfo(destination.baseCoordinates.lat, destination.baseCoordinates.lng)
         };
       })
-      .filter(destination => destination.distance <= radius)
-      .sort((a, b) => a.distance - b.distance) // Sort by distance
-      .slice(0, 6); // Limit to 6 destinations
+      .filter(destination => {
+        // Apply radius filter
+        if (destination.distance > radius) return false;
+        
+        // Apply maxDistance filter (additional constraint)
+        if (destination.distance > maxDistance) return false;
+        
+        // Apply category filter (case-insensitive, partial match)
+        if (category && category.trim() !== "") {
+          const categoryMatch = destination.category.toLowerCase().includes(category.toLowerCase()) ||
+                               destination.tags.some(tag => tag.toLowerCase().includes(category.toLowerCase()));
+          if (!categoryMatch) return false;
+        }
+        
+        // Apply minimum rating filter
+        if (minRating > 0 && destination.rating < minRating) return false;
+        
+        return true;
+      })
+      .sort((a, b) => a.distance - b.distance); // Sort by distance
 
-    // If no destinations found within radius, get closest ones
-    if (nearbyDestinations.length === 0) {
+    // Limit results but allow more for filtered searches
+    const maxResults = category || minRating > 0 ? 12 : 6;
+    filteredDestinations = filteredDestinations.slice(0, maxResults);
+
+    // If no destinations found with filters, try with relaxed criteria
+    if (filteredDestinations.length === 0) {
+      console.log('🔄 No results with filters, trying relaxed search...');
+      
+      // Try without category filter first
+      let relaxedDestinations = destinationsDatabase
+        .map(destination => {
+          const distance = calculateDistance(lat, lng, destination.baseCoordinates.lat, destination.baseCoordinates.lng);
+          return {
+            ...destination,
+            distance,
+            weatherInfo: generateWeatherInfo(destination.baseCoordinates.lat, destination.baseCoordinates.lng)
+          };
+        })
+        .filter(destination => {
+          // Only apply distance and rating filters
+          if (destination.distance > Math.max(radius * 2, 100)) return false; // Expand radius
+          if (minRating > 0 && destination.rating < minRating - 0.5) return false; // Relax rating
+          return true;
+        })
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 4);
+
+      if (relaxedDestinations.length > 0) {
+        return NextResponse.json({
+          success: true,
+          location: locationInfo,
+          destinations: relaxedDestinations,
+          message: `No exact matches found. Showing ${relaxedDestinations.length} nearby destinations with relaxed criteria.`,
+          userCoordinates: { lat, lng },
+          appliedFilters: {
+            radiusInKm: radius,
+            category: category || "Any",
+            minRating,
+            maxDistance,
+            relaxed: true
+          }
+        });
+      }
+
+      // If still no results, get closest destinations regardless of filters
       const closestDestinations = destinationsDatabase
         .map(destination => {
           const distance = calculateDistance(lat, lng, destination.baseCoordinates.lat, destination.baseCoordinates.lng);
@@ -259,17 +355,30 @@ export async function POST(request: NextRequest) {
         success: true,
         location: locationInfo,
         destinations: closestDestinations,
-        message: `No destinations found within ${radius}km. Showing closest destinations instead.`,
-        userCoordinates: { lat, lng }
+        message: `No destinations found matching your criteria. Showing closest destinations instead.`,
+        userCoordinates: { lat, lng },
+        appliedFilters: {
+          radiusInKm: radius,
+          category: category || "Any",
+          minRating,
+          maxDistance,
+          fallback: true
+        }
       });
     }
 
     return NextResponse.json({
       success: true,
       location: locationInfo,
-      destinations: nearbyDestinations,
-      message: `Found ${nearbyDestinations.length} destinations near ${locationInfo.city}`,
-      userCoordinates: { lat, lng }
+      destinations: filteredDestinations,
+      message: `Found ${filteredDestinations.length} destinations matching your criteria near ${locationInfo.city}`,
+      userCoordinates: { lat, lng },
+      appliedFilters: {
+        radiusInKm: radius,
+        category: category || "Any",
+        minRating,
+        maxDistance
+      }
     });
 
   } catch (error) {
