@@ -1283,147 +1283,252 @@ const NearbyDestinations = () => {
 
       <div className="relative max-w-6xl mx-auto px-6 lg:px-8">
         {/* Header Section */}
-        <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="inline-flex items-center gap-2 bg-gray-50 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Discover</span>
+        <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          {/* Premium Badge */}
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-full px-6 py-3 mb-8 shadow-sm">
+            <div className="relative">
+              <Sparkles className="w-5 h-5 text-blue-600" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+            </div>
+            <span className="text-sm font-semibold text-blue-700 tracking-wide">DISCOVER NEARBY</span>
+            <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
+            <span className="text-xs text-blue-600 font-medium">AI-Powered</span>
           </div>
           
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 tracking-tight">
-            Near You
-          </h1>
+          {/* Main Title with Gradient */}
+          <div className="relative mb-8">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent mb-4 tracking-tight leading-none">
+              Near You
+            </h1>
+            {/* Subtle accent line */}
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
+          </div>
           
-          <p className="text-xl md:text-2xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
-            Discover hidden gems, popular attractions, and local favorites within your reach
-          </p>
+          {/* Enhanced Description */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <p className="text-xl md:text-2xl text-gray-600 font-light leading-relaxed mb-6">
+              Discover hidden gems, popular attractions, and local favorites within your reach
+            </p>
+            <p className="text-base text-gray-500 max-w-2xl mx-auto">
+              Powered by real-time location data, curated recommendations, and local insights to help you explore like never before
+            </p>
+          </div>
           
-          {/* Quick Stats/Features */}
-          <div className="flex flex-wrap justify-center gap-6 mt-8 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Real-time distances</span>
+          {/* Premium Feature Pills */}
+          <div className="flex flex-wrap justify-center gap-4 mt-10">
+            <div className="group flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-5 py-3 shadow-sm hover:shadow-md transition-all duration-300 hover:border-green-300">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse group-hover:animate-bounce"></div>
+              <span className="text-sm font-medium text-gray-700">Real-time distances</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span>Curated recommendations</span>
+            <div className="group flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-5 py-3 shadow-sm hover:shadow-md transition-all duration-300 hover:border-blue-300">
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse group-hover:animate-bounce"></div>
+              <span className="text-sm font-medium text-gray-700">Curated recommendations</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>Local insights</span>
+            <div className="group flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-5 py-3 shadow-sm hover:shadow-md transition-all duration-300 hover:border-purple-300">
+              <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse group-hover:animate-bounce"></div>
+              <span className="text-sm font-medium text-gray-700">Local insights</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-              <span>Weather updates</span>
+            <div className="group flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-5 py-3 shadow-sm hover:shadow-md transition-all duration-300 hover:border-orange-300">
+              <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse group-hover:animate-bounce"></div>
+              <span className="text-sm font-medium text-gray-700">Weather updates</span>
             </div>
           </div>
 
-          {/* Location Status */}
+          {/* Premium Location Status */}
           {userLocation && (
-            <div className="mt-8 mb-4">
-              <div className="inline-flex items-center gap-3 bg-gray-50 rounded-2xl px-6 py-4 border border-gray-100">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-gray-700 font-medium">
-                  {userLocation.city}
-                </span>
-                <ArrowRight className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-500">
-                  {destinations.length} places nearby
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Enable Location Button */}
-          {!userLocation && !loading && (
-            <div className="mt-12">
-              <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 border border-gray-200 max-w-2xl mx-auto">
-                <div className="text-center space-y-6">
-                  {/* Icon and Title */}
-                  <div className="space-y-3">
-                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto">
-                      <Navigation className="w-8 h-8 text-blue-600" />
+            <div className="mt-12 mb-8">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-blue-400/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                <div className="relative bg-gradient-to-r from-white to-green-50/50 rounded-3xl px-8 py-6 border border-green-200/50 shadow-lg backdrop-blur-sm">
+                  <div className="flex items-center justify-center gap-4 flex-wrap">
+                    {/* Location Indicator */}
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-green-600" />
+                        <span className="text-gray-800 font-semibold text-lg">
+                          {userLocation.city}
+                        </span>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900">Discover Places Near You</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      Enable location access to find amazing destinations, hidden gems, and local favorites around you
-                    </p>
-                  </div>
-                  
-                  {/* Benefits */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="bg-white/60 rounded-xl p-4 border border-white/40">
-                      <div className="text-green-600 font-medium mb-1">🎯 Personalized</div>
-                      <div className="text-gray-600">Destinations matched to your location</div>
+                    
+                    {/* Separator */}
+                    <div className="hidden md:block w-px h-8 bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
+                    
+                    {/* Results Count */}
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-100 rounded-xl px-4 py-2">
+                        <span className="text-blue-700 font-bold text-lg">
+                          {destinations.length}
+                        </span>
+                      </div>
+                      <span className="text-gray-600 font-medium">
+                        places discovered
+                      </span>
                     </div>
-                    <div className="bg-white/60 rounded-xl p-4 border border-white/40">
-                      <div className="text-blue-600 font-medium mb-1">📍 Accurate</div>
-                      <div className="text-gray-600">Real distances and directions</div>
-                    </div>
-                    <div className="bg-white/60 rounded-xl p-4 border border-white/40">
-                      <div className="text-purple-600 font-medium mb-1">⚡ Instant</div>
-                      <div className="text-gray-600">Quick recommendations</div>
+                    
+                    {/* Status Badge */}
+                    <div className="flex items-center gap-2 bg-green-100 rounded-full px-4 py-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-green-700 font-medium text-sm">Live</span>
                     </div>
                   </div>
-                  
-                  {/* Action Button */}
-                  <button
-                    onClick={getCurrentLocation}
-                    className="group inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
-                  >
-                    <Navigation className="w-5 h-5 transition-transform group-hover:rotate-12" />
-                    Enable Location Access
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </button>
-                  
-                  {/* Privacy Note */}
-                  <p className="text-xs text-gray-500 max-w-md mx-auto">
-                    🔒 Your location is only used to find nearby destinations and is never stored or shared
-                  </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Loading State */}
+          {/* Premium Enable Location Section */}
+          {!userLocation && !loading && (
+            <div className="mt-16">
+              <div className="relative max-w-4xl mx-auto">
+                {/* Background Effects */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-3xl blur-3xl opacity-60"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-purple-100/20 rounded-3xl"></div>
+                
+                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-white/50 shadow-2xl">
+                  <div className="text-center space-y-8">
+                    {/* Premium Icon */}
+                    <div className="relative inline-flex items-center justify-center">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
+                      <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl">
+                        <Navigation className="w-12 h-12 text-white" />
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Enhanced Title and Description */}
+                    <div className="space-y-4">
+                      <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
+                        Unlock Your Adventure
+                      </h3>
+                      <p className="text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                        Enable location access to discover amazing destinations, hidden gems, and local favorites perfectly tailored to your surroundings
+                      </p>
+                    </div>
+                    
+                    {/* Premium Benefits Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+                      <div className="group bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100 hover:shadow-lg transition-all duration-300">
+                        <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                          <span className="text-2xl">🎯</span>
+                        </div>
+                        <div className="text-green-700 font-bold text-lg mb-2">Hyper-Personalized</div>
+                        <div className="text-green-600">AI-powered recommendations based on your exact location and preferences</div>
+                      </div>
+                      
+                      <div className="group bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100 hover:shadow-lg transition-all duration-300">
+                        <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                          <span className="text-2xl">📍</span>
+                        </div>
+                        <div className="text-blue-700 font-bold text-lg mb-2">Precision Mapping</div>
+                        <div className="text-blue-600">Real-time distances, accurate directions, and live traffic updates</div>
+                      </div>
+                      
+                      <div className="group bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-all duration-300">
+                        <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                          <span className="text-2xl">⚡</span>
+                        </div>
+                        <div className="text-purple-700 font-bold text-lg mb-2">Instant Discovery</div>
+                        <div className="text-purple-600">Lightning-fast recommendations updated in real-time</div>
+                      </div>
+                    </div>
+                    
+                    {/* Premium Action Button */}
+                    <div className="pt-6">
+                      <button
+                        onClick={getCurrentLocation}
+                        className="group relative inline-flex items-center gap-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-10 py-5 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-2xl hover:shadow-3xl"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                        <Navigation className="relative w-6 h-6 transition-transform group-hover:rotate-12" />
+                        <span className="relative text-lg">Enable Location Access</span>
+                        <ArrowRight className="relative w-5 h-5 transition-transform group-hover:translate-x-1" />
+                      </button>
+                    </div>
+                    
+                    {/* Enhanced Privacy Note */}
+                    <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-200/50 max-w-2xl mx-auto">
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <span className="text-sm">🔒</span>
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold text-gray-800">Privacy Protected</p>
+                          <p className="text-xs text-gray-600">Your location is only used for recommendations and never stored or shared with third parties</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Premium Loading State */}
           {loading && (
             <div className="mt-12">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-100">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  {/* Enhanced Loading Animation */}
-                  <div className="relative">
-                    <div className="animate-spin rounded-full h-8 w-8 border-3 border-blue-200 border-t-blue-600"></div>
-                    <div className="absolute inset-0 rounded-full border-2 border-blue-100 animate-pulse"></div>
+              <div className="relative bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 rounded-3xl p-10 max-w-3xl mx-auto border border-blue-100/50 shadow-xl backdrop-blur-sm">
+                {/* Animated Background Elements */}
+                <div className="absolute inset-0 overflow-hidden rounded-3xl">
+                  <div className="absolute top-4 right-4 w-20 h-20 bg-blue-100/30 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-6 left-6 w-16 h-16 bg-purple-100/30 rounded-full animate-pulse delay-300"></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-r from-blue-50/20 to-purple-50/20 rounded-full animate-spin" style={{animationDuration: '20s'}}></div>
+                </div>
+                
+                <div className="relative text-center space-y-8">
+                  {/* Premium Loading Icon */}
+                  <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl animate-pulse"></div>
+                    <Sparkles className="relative w-10 h-10 text-white animate-spin" style={{animationDuration: '3s'}} />
                   </div>
                   
-                  {/* Main Loading Message */}
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-gray-900">🗺️ Discovering Amazing Places</h3>
-                    <p className="text-blue-700 font-medium">Finding the best destinations near you...</p>
+                  {/* Enhanced Loading Message */}
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-bold text-gray-900">🗺️ Discovering Amazing Places</h3>
+                    <p className="text-lg text-blue-700 font-semibold">Finding the best destinations near you...</p>
+                    <div className="w-32 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto animate-pulse"></div>
                   </div>
                   
-                  {/* Progress Steps */}
-                  <div className="flex items-center space-x-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span>Getting your location</span>
+                  {/* Premium Progress Steps */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="flex flex-col items-center gap-3 p-4 bg-white/60 rounded-2xl border border-white/40 backdrop-blur-sm">
+                      <div className="w-4 h-4 bg-green-500 rounded-full animate-bounce"></div>
+                      <span className="font-medium text-gray-700">Getting your location</span>
                     </div>
-                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      <span>Searching nearby attractions</span>
+                    <div className="flex flex-col items-center gap-3 p-4 bg-white/60 rounded-2xl border border-white/40 backdrop-blur-sm">
+                      <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce delay-150"></div>
+                      <span className="font-medium text-gray-700">Searching nearby attractions</span>
                     </div>
-                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                      <span>Curating recommendations</span>
+                    <div className="flex flex-col items-center gap-3 p-4 bg-white/60 rounded-2xl border border-white/40 backdrop-blur-sm">
+                      <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce delay-300"></div>
+                      <span className="font-medium text-gray-700">Curating recommendations</span>
                     </div>
                   </div>
                   
-                  {/* Helpful Tip */}
-                  <div className="bg-white/60 rounded-2xl px-4 py-3 border border-white/40">
-                    <p className="text-sm text-gray-700">
-                      💡 <span className="font-medium">Tip:</span> We're finding places within your preferred distance and matching your interests
-                    </p>
+                  {/* Premium Tip Card */}
+                  <div className="bg-gradient-to-r from-white/80 to-blue-50/80 rounded-2xl p-6 border border-blue-200/50 backdrop-blur-sm">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-lg">💡</span>
+                      </div>
+                      <div className="text-left">
+                        <p className="font-semibold text-gray-800 mb-1">Smart Discovery in Progress</p>
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                          We're analyzing your location, preferences, and real-time data to find the perfect places within your preferred distance and interests.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Loading Progress Bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse" style={{width: '60%'}}></div>
                   </div>
                 </div>
               </div>
