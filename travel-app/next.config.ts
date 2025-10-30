@@ -21,6 +21,20 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Cloudinary for user uploaded images
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Travel Guide API domain for images
+      {
+        protocol: 'https',
+        hostname: 'travelguide-rttu.onrender.com',
+        port: '',
+        pathname: '/**',
+      },
       // Add other common image hosts you might use
       {
         protocol: 'https',

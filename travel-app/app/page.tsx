@@ -2,6 +2,7 @@
 import Header from '@/components/layout/Header';
 import Hero from '@/components/sections/Hero';
 import NearbyDestinations from '@/components/sections/NearbyDestinations';
+import Posts from '@/components/sections/Posts'; // Travel Stories Section
 import FeaturedDestinations from '@/components/sections/FeaturedDestinations';
 import PopularTours from '@/components/sections/PopularTours'; // Now "Plan Your Path"
 import WhyChooseUs from '@/components/sections/WhyChooseUs'; // Now "Seasonal Experiences"
@@ -17,6 +18,7 @@ export default function Home() {
       <Header />
       <Hero />
       <NearbyDestinations />
+      <Posts /> {/* Travel Stories */}
       <FeaturedDestinations />
       <Testimonials /> {/* Stories from Nepal */}
       <PopularTours /> {/* Plan Your Path */}

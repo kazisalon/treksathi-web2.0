@@ -206,11 +206,31 @@ const NearbyDestinations = () => {
               throw new Error(`Invalid coordinates: lat=${latitude}, lng=${longitude}`);
             }
             
+            // Try to get actual location name using reverse geocoding
+            let locationName = `Location ${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`;
+            
+            try {
+              // Use a simple reverse geocoding service to get location name
+              const geocodeResponse = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+              );
+              
+              if (geocodeResponse.ok) {
+                const geocodeData = await geocodeResponse.json();
+                if (geocodeData.city || geocodeData.locality || geocodeData.principalSubdivision) {
+                  locationName = geocodeData.city || geocodeData.locality || geocodeData.principalSubdivision;
+                  console.log('✅ Got location name from reverse geocoding:', locationName);
+                }
+              }
+            } catch (error) {
+              console.log('⚠️ Reverse geocoding failed, using coordinates:', error);
+            }
+
             // Set user location with enhanced information
             const location: UserLocation = {
               lat: latitude,
               lng: longitude,
-              city: isWashingtonDC ? 'Washington D.C. (Fallback?)' : 'Your Location',
+              city: isWashingtonDC ? 'Washington D.C. (Fallback?)' : locationName,
               area: `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)} (±${Math.round(accuracy)}m)`
             };
 

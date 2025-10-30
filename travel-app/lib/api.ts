@@ -234,6 +234,147 @@ export class TravelGuideAPI {
       throw new Error(error.response?.data?.message || 'Failed to fetch bookings');
     }
   }
+
+  // Posts API methods
+  static async getAllPosts(): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.get('/api/Post/all');
+      return response.data;
+    } catch (error) {
+      console.error('Get posts error:', error);
+      throw error;
+    }
+  }
+
+  static async getPostsWithUserData(): Promise<any> {
+    try {
+      console.log('API: Getting posts with user-specific data');
+      
+      // Use the correct endpoint from API documentation
+      const response: AxiosResponse = await apiClient.get('/api/Post/all');
+      console.log('Posts response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Get posts with user data error:', error);
+      throw error;
+    }
+  }
+
+  static async getPostById(id: string): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.get(`/api/Post/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get post by ID error:', error);
+      throw error;
+    }
+  }
+
+  static async getPostsByUser(userId: string): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.get(`/api/Post/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get posts by user error:', error);
+      throw error;
+    }
+  }
+
+  static async createPost(data: any): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.post('/api/Post/create', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Create post error:', error);
+      throw error;
+    }
+  }
+
+  static async updatePost(postId: string, data: any): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.put(`/api/Post/update/${postId}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Update post error:', error);
+      throw error;
+    }
+  }
+
+  static async deletePost(postId: string): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.delete(`/api/Post/delete/${postId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Delete post error:', error);
+      throw error;
+    }
+  }
+
+  static async likePost(postId: string): Promise<any> {
+    try {
+      console.log('API: Liking post', postId);
+      const response: AxiosResponse = await apiClient.post(`/api/Post/${postId}/like`);
+      console.log('API: Like response:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Like post error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      throw error;
+    }
+  }
+
+  static async addComment(postId: string, comment: string): Promise<any> {
+    try {
+      console.log('API: Adding comment to post', postId);
+      
+      // Try different request body formats that the API might expect
+      const possibleFormats = [
+        { text: comment },           // Common format
+        { content: comment },        // Alternative format
+        { comment: comment },        // Current format
+        { message: comment },        // Another alternative
+        { body: comment },           // Body format
+        comment                      // Just the string
+      ];
+      
+      for (let i = 0; i < possibleFormats.length; i++) {
+        try {
+          const requestBody = possibleFormats[i];
+          console.log(`Trying format ${i + 1}:`, requestBody);
+          
+          const response: AxiosResponse = await apiClient.post(`/api/Post/${postId}/comment`, requestBody);
+          console.log('Comment API response:', response.data);
+          return response.data;
+        } catch (error: any) {
+          console.log(`Format ${i + 1} failed:`, error.response?.status, error.response?.data);
+          
+          // If this is the last format, throw the error
+          if (i === possibleFormats.length - 1) {
+            throw error;
+          }
+          // Otherwise, continue to next format
+        }
+      }
+    } catch (error: any) {
+      console.error('Add comment error:', error);
+      console.error('Error response:', error.response?.data);
+      throw error;
+    }
+  }
+
+
+
+  static async getUserLikedPosts(): Promise<string[]> {
+    // Note: This endpoint is not available in the current API documentation
+    // Returning empty array to prevent 404 errors
+    console.log('API: getUserLikedPosts - endpoint not available, returning empty array');
+    return [];
+  }
 }
 
 export default TravelGuideAPI;
