@@ -81,7 +81,7 @@ const WhyChooseUs = () => {
               25+
             </div>
             <div className="text-gray-600 font-semibold">
-              Nepal Destinations
+              Destinations
             </div>
           </div>
           <div className="text-center">
