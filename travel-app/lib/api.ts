@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://travelguide-rtt
 // Create axios instance with default config
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -238,7 +238,7 @@ export class TravelGuideAPI {
   // Posts API methods
   static async getAllPosts(): Promise<any> {
     try {
-      const response: AxiosResponse = await apiClient.get('/api/Post/all');
+      const response: AxiosResponse = await getWithRetry('/api/Post/all', {}, 2, 1500);
       return response.data;
     } catch (error) {
       console.error('Get posts error:', error);
@@ -249,9 +249,7 @@ export class TravelGuideAPI {
   static async getPostsWithUserData(): Promise<any> {
     try {
       console.log('API: Getting posts with user-specific data');
-      
-      // Use the correct endpoint from API documentation
-      const response: AxiosResponse = await apiClient.get('/api/Post/all');
+      const response: AxiosResponse = await getWithRetry('/api/Post/all', {}, 2, 1500);
       console.log('Posts response:', response.data);
       return response.data;
     } catch (error) {
@@ -262,7 +260,7 @@ export class TravelGuideAPI {
 
   static async getPostById(id: string): Promise<any> {
     try {
-      const response: AxiosResponse = await apiClient.get(`/api/Post/${id}`);
+      const response: AxiosResponse = await getWithRetry(`/api/Post/${id}`, {}, 2, 1500);
       return response.data;
     } catch (error) {
       console.error('Get post by ID error:', error);
@@ -378,3 +376,35 @@ export class TravelGuideAPI {
 }
 
 export default TravelGuideAPI;
+
+
+// Simple retry helper for GET requests
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function getWithRetry<T = any>(
+  url: string,
+  options: any = {},
+  retries = 2,
+  backoffMs = 1500
+): Promise<AxiosResponse<T>> {
+  let attempt = 0;
+  let lastError: any;
+
+  while (attempt <= retries) {
+    try {
+      return await apiClient.get<T>(url, options);
+    } catch (err: any) {
+      lastError = err;
+      const isTimeout = err?.code === 'ECONNABORTED';
+      const is5xx = err?.response?.status >= 500 && err?.response?.status < 600;
+      const shouldRetry = isTimeout || is5xx;
+
+      if (!shouldRetry || attempt === retries) throw err;
+
+      await sleep(backoffMs * Math.pow(2, attempt));
+      attempt++;
+    }
+  }
+
+  throw lastError;
+}

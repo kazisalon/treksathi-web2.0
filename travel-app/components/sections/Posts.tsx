@@ -405,6 +405,18 @@ const Posts: React.FC = () => {
   const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set());
   const sectionRef = useRef<HTMLDivElement>(null);
 
+  // Map API comment shape to UI Comment interface
+  const mapApiComments = (apiComments: any[] | undefined | null): Comment[] => {
+    if (!Array.isArray(apiComments)) return [];
+    return apiComments.map((c: any) => ({
+      id: c.id || c._id || `c-${Date.now()}-${Math.random()}`,
+      text: c.text || c.content || c.comment || '',
+      userName: c.userName || c.username || c.user?.name || 'Anonymous',
+      userId: c.userId || c.user?.id || '',
+      dateCreated: c.dateCreated || c.createdAt || c.created || new Date().toISOString(),
+    }));
+  };
+
   // Sync NextAuth token with localStorage for API compatibility
   useEffect(() => {
     if (session?.accessToken) {
@@ -466,8 +478,11 @@ const Posts: React.FC = () => {
                 id: post.id || post._id || `temp-${Date.now()}-${Math.random()}`,
                 title: post.title || 'Untitled Post',
                 description: post.description || post.content || '',
-                likesCount: post.likesCount || post.likes || post.likeCount || 0,
-                commentCount: post.commentCount || post.comments || post.commentsCount || post.commentLength || 0,
+                likesCount: post.likesCount ?? post.likes ?? post.likeCount ?? 0,
+                commentCount:
+                  typeof post.commentCount === 'number'
+                    ? post.commentCount
+                    : (Array.isArray(post.comments) ? post.comments.length : (post.commentsCount ?? post.commentLength ?? 0)),
                 imageUrls: post.imageUrls || post.images || (post.imageUrl ? [post.imageUrl] : []),
                 userName: post.userName || post.username || post.user?.name || post.user?.username || 'Anonymous',
                 userId: post.userId || post.user?.id || post.authorId || '',
@@ -479,52 +494,62 @@ const Posts: React.FC = () => {
       console.log('First normalized post:', normalizedPosts[0]);
       
       setPosts(normalizedPosts);
+
+// cache posts for offline/timeout fallback
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('cache:posts', JSON.stringify(normalizedPosts));
+        }
+      } catch {}
       
       // Initialize liked posts state (Instagram-like persistence)
       if (status === 'authenticated') {
         try {
           const userLikedPosts = new Set<string>();
-          
-          // Method 1: Check if posts include like status (preferred)
+
+          // Method 1: from posts list if server includes flags
           fetchedPosts.forEach((post: any) => {
-            // Check various possible field names for like status
-            if (post.isLiked || post.likedByUser || post.isLikedByCurrentUser || 
-                post.liked || post.userLiked || post.hasLiked) {
-              userLikedPosts.add(post.id);
-              console.log(`Post ${post.id} is liked by user`);
+            if (post.isLiked || post.likedByUser || post.isLikedByCurrentUser || post.liked || post.userLiked || post.hasLiked) {
+              if (post.id) userLikedPosts.add(post.id);
             }
           });
-          
-          // Method 2: If no like status in posts, fetch separately
-          if (userLikedPosts.size === 0) {
-            console.log('No like status in posts, fetching user likes separately...');
-            const likedPostIds = await TravelGuideAPI.getUserLikedPosts();
-            console.log('Fetched user liked post IDs:', likedPostIds);
-            
-            if (Array.isArray(likedPostIds)) {
-              likedPostIds.forEach((postId: string) => {
-                if (postId) userLikedPosts.add(postId);
-              });
-            }
-          }
-          
-          console.log('Final user liked posts:', Array.from(userLikedPosts));
-          setLikedPosts(userLikedPosts);
-          
+
+          // Prefer server truth; otherwise fallback to local storage
+          const localLiked = loadLikedFromStorage(session?.user?.id);
+          const finalLiked = userLikedPosts.size > 0 ? userLikedPosts : localLiked;
+
+          setLikedPosts(finalLiked);
+          saveLikedToStorage(session?.user?.id, finalLiked);
         } catch (likeError) {
           console.error('Error fetching user liked posts:', likeError);
-          // Continue without like status - user can still interact
-          setLikedPosts(new Set());
+          setLikedPosts(loadLikedFromStorage(session?.user?.id));
         }
       } else {
-        // Clear liked posts for unauthenticated users
         setLikedPosts(new Set());
       }
       
       setError(null);
     } catch (err) {
-      setError('Failed to load posts. Please try again later.');
       console.error('Error fetching posts:', err);
+
+      // Fallback to cached posts if available
+      try {
+        const raw = localStorage.getItem('cache:posts');
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (Array.isArray(cached) && cached.length) {
+            setPosts(cached);
+            setError(null);
+            showToast('Showing cached posts due to network timeout', 'info');
+          } else {
+            setError('Failed to load posts. Please try again later.');
+          }
+        } else {
+          setError('Failed to load posts. Please try again later.');
+        }
+      } catch {
+        setError('Failed to load posts. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
@@ -547,9 +572,60 @@ const Posts: React.FC = () => {
     setToast({ message, type });
   };
 
-  // Initialize comments for a specific post (local state only)
-  const initializeComments = (postId: string) => {
-    initializeCommentsState(postId);
+  // Local storage helpers for liked posts (per user)
+  const likedStorageKey = (uid?: string) => `likedPosts:${uid || 'guest'}`;
+  const loadLikedFromStorage = (uid?: string): Set<string> => {
+    try {
+      const raw = typeof window !== 'undefined' ? localStorage.getItem(likedStorageKey(uid)) : null;
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(arr) ? arr : []);
+    } catch {
+      return new Set();
+    }
+  };
+  const saveLikedToStorage = (uid: string | undefined, set: Set<string>) => {
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(likedStorageKey(uid), JSON.stringify(Array.from(set)));
+      }
+    } catch {}
+  };
+
+  // Initialize comments for a specific post (fetch from API)
+  const initializeComments = async (postId: string) => {
+    if (loadingComments.has(postId)) return;
+
+    setLoadingComments(prev => {
+      const next = new Set(prev);
+      next.add(postId);
+      return next;
+    });
+
+    try {
+      const postData = await TravelGuideAPI.getPostById(postId);
+      const mapped = mapApiComments(postData?.comments);
+
+      setPostComments(prev => ({
+        ...prev,
+        [postId]: mapped,
+      }));
+
+      // Ensure the counter reflects backend data
+      setPosts(prev =>
+        prev.map(p => (p.id === postId ? { ...p, commentCount: mapped.length } : p))
+      );
+    } catch (err) {
+      console.error('Failed to fetch comments for post:', postId, err);
+      if (!postComments[postId]) {
+        setPostComments(prev => ({ ...prev, [postId]: [] }));
+      }
+    } finally {
+      setLoadingComments(prev => {
+        const next = new Set(prev);
+        next.delete(postId);
+        return next;
+      });
+    }
   };
 
   // Auto-hide toast
@@ -566,70 +642,53 @@ const Posts: React.FC = () => {
       return;
     }
 
-    // Prevent multiple rapid clicks
     const wasLiked = likedPosts.has(postId);
-    
+
     try {
       console.log('=== LIKE DEBUG ===');
       console.log('Post ID:', postId);
-      console.log('Current like state:', wasLiked ? 'liked' : 'not liked');
-      console.log('User ID:', session?.user?.id);
-      console.log('Auth token:', localStorage.getItem('authToken'));
-      
-      // Make API call first (Instagram-like: server is source of truth)
+      console.log('Was liked:', wasLiked);
+
       const response = await TravelGuideAPI.likePost(postId);
       console.log('Like API response:', response);
-      
-      // Update UI based on server response
-      // The API should return the new like status and count
-      if (response && typeof response === 'object') {
-        // If API returns like status and count, use that
-        if (response.isLiked !== undefined) {
-          setLikedPosts(prev => {
-            const newSet = new Set(prev);
-            if (response.isLiked) {
-              newSet.add(postId);
-            } else {
-              newSet.delete(postId);
-            }
-            return newSet;
-          });
+
+      // Determine next liked state: prefer API flag, else toggle
+      const nextIsLiked = typeof response?.isLiked === 'boolean' ? response.isLiked : !wasLiked;
+
+      // Update liked set and persist it immediately
+      setLikedPosts(prev => {
+        const next = new Set(prev);
+        if (nextIsLiked) {
+          next.add(postId);
         } else {
-          // Fallback: toggle based on previous state
-          setLikedPosts(prev => {
-            const newSet = new Set(prev);
-            if (wasLiked) {
-              newSet.delete(postId);
-            } else {
-              newSet.add(postId);
-            }
-            return newSet;
-          });
+          next.delete(postId);
         }
+        saveLikedToStorage(session?.user?.id, next);
+        return next;
+      });
 
-        // Update like count from server response or calculate
-        const newLikeCount = response.likesCount || response.likeCount || (wasLiked ? -1 : 1);
-        setPosts(prev => prev.map(post => 
-          post.id === postId 
-            ? { 
-                ...post, 
-                likesCount: typeof newLikeCount === 'number' ? newLikeCount : 
-                           (wasLiked ? post.likesCount - 1 : post.likesCount + 1)
-              }
-            : post
-        ));
-      }
+      // Use server absolute count if provided; else apply relative delta and clamp
+      const serverCount =
+        typeof response?.likesCount === 'number'
+          ? response.likesCount
+          : typeof response?.likeCount === 'number'
+          ? response.likeCount
+          : undefined;
 
-      // Show success message
-      showToast(wasLiked ? '💔 Post unliked' : '❤️ Post liked!', 'success');
-      
+      const delta = nextIsLiked === wasLiked ? 0 : nextIsLiked ? 1 : -1;
+
+      setPosts(prev =>
+        prev.map(p => {
+          if (p.id !== postId) return p;
+          const current = p.likesCount || 0;
+          const nextCount = serverCount !== undefined ? serverCount : Math.max(0, current + delta);
+          return { ...p, likesCount: nextCount };
+        })
+      );
+
+      showToast(nextIsLiked ? '❤️ Post liked!' : '💔 Post unliked', 'success');
     } catch (error: any) {
-      console.error('=== LIKE ERROR ===');
-      console.error('Full error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
-      
-      // Specific error handling
+      console.error('=== LIKE ERROR ===', error);
       if (error.response?.status === 401) {
         showToast('🔒 Authentication failed. Please log in again.', 'error');
       } else if (error.response?.status === 404) {
@@ -681,13 +740,14 @@ const Posts: React.FC = () => {
     
     showToast('💬 Comment added successfully!', 'success');
 
-    // Try to sync with API in background (non-blocking)
+    // Sync with API, then refresh from backend to reflect authoritative state
     try {
       await TravelGuideAPI.addComment(postId, comment);
-      console.log('Comment synced with API successfully');
+      await initializeComments(postId);
+      console.log('Comment synced and refreshed from API');
     } catch (error) {
       console.error('Failed to sync comment with API:', error);
-      // Comment is still visible in UI, just not persisted to backend
+      // Comment remains visible from optimistic update
     }
   };
 
@@ -934,7 +994,7 @@ const Posts: React.FC = () => {
                       <span className="text-sm font-semibold">{post.likesCount || 0}</span>
                     </button>
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
                         if (status !== 'authenticated') {
                           const loginPrompt = document.createElement('div');
                           loginPrompt.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
@@ -948,7 +1008,7 @@ const Posts: React.FC = () => {
                           
                           // Initialize comments when opening the comment section
                           if (isOpening) {
-                            initializeComments(post.id);
+                            await initializeComments(post.id);
                           }
                         }
                       }}
