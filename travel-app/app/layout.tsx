@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${notoSansDevanagari.variable} antialiased`}
+        className={`${inter.variable} ${notoSansDevanagari.variable} antialiased app-bg`}
         suppressHydrationWarning={true}
       >
         <Providers>

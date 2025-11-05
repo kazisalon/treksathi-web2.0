@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Share2, Bookmark, MapPin, Calendar, User, Star, Eye, MoreHorizontal, Plus, X, Upload, Camera, Lock, LogIn } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, MapPin, Calendar, User, Star, Eye, MoreHorizontal, Plus, X, Upload, Camera, Lock, LogIn, Compass, Plane, Mountain, Sun, CloudRain, Route, BadgeCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -382,6 +382,7 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
 
 const Posts: React.FC = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -445,6 +446,12 @@ const Posts: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Re-init liked set whenever auth status changes (preserve likes when logged out)
+  useEffect(() => {
+    const fromStorage = loadLikedFromStorage(session?.user?.id);
+    setLikedPosts(fromStorage);
+  }, [status]);
+
   // Fetch posts function (Instagram-like behavior)
   const fetchPosts = async () => {
     try {
@@ -492,42 +499,17 @@ const Posts: React.FC = () => {
 
       setPosts(normalizedPosts);
 
-// cache posts for offline/timeout fallback
+      // cache posts for offline/timeout fallback
       try {
         if (typeof window !== 'undefined') {
           localStorage.setItem('cache:posts', JSON.stringify(normalizedPosts));
         }
       } catch {}
-      
-      // Initialize liked posts state (Instagram-like persistence)
-      if (status === 'authenticated') {
-        try {
-          const userLikedPosts = new Set<string>();
-          
-          // Method 1: Check if posts include like status (preferred)
-          fetchedPosts.forEach((post: any) => {
-            if (post.isLiked || post.likedByUser || post.isLikedByCurrentUser || 
-                post.liked || post.userLiked || post.hasLiked) {
-              const pid = String(post.id || post._id);
-              if (pid) userLikedPosts.add(pid);
-            }
-          });
-          
-          // Method 2: If no like status in posts, fetch separately (not available -> fallback)
-          if (userLikedPosts.size === 0) {
-            const storageSet = loadLikedFromStorage(session?.user?.id);
-            storageSet.forEach((pid) => userLikedPosts.add(String(pid)));
-          }
-          
-          setLikedPosts(userLikedPosts);
-        } catch (likeError) {
-          console.error('Error initializing liked posts:', likeError);
-          setLikedPosts(new Set());
-        }
-      } else {
-        setLikedPosts(new Set());
-      }
-      
+
+      // Initialize liked posts state from storage for both auth and guest
+      const storageSet = loadLikedFromStorage(session?.user?.id);
+      setLikedPosts(storageSet);
+
       setError(null);
     } catch (err) {
       console.error('Error fetching posts:', err);
@@ -578,13 +560,48 @@ const Posts: React.FC = () => {
     return likedPosts.has(postId) ? Math.max(base, 1) : base;
   };
 
+  // Premium UI tokens
+  const cardOuterClass =
+    'relative rounded-3xl p-[1px] ring-1 ring-slate-200/60 bg-gradient-to-br from-white/70 via-slate-100/60 to-slate-200/40';
+  const cardInnerClass =
+    'rounded-3xl bg-white/90 backdrop-blur-xl border border-white/60 shadow-[0_12px_30px_rgba(2,6,23,0.08)] hover:shadow-[0_18px_44px_rgba(2,6,23,0.12)] transition-all duration-300';
+  const imageWrapClass =
+    'relative rounded-2xl overflow-hidden group ring-1 ring-slate-200/60';
+  const imageClass =
+    'w-full h-64 object-cover transform group-hover:scale-[1.02] transition-transform duration-300';
+  const imageOverlayClass =
+    'absolute inset-0 bg-gradient-to-t from-black/20 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300';
+  const avatarRingClass =
+    'ring-2 ring-white bg-gradient-to-br from-indigo-500 to-sky-600';
+  const countPillClass =
+    'ml-1 inline-flex items-center justify-center min-w-5 h-5 px-2 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold ring-1 ring-slate-200/60';
+  const stampClass =
+    'absolute top-3 left-3 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-rose-500 shadow-md flex items-center justify-center ring-2 ring-white/70';
+  const metaChip =
+    'inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium ring-1 ring-slate-200';
+  const dividerClass = 'relative my-4 h-8 flex items-center justify-between';
+
+  // Aliases for travel-specific class tokens (for clarity in JSX below)
+  const travelStampClass = stampClass;
+  const travelMetaChip = metaChip;
+  const travelDividerClass = dividerClass;
+
   // Local storage helpers for liked posts (per user)
   const likedStorageKey = (uid?: string) => `likedPosts:${uid || 'guest'}`;
+  const likedLastKey = 'likedPosts:last';
+
   const loadLikedFromStorage = (uid?: string): Set<string> => {
     try {
-      const raw = typeof window !== 'undefined' ? localStorage.getItem(likedStorageKey(uid)) : null;
-      const arr = raw ? JSON.parse(raw) : [];
-      return new Set(Array.isArray(arr) ? arr : []);
+      const key = uid ? likedStorageKey(uid) : likedLastKey;
+      const rawPrimary = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+      if (rawPrimary) {
+        const arr = JSON.parse(rawPrimary);
+        return new Set(Array.isArray(arr) ? arr : []);
+      }
+      // Fallback to guest storage if last snapshot not available
+      const rawGuest = typeof window !== 'undefined' ? localStorage.getItem(likedStorageKey()) : null;
+      const arrGuest = rawGuest ? JSON.parse(rawGuest) : [];
+      return new Set(Array.isArray(arrGuest) ? arrGuest : []);
     } catch {
       return new Set();
     }
@@ -592,7 +609,10 @@ const Posts: React.FC = () => {
   const saveLikedToStorage = (uid: string | undefined, set: Set<string>) => {
     try {
       if (typeof window !== 'undefined') {
+        // Save to user/guest specific key
         localStorage.setItem(likedStorageKey(uid), JSON.stringify(Array.from(set)));
+        // Always also save a "last seen" snapshot for logout/guest view
+        localStorage.setItem(likedLastKey, JSON.stringify(Array.from(set)));
       }
     } catch {}
   };
@@ -880,9 +900,56 @@ const Posts: React.FC = () => {
     return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop';
   };
 
+  // Travel-specific helpers
+  const getSeasonLabel = (dateString?: string | null) => {
+    try {
+      if (!dateString) return 'Season';
+      const m = new Date(dateString).getMonth(); // 0-11
+      if ([11, 0, 1].includes(m)) return 'Winter';
+      if ([2, 3, 4].includes(m)) return 'Spring';
+      if ([5, 6, 7].includes(m)) return 'Monsoon';
+      return 'Autumn';
+    } catch {
+      return 'Season';
+    }
+  };
+
+  const getSeasonIcon = (season: string): React.ReactNode => {
+    if (season.toLowerCase() === 'monsoon') {
+      return <CloudRain className="w-3 h-3 text-sky-600" />;
+    }
+    return <Sun className="w-3 h-3 text-amber-500" />;
+  };
+
+  const getTripTraits = (text?: string) => {
+    const t = (text || '').toLowerCase();
+    const traits: string[] = [];
+    if (/(trek|hike|trail|mountain|peak)/.test(t)) traits.push('Trek');
+    if (/(temple|culture|heritage|festival)/.test(t)) traits.push('Culture');
+    if (/(lake|view|scenic|sunrise|sunset|nature)/.test(t)) traits.push('Scenic');
+    if (/(food|cafe|restaurant|tea|coffee)/.test(t)) traits.push('Food');
+    if (traits.length === 0) traits.push('Explore');
+    return traits.slice(0, 3);
+  };
+
+  const traitIcon = (trait: string): React.ReactNode => {
+    switch (trait) {
+      case 'Trek':
+        return <Mountain className="w-3 h-3 text-indigo-600" />;
+      case 'Culture':
+        return <BadgeCheck className="w-3 h-3 text-pink-600" />;
+      case 'Scenic':
+        return <Star className="w-3 h-3 text-amber-500" />;
+      case 'Food':
+        return <Share2 className="w-3 h-3 text-rose-600" />;
+      default:
+        return <Compass className="w-3 h-3 text-slate-600" />;
+    }
+  };
+
   if (loading) {
     return (
-      <section ref={sectionRef} className="py-20 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
+      <section ref={sectionRef} className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-8">
             <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
@@ -901,7 +968,7 @@ const Posts: React.FC = () => {
 
   if (error) {
     return (
-      <section ref={sectionRef} className="py-20 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
+      <section ref={sectionRef} className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-6">
             <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto">
@@ -918,35 +985,35 @@ const Posts: React.FC = () => {
   }
 
   return (
-    <section ref={sectionRef} className="py-20 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
+    <section ref={sectionRef} className="py-20">
       <div className="container mx-auto px-4">
         {/* Premium Section Header */}
         <div className={`text-center space-y-8 mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="relative">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent mb-4 tracking-tight leading-none">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-amber-400 via-rose-400 to-sky-400 bg-clip-text text-transparent mb-4 tracking-tight leading-none drop-shadow-[0_2px_8px_rgba(255,182,120,0.25)]">
               Travel Stories
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto"></div>
+            <div className="w-32 h-[3px] bg-gradient-to-r from-amber-400 via-rose-400 to-sky-400 rounded-full mx-auto"></div>
           </div>
-          
+
           <div className="max-w-4xl mx-auto space-y-4">
-            <p className="text-xl md:text-2xl text-gray-600 font-light leading-relaxed">
+            <p className="text-xl md:text-2xl text-slate-300 font-light leading-relaxed">
               Discover authentic travel experiences shared by fellow adventurers
             </p>
-            <p className="text-base text-gray-500 max-w-2xl mx-auto">
+            <p className="text-base text-slate-400 max-w-2xl mx-auto">
               Real stories, stunning photos, and insider tips from travelers exploring Nepal and beyond
             </p>
           </div>
 
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-6 mt-8">
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50 shadow-sm">
+            <div className="flex items-center gap-2 bg-white/70 backdrop-blur-xl rounded-2xl px-4 py-2 ring-1 ring-white/20 shadow-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-gray-700">{posts.length} Stories</span>
+              <span className="text-sm font-medium text-slate-700">{posts.length} Stories</span>
             </div>
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50 shadow-sm">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-gray-700">Live Updates</span>
+            <div className="flex items-center gap-2 bg-white/70 backdrop-blur-xl rounded-2xl px-4 py-2 ring-1 ring-white/20 shadow-sm">
+              <div className="w-2 h-2 bg-sky-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-slate-700">Live Updates</span>
             </div>
           </div>
         </div>
@@ -955,223 +1022,256 @@ const Posts: React.FC = () => {
         <CreatePost onPostCreated={refreshPosts} />
 
         {/* Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.filter(post => post && post.id && post.title).map((post, index) => (
-            <div
-              key={post.id}
-              className={`group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: `${index * 100}ms` }}
-            >
-              {/* Post Header */}
-              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50/80 to-white/90 backdrop-blur-sm border-b border-gray-100/60">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="w-5 h-5 text-white" />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {posts.filter(post => post && post.id && post.title).map((post, index) => {
+            const season = getSeasonLabel(post.dateCreated);
+            const seasonIconEl = getSeasonIcon(season);
+            const traits = getTripTraits(`${post.title || ''} ${post.description || ''}`);
+
+            return (
+              <div key={post.id} className={cardOuterClass} style={{ transitionDelay: `${index * 100}ms` }}>
+                <div className={cardInnerClass}>
+                  {/* Header */}
+                  <div className="flex items-center justify-between p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-10 h-10 rounded-full ${avatarRingClass} flex items-center justify-center shadow-sm`}>
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-slate-900">{post.userName || 'Travel Explorer'}</span>
+                          <span className="text-xs text-slate-500">• {formatDate(post.dateCreated)}</span>
+                        </div>
+                        {post.location && post.location.trim() && (
+                          <div className="flex items-center text-xs text-slate-500">
+                            <MapPin className="w-3 h-3 mr-1" /> {post.location}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <Compass className="w-5 h-5" />
+                      <MoreHorizontal className="w-5 h-5" />
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-sm tracking-tight">
-                      {post.userName || 'Travel Explorer'}
-                    </h3>
-                    <div className="flex items-center space-x-2 text-xs">
-                      <span className="text-gray-500">{formatDate(post.dateCreated)}</span>
+
+                  {/* Image with travel stamp and location chip */}
+                  <div className="px-4">
+                    <div className={imageWrapClass}>
+                      <div className={travelStampClass}>
+                        <Plane className="w-5 h-5 text-white" />
+                      </div>
+                      <Image
+                        src={getImageUrl(post.imageUrls) || '/images/placeholder.jpg'}
+                        alt={post.title}
+                        width={800}
+                        height={450}
+                        className={imageClass}
+                      />
+                      <div className={imageOverlayClass} />
                       {post.location && post.location.trim() && (
-                        <>
-                          <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                          <span className="text-indigo-600 font-medium flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            {post.location}
+                        <div className="absolute bottom-3 left-3">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/90 text-slate-800 text-xs font-medium ring-1 ring-white">
+                            <MapPin className="w-3 h-3" /> {post.location}
                           </span>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
-                </div>
-                <button className="text-gray-400 hover:text-gray-600 transition-all duration-200 hover:bg-gray-100 rounded-full p-2">
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-              </div>
 
-              {/* Post Image */}
-              <div className="relative h-64 overflow-hidden">
-                <Image
-                  src={getImageUrl(post.imageUrls)}
-                  alt={post.title}
-                  fill
-                  className="object-cover transform group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h2 className="text-lg font-bold mb-1 tracking-tight line-clamp-2">
-                    {post.title || 'Untitled Post'}
-                  </h2>
-                </div>
-              </div>
+                  {/* Body */}
+                  <div className="px-4 pt-4">
+                    <h3 className="text-slate-900 font-semibold">{post.title || 'Untitled Post'}</h3>
+                    <p className="text-slate-700 text-sm mt-1">{post.description || 'No description available'}</p>
 
-              {/* Post Content */}
-              <div className="p-6 bg-gradient-to-b from-white to-gray-50/30">
-                <p className="text-gray-700 text-sm leading-relaxed mb-4 line-clamp-3">
-                  {post.description || 'No description available'}
-                </p>
-
-                {/* Engagement */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200/60">
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={() => handleLike(post.id)}
-                      className={`flex items-center space-x-1 transition-all duration-300 hover:scale-110 active:scale-95 ${
-                        likedPosts.has(post.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
-                      }`}
-                    >
-                      <Heart 
-                        className={`w-5 h-5 transition-all duration-300 ${
-                          likedPosts.has(post.id) 
-                            ? 'fill-current animate-pulse' 
-                            : 'hover:fill-red-100'
-                        }`} 
-                      />
-                      <span className="text-sm font-semibold">{getDisplayLikesCount(post.id, post.likesCount)}</span>
-                    </button>
-                    <button 
-                      onClick={async () => {
-                        if (status !== 'authenticated') {
-                          const loginPrompt = document.createElement('div');
-                          loginPrompt.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-                          loginPrompt.innerHTML = '🔒 Please log in to comment';
-                          document.body.appendChild(loginPrompt);
-                          setTimeout(() => document.body.removeChild(loginPrompt), 3000);
-                        } else {
-                          const isOpening = activeCommentPost !== post.id;
-                          setActiveCommentPost(isOpening ? post.id : null);
-                          setCommentText('');
-                          
-                          // Initialize comments when opening the comment section
-                          if (isOpening) {
-                            await initializeComments(post.id);
-                          }
-                        }
-                      }}
-                      className={`flex items-center space-x-1 transition-all duration-200 hover:scale-105 ${
-                        activeCommentPost === post.id ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
-                      }`}
-                    >
-                      <MessageCircle className="w-5 h-5" />
-                      <span className="text-sm font-semibold">{post.commentCount || 0}</span>
-                    </button>
-                    <button 
-                      onClick={() => handleShare(post)}
-                      className="flex items-center space-x-1 text-gray-600 hover:text-emerald-500 transition-all duration-200 hover:scale-105 active:scale-95"
-                    >
-                      <Share2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => handleBookmark(post.id)}
-                    className={`transition-all duration-200 hover:scale-110 ${
-                      bookmarkedPosts.has(post.id) ? 'text-amber-500' : 'text-gray-600 hover:text-amber-500'
-                    }`}
-                  >
-                    <Bookmark className={`w-5 h-5 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Comment Input Section - Instagram Style */}
-                {activeCommentPost === post.id && (
-                  <div className="mt-4 pt-4 border-t border-gray-200/60 animate-in slide-in-from-top duration-300">
-                    {/* Comments Display */}
-                    <div className="mb-4 space-y-3 max-h-60 overflow-y-auto">
-                      {(() => {
-                        const comments = postComments[post.id] || [];
-                        
-                        return comments.length > 0 ? (
-                          comments.map((comment) => (
-                            <div key={comment.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-xl">
-                              <div className="flex-shrink-0">
-                                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-sm">
-                                  <User className="w-4 h-4 text-white" />
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center space-x-2 mb-1">
-                                  <span className="text-sm font-semibold text-gray-900">{comment.userName}</span>
-                                  <span className="text-xs text-gray-500">
-                                    {formatDate(comment.dateCreated)}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-gray-700 break-words">{comment.text}</p>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center py-4">
-                            <MessageCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                            <p className="text-sm text-gray-500">No comments yet. Be the first to comment!</p>
-                          </div>
-                        );
-                      })()}
+                    {/* Travel meta row */}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className={travelMetaChip}><Calendar className="w-3 h-3" /> {formatDate(post.dateCreated)}</span>
+                      <span className={travelMetaChip}>{seasonIconEl} {season}</span>
+                      {post.location && post.location.trim() && (
+                        <span className={travelMetaChip}><MapPin className="w-3 h-3" /> {post.location}</span>
+                      )}
+                      {traits.map((t) => (
+                        <span key={t} className={travelMetaChip}>
+                          {traitIcon(t)} {t}
+                        </span>
+                      ))}
+                      <span className={travelMetaChip}><Star className="w-3 h-3 text-amber-500" /> Adventure {getDisplayLikesCount(post.id, post.likesCount)}</span>
                     </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+                  </div>
+
+                  {/* Boarding-pass perforation */}
+                  <div className="px-4">
+                    <div className={travelDividerClass}>
+                      <span className="w-3 h-3 bg-slate-200 rounded-full"></span>
+                      <div className="flex-1 border-t border-dashed border-slate-300 mx-2"></div>
+                      <span className="w-3 h-3 bg-slate-200 rounded-full"></span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between px-4 pb-4">
+                    <div className="flex items-center gap-4">
+                      {/* Like */}
+                      <button
+                        onClick={() => handleLike(post.id)}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full ring-1 ring-slate-200 bg-slate-50 transition-all duration-300 ${
+                          status === 'authenticated' ? 'hover:scale-105 active:scale-95' : ''
+                        } ${
+                          status === 'authenticated' && likedPosts.has(post.id)
+                            ? 'text-red-500'
+                            : 'text-slate-700 hover:text-red-500'
+                        }`}
+                      >
+                        <Heart
+                          className={`w-5 h-5 transition-all duration-300 ${
+                            status === 'authenticated' && likedPosts.has(post.id)
+                              ? 'fill-current'
+                              : 'hover:fill-red-100'
+                          }`}
+                        />
+                        <span className="text-xs font-medium">Like</span>
+                        <span className={countPillClass}>
+                          {getDisplayLikesCount(post.id, post.likesCount)}
+                        </span>
+                      </button>
+
+                      {/* Comment */}
+                      <button
+                        onClick={async () => {
+                          if (status !== 'authenticated') {
+                            const loginPrompt = document.createElement('div');
+                            loginPrompt.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                            loginPrompt.innerHTML = '🔒 Please log in to comment';
+                            document.body.appendChild(loginPrompt);
+                            setTimeout(() => document.body.removeChild(loginPrompt), 3000);
+                          } else {
+                            const isOpening = activeCommentPost !== post.id;
+                            setActiveCommentPost(isOpening ? post.id : null);
+                            setCommentText('');
+                            if (isOpening) await initializeComments(post.id);
+                          }
+                        }}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-full ring-1 ring-slate-200 bg-slate-50 text-slate-700 hover:text-sky-600 transition-all"
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                        <span className="text-xs font-medium">Comment</span>
+                        <span className="ml-1 text-xs font-semibold text-slate-600">{post.commentCount || 0}</span>
+                      </button>
+
+                      {/* Share */}
+                      <button
+                        onClick={() => handleShare(post)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-full ring-1 ring-slate-200 bg-slate-50 text-slate-700 hover:text-emerald-600 transition-all"
+                      >
+                        <Share2 className="w-5 h-5" />
+                        <span className="text-xs font-medium">Share</span>
+                      </button>
+
+                      {/* Save */}
+                      <button
+                        onClick={() => handleBookmark(post.id)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-full ring-1 ring-slate-200 bg-slate-50 text-slate-700 hover:text-fuchsia-600 transition-all"
+                      >
+                        <Bookmark className="w-5 h-5" />
+                        <span className="text-xs font-medium">Save</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <Mountain className="w-5 h-5" />
+                      <Eye className="w-5 h-5" />
+                    </div>
+                  </div>
+
+                  {/* Comments */}
+                  {activeCommentPost === post.id && (
+                    <div className="px-4 pb-4">
+                      <div className="mt-2 space-y-3 max-h-60 overflow-y-auto">
+                        {(() => {
+                          const comments = postComments[post.id] || [];
+                          return comments.length > 0 ? (
+                            comments.map((comment) => (
+                              <div key={comment.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-xl">
+                                <div className="flex-shrink-0">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-sm">
+                                    <User className="w-4 h-4 text-white" />
+                                  </div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <span className="text-sm font-semibold text-gray-900">{comment.userName}</span>
+                                    <span className="text-xs text-gray-500">{formatDate(comment.dateCreated)}</span>
+                                  </div>
+                                  <p className="text-sm text-gray-700 break-words">{comment.text}</p>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center py-4">
+                              <MessageCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                              <p className="text-sm text-gray-500">No comments yet. Be the first to comment!</p>
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      <div className="flex items-start space-x-3 mt-3">
+                        <div className={`w-8 h-8 ${avatarRingClass} rounded-full flex items-center justify-center shadow-lg`}>
                           <User className="w-4 h-4 text-white" />
                         </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="relative">
-                          <textarea
-                            value={commentText}
-                            onChange={(e) => setCommentText(e.target.value)}
-                            placeholder="Add a comment..."
-                            className="w-full p-3 pr-16 border-0 bg-gray-50 rounded-2xl resize-none focus:ring-2 focus:ring-pink-500 focus:bg-white transition-all duration-200 text-sm"
-                            rows={1}
-                            style={{ minHeight: '44px' }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleCommentSubmit(post.id);
-                              }
-                            }}
-                            onInput={(e) => {
-                              const target = e.target as HTMLTextAreaElement;
-                              target.style.height = 'auto';
-                              target.style.height = Math.min(target.scrollHeight, 120) + 'px';
-                            }}
-                          />
-                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                            {commentText.trim() && (
-                              <button
-                                onClick={() => handleCommentSubmit(post.id)}
-                                className="text-blue-500 hover:text-blue-600 font-semibold text-sm transition-colors"
-                              >
-                                Post
-                              </button>
-                            )}
+                        <div className="flex-1">
+                          <div className="relative">
+                            <textarea
+                              value={commentText}
+                              onChange={(e) => setCommentText(e.target.value)}
+                              placeholder="Write a thoughtful comment…"
+                              className="w-full p-3 pr-16 border bg-white/70 rounded-2xl resize-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-sm"
+                              rows={1}
+                              style={{ minHeight: '44px' }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleCommentSubmit(post.id);
+                                }
+                              }}
+                              onInput={(e) => {
+                                const target = (e.target as HTMLTextAreaElement);
+                                target.style.height = 'auto';
+                                target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+                              }}
+                            />
+                            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                              {commentText.trim() && (
+                                <button
+                                  onClick={() => handleCommentSubmit(post.id)}
+                                  className="text-blue-500 hover:text-blue-600 font-semibold text-sm transition-colors"
+                                >
+                                  Post
+                                </button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-xs text-gray-400">Press Enter to post</span>
-                          <button
-                            onClick={() => {
-                              setActiveCommentPost(null);
-                              setCommentText('');
-                            }}
-                            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
-                          >
-                            Cancel
-                          </button>
+                          <div className="flex justify-between items-center mt-2">
+                            <span className="text-xs text-gray-400">Press Enter to post</span>
+                            <button
+                              onClick={() => {
+                                setActiveCommentPost(null);
+                                setCommentText('');
+                              }}
+                              className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-
-              {/* Premium Bottom Accent */}
-              <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Empty State */}
