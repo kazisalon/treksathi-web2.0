@@ -314,14 +314,27 @@ export class TravelGuideAPI {
 
   static async likePost(postId: string): Promise<any> {
     try {
-      console.log('API: Liking post', postId);
-      const response: AxiosResponse = await apiClient.post(`/api/Post/${postId}/like`);
-      console.log('API: Like response:', response.data);
+      console.log('API: Liking post via proxy', postId);
+  
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
+  
+      const response: AxiosResponse = await axios.post(
+        `/api/proxy/post/${encodeURIComponent(postId)}/like`,
+        {}, // send empty JSON object instead of null
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(token ? { 'x-access-token': token } : {}),
+            ...(token ? { token: token } : {}),
+          },
+        }
+      );
+  
+      console.log('API: Like response (proxy):', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('Like post error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
+      console.error('Like post error (proxy):', error);
       throw error;
     }
   }

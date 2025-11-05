@@ -473,26 +473,23 @@ const Posts: React.FC = () => {
       console.log('First post structure:', fetchedPosts[0]);
       
       // Normalize posts data to ensure all required fields exist
-              const normalizedPosts = fetchedPosts.map((post: any) => ({
-                ...post,
-                id: post.id || post._id || `temp-${Date.now()}-${Math.random()}`,
-                title: post.title || 'Untitled Post',
-                description: post.description || post.content || '',
-                likesCount: post.likesCount ?? post.likes ?? post.likeCount ?? 0,
-                commentCount:
-                  typeof post.commentCount === 'number'
-                    ? post.commentCount
-                    : (Array.isArray(post.comments) ? post.comments.length : (post.commentsCount ?? post.commentLength ?? 0)),
-                imageUrls: post.imageUrls || post.images || (post.imageUrl ? [post.imageUrl] : []),
-                userName: post.userName || post.username || post.user?.name || post.user?.username || 'Anonymous',
-                userId: post.userId || post.user?.id || post.authorId || '',
-                location: post.location || '',
-                dateCreated: post.dateCreated || post.createdAt || post.created || new Date().toISOString()
-              }));
-      
+      const normalizedPosts = fetchedPosts.map((post: any) => ({
+        ...post,
+        id: String(post.id || post._id || `temp-${Date.now()}-${Math.random()}`),
+        title: post.title || 'Untitled Post',
+        description: post.description || post.content || '',
+        likesCount: post.likesCount || post.likes || post.likeCount || 0,
+        commentCount: post.commentCount || post.comments || post.commentsCount || post.commentLength || 0,
+        imageUrls: post.imageUrls || post.images || (post.imageUrl ? [post.imageUrl] : []),
+        userName: post.userName || post.username || post.user?.name || post.user?.username || 'Anonymous',
+        userId: post.userId || post.user?.id || post.authorId || '',
+        location: post.location || '',
+        dateCreated: post.dateCreated || post.createdAt || post.created || new Date().toISOString()
+      }));
+
       console.log('Normalized posts:', normalizedPosts);
       console.log('First normalized post:', normalizedPosts[0]);
-      
+
       setPosts(normalizedPosts);
 
 // cache posts for offline/timeout fallback
@@ -506,23 +503,26 @@ const Posts: React.FC = () => {
       if (status === 'authenticated') {
         try {
           const userLikedPosts = new Set<string>();
-
-          // Method 1: from posts list if server includes flags
+          
+          // Method 1: Check if posts include like status (preferred)
           fetchedPosts.forEach((post: any) => {
-            if (post.isLiked || post.likedByUser || post.isLikedByCurrentUser || post.liked || post.userLiked || post.hasLiked) {
-              if (post.id) userLikedPosts.add(post.id);
+            if (post.isLiked || post.likedByUser || post.isLikedByCurrentUser || 
+                post.liked || post.userLiked || post.hasLiked) {
+              const pid = String(post.id || post._id);
+              if (pid) userLikedPosts.add(pid);
             }
           });
-
-          // Prefer server truth; otherwise fallback to local storage
-          const localLiked = loadLikedFromStorage(session?.user?.id);
-          const finalLiked = userLikedPosts.size > 0 ? userLikedPosts : localLiked;
-
-          setLikedPosts(finalLiked);
-          saveLikedToStorage(session?.user?.id, finalLiked);
+          
+          // Method 2: If no like status in posts, fetch separately (not available -> fallback)
+          if (userLikedPosts.size === 0) {
+            const storageSet = loadLikedFromStorage(session?.user?.id);
+            storageSet.forEach((pid) => userLikedPosts.add(String(pid)));
+          }
+          
+          setLikedPosts(userLikedPosts);
         } catch (likeError) {
-          console.error('Error fetching user liked posts:', likeError);
-          setLikedPosts(loadLikedFromStorage(session?.user?.id));
+          console.error('Error initializing liked posts:', likeError);
+          setLikedPosts(new Set());
         }
       } else {
         setLikedPosts(new Set());
@@ -570,6 +570,12 @@ const Posts: React.FC = () => {
   // Toast notification helper
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type });
+  };
+
+  // Ensure likes count never shows 0 when user has liked (Instagram-like UX)
+  const getDisplayLikesCount = (postId: string, likesCount?: number) => {
+    const base = typeof likesCount === 'number' ? likesCount : 0;
+    return likedPosts.has(postId) ? Math.max(base, 1) : base;
   };
 
   // Local storage helpers for liked posts (per user)
@@ -642,32 +648,32 @@ const Posts: React.FC = () => {
       return;
     }
 
-    const wasLiked = likedPosts.has(postId);
+    const prevWasLiked = likedPosts.has(postId);
+    const optimisticIsLiked = !prevWasLiked;
+
+    // Optimistic update: liked set and likes count immediately
+    setLikedPosts(prev => {
+      const next = new Set(prev);
+      if (optimisticIsLiked) next.add(postId);
+      else next.delete(postId);
+      saveLikedToStorage(session?.user?.id, next);
+      return next;
+    });
+
+    setPosts(prev =>
+      prev.map(p =>
+        p.id === postId
+          ? { ...p, likesCount: Math.max(0, (p.likesCount || 0) + (optimisticIsLiked ? 1 : -1)) }
+          : p
+      )
+    );
 
     try {
-      console.log('=== LIKE DEBUG ===');
-      console.log('Post ID:', postId);
-      console.log('Was liked:', wasLiked);
-
       const response = await TravelGuideAPI.likePost(postId);
-      console.log('Like API response:', response);
 
-      // Determine next liked state: prefer API flag, else toggle
-      const nextIsLiked = typeof response?.isLiked === 'boolean' ? response.isLiked : !wasLiked;
-
-      // Update liked set and persist it immediately
-      setLikedPosts(prev => {
-        const next = new Set(prev);
-        if (nextIsLiked) {
-          next.add(postId);
-        } else {
-          next.delete(postId);
-        }
-        saveLikedToStorage(session?.user?.id, next);
-        return next;
-      });
-
-      // Use server absolute count if provided; else apply relative delta and clamp
+      // Server flags if available
+      const serverIsLiked =
+        typeof response?.isLiked === 'boolean' ? response.isLiked : optimisticIsLiked;
       const serverCount =
         typeof response?.likesCount === 'number'
           ? response.likesCount
@@ -675,24 +681,58 @@ const Posts: React.FC = () => {
           ? response.likeCount
           : undefined;
 
-      const delta = nextIsLiked === wasLiked ? 0 : nextIsLiked ? 1 : -1;
+      // Update liked set from server flag
+      setLikedPosts(prev => {
+        const next = new Set(prev);
+        if (serverIsLiked) next.add(postId);
+        else next.delete(postId);
+        saveLikedToStorage(session?.user?.id, next);
+        return next;
+      });
 
+      // Reconcile count: prefer optimistic unless server provides a definitive number
       setPosts(prev =>
         prev.map(p => {
           if (p.id !== postId) return p;
-          const current = p.likesCount || 0;
-          const nextCount = serverCount !== undefined ? serverCount : Math.max(0, current + delta);
-          return { ...p, likesCount: nextCount };
+          const current = p.likesCount || 0; // already includes optimistic change
+          if (serverCount === undefined) {
+            // No server count -> keep optimistic
+            return { ...p, likesCount: current };
+          }
+          if (serverIsLiked && serverCount <= 0) {
+            // Server returned 0 while liked -> keep at least optimistic 1
+            return { ...p, likesCount: Math.max(current, 1) };
+          }
+          // Server provided a definitive count -> trust it
+          return { ...p, likesCount: Math.max(0, serverCount) };
         })
       );
 
-      showToast(nextIsLiked ? '❤️ Post liked!' : '💔 Post unliked', 'success');
+      showToast(serverIsLiked ? '❤️ Post liked!' : '💔 Post unliked', 'success');
     } catch (error: any) {
       console.error('=== LIKE ERROR ===', error);
-      if (error.response?.status === 401) {
+
+      // Revert on failure
+      setLikedPosts(prev => {
+        const next = new Set(prev);
+        if (prevWasLiked) next.add(postId);
+        else next.delete(postId);
+        saveLikedToStorage(session?.user?.id, next);
+        return next;
+      });
+
+      setPosts(prev =>
+        prev.map(p =>
+          p.id === postId
+            ? { ...p, likesCount: Math.max(0, (p.likesCount || 0) + (prevWasLiked ? 1 : -1)) }
+            : p
+        )
+      );
+
+      if (error?.response?.status === 401) {
         showToast('🔒 Authentication failed. Please log in again.', 'error');
-      } else if (error.response?.status === 404) {
-        showToast('❌ Post not found. Please refresh the page.', 'error');
+      } else if (error?.response?.status === 404) {
+        showToast('❌ Post not found.', 'error');
       } else {
         showToast('❌ Failed to like post. Please try again.', 'error');
       }
@@ -991,7 +1031,7 @@ const Posts: React.FC = () => {
                             : 'hover:fill-red-100'
                         }`} 
                       />
-                      <span className="text-sm font-semibold">{post.likesCount || 0}</span>
+                      <span className="text-sm font-semibold">{getDisplayLikesCount(post.id, post.likesCount)}</span>
                     </button>
                     <button 
                       onClick={async () => {

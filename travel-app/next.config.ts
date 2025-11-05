@@ -50,6 +50,16 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  async rewrites() {
+    const base = process.env.NEXT_PUBLIC_API_URL || 'https://travelguide-rttu.onrender.com';
+    return [
+      // Specific like routes (two shapes to match backend)
+      { source: '/api/proxy/post/:postId/like', destination: `${base}/api/Post/:postId/like` },
+      { source: '/api/proxy/post/like/:postId', destination: `${base}/api/Post/like/:postId` },
+      // Generic proxy for other endpoints
+      { source: '/api/proxy/:path*', destination: `${base}/api/:path*` },
+    ];
+  },
 };
 
 export default nextConfig;
