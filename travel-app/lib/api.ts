@@ -209,13 +209,33 @@ export class TravelGuideAPI {
 
   static async getTourById(id: string): Promise<any> {
     try {
-      const response = await apiClient.get(`/api/Tours/${id}`);
+      const response: AxiosResponse = await apiClient.get(`/api/Tours/${id}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch tour');
     }
   }
 
+  // Marketplace endpoints
+  static async getMarketplaceAll(): Promise<any> {
+    try {
+      const response: AxiosResponse = await getWithRetry('/api/Marketplace/all', {}, 2, 1500);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get marketplace items error:', error);
+      throw new Error(error.message || 'Failed to fetch marketplace items');
+    }
+  }
+
+  static async getMarketplaceById(id: string): Promise<any> {
+    try {
+      const response: AxiosResponse = await getWithRetry(`/api/Marketplace/${id}`, {}, 2, 1500);
+      return response.data;
+    } catch (error: any) {
+      console.error('Get marketplace item error:', error);
+      throw new Error(error.message || 'Failed to fetch marketplace item');
+    }
+  }
   // Bookings endpoints
   static async createBooking(data: any): Promise<any> {
     try {
