@@ -22,11 +22,10 @@ export default function Home() {
       <Posts /> {/* Travel Stories */}
       <FeaturedDestinations />
       <Marketplace /> {/* Marketplace below Travel Stories */}
-
-      <Testimonials /> {/* Stories from Nepal */}
+      {/* Removed Testimonials (Stories from Nepal) */}
       <PopularTours /> {/* Plan Your Path */}
       <WhyChooseUs /> {/* Seasonal Experiences */}
-      <SustainabilityImpact />
+      {/* Removed SustainabilityImpact */}
       <Newsletter /> {/* Join Our Community */}
       <Footer />
     </main>

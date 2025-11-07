@@ -236,6 +236,42 @@ export class TravelGuideAPI {
       throw new Error(error.message || 'Failed to fetch marketplace item');
     }
   }
+
+  // Create Marketplace item (auth required)
+  static async createMarketplace(data: any): Promise<any> {
+    try {
+      // Always send multipart if FormData is provided
+      const response = await apiClient.post('/api/Marketplace/create', data instanceof FormData ? data : data, data instanceof FormData ? {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      } : undefined);
+      return response.data;
+    } catch (error: any) {
+      console.error('Create marketplace item error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Failed to create marketplace item');
+    }
+  }
+
+  // Update Marketplace item
+  static async updateMarketplace(data: any): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.put('/api/Marketplace/update', data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Update marketplace item error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Failed to update marketplace item');
+    }
+  }
+
+  // Delete Marketplace item
+  static async deleteMarketplace(itemId: string): Promise<any> {
+    try {
+      const response: AxiosResponse = await apiClient.delete(`/api/Marketplace/${itemId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Delete marketplace item error:', error);
+      throw new Error(error.response?.data?.message || error.message || 'Failed to delete marketplace item');
+    }
+  }
   // Bookings endpoints
   static async createBooking(data: any): Promise<any> {
     try {
