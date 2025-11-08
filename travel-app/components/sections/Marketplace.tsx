@@ -118,6 +118,27 @@ const Marketplace: React.FC = () => {
   const [createSuccess, setCreateSuccess] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
 
+  // Premium UI: sorting key and derived list
+  const [sortKey, setSortKey] = useState<'relevance' | 'newest' | 'priceLow' | 'priceHigh'>('relevance');
+  const displayed = React.useMemo(() => {
+    const arr = [...filtered];
+    switch (sortKey) {
+      case 'newest': {
+        // Safely sort by dateCreated if available
+        return arr.sort((a, b) => {
+          const ad = a.dateCreated || '';
+          const bd = b.dateCreated || '';
+          return bd.localeCompare(ad);
+        });
+      }
+      case 'priceLow':
+        return arr.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+      case 'priceHigh':
+        return arr.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+      default:
+        return arr;
+    }
+  }, [filtered, sortKey]);
   const resetForm = () => {
     setTitle('');
     setDescription('');
@@ -209,47 +230,63 @@ const Marketplace: React.FC = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-10 max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Marketplace</h2>
-          <p className="mt-2 text-slate-600">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900">Marketplace</h2>
+          <p className="mt-2 text-slate-600 text-sm md:text-base">
             Find great gear and local deals from trekkers
           </p>
 
-          {/* Create Listing CTA (white background) */}
+          {/* Create Listing CTA */}
           <div className="mt-4 flex justify-center">
             <button
               onClick={() => setShowCreate((v) => !v)}
-              className="px-4 py-2 rounded-full bg-white text-slate-900 border shadow-sm"
+              className="px-5 py-2.5 rounded-full bg-white text-slate-900 border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition"
             >
               {showCreate ? 'Close' : 'Create Listing'}
             </button>
           </div>
 
-          {/* Filters */}
-          <div className="mt-6 inline-flex gap-2 bg-white rounded-full shadow-sm p-1 border border-slate-200">
-            <button
-              onClick={() => setFilterType('all')}
-              className={`px-4 py-2 rounded-full text-sm ${
-                filterType === 'all' ? 'bg-slate-900 text-white' : 'text-slate-700'
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilterType('sale')}
-              className={`px-4 py-2 rounded-full text-sm ${
-                filterType === 'sale' ? 'bg-slate-900 text-white' : 'text-slate-700'
-              }`}
-            >
-              For Sale
-            </button>
-            <button
-              onClick={() => setFilterType('rent')}
-              className={`px-4 py-2 rounded-full text-sm ${
-                filterType === 'rent' ? 'bg-slate-900 text-white' : 'text-slate-700'
-              }`}
-            >
-              For Rent
-            </button>
+          {/* Filters + Sort */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <div className="inline-flex gap-2 bg-white rounded-full shadow-sm p-1 border border-slate-200">
+              <button
+                onClick={() => setFilterType('all')}
+                className={`px-4 py-2 rounded-full text-sm transition ${
+                  filterType === 'all' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setFilterType('sale')}
+                className={`px-4 py-2 rounded-full text-sm transition ${
+                  filterType === 'sale' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                For Sale
+              </button>
+              <button
+                onClick={() => setFilterType('rent')}
+                className={`px-4 py-2 rounded-full text-sm transition ${
+                  filterType === 'rent' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                For Rent
+              </button>
+            </div>
+
+            <div className="inline-flex items-center gap-2 bg-white rounded-full shadow-sm px-3 py-1 border border-slate-200">
+              <span className="text-xs font-medium text-slate-600">Sort</span>
+              <select
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as any)}
+                className="bg-transparent text-sm text-slate-700 outline-none"
+              >
+                <option value="relevance">Relevance</option>
+                <option value="newest">Newest</option>
+                <option value="priceLow">Price: Low to High</option>
+                <option value="priceHigh">Price: High to Low</option>
+              </select>
+            </div>
           </div>
         </div>
 
