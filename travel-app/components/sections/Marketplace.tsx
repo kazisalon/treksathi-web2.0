@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
-import { MapPin, Tag, BadgePercent, CheckCircle, XCircle, Plus, LogIn } from 'lucide-react';
+import { MapPin, Tag, BadgePercent, CheckCircle, XCircle, Plus, LogIn, LayoutGrid, List, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { TravelGuideAPI } from '../../lib/api';
@@ -119,26 +119,50 @@ const Marketplace: React.FC = () => {
   const [showCreate, setShowCreate] = useState(false);
 
   // Premium UI: sorting key and derived list
-  const [sortKey, setSortKey] = useState<'relevance' | 'newest' | 'priceLow' | 'priceHigh'>('relevance');
-  const displayed = React.useMemo(() => {
-    const arr = [...filtered];
-    switch (sortKey) {
-      case 'newest': {
-        // Safely sort by dateCreated if available
-        return arr.sort((a, b) => {
-          const ad = a.dateCreated || '';
-          const bd = b.dateCreated || '';
-          return bd.localeCompare(ad);
-        });
-      }
-      case 'priceLow':
-        return arr.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-      case 'priceHigh':
-        return arr.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-      default:
-        return arr;
+  const [sortKey, setSortKey] = useState<'recent' | 'price_asc' | 'price_desc' | 'rent_asc' | 'rent_desc'>('recent');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [search, setSearch] = useState('');
+
+  const displayed = useMemo(() => {
+    let arr = [...filtered];
+  
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      arr = arr.filter(
+        (i) =>
+          (i.title || '').toLowerCase().includes(q) ||
+          (i.category || '').toLowerCase().includes(q)
+      );
     }
-  }, [filtered, sortKey]);
+  
+    const byDateDesc = (a?: string, b?: string) => {
+      const ta = a ? Date.parse(a) : 0;
+      const tb = b ? Date.parse(b) : 0;
+      return tb - ta;
+    };
+  
+    switch (sortKey) {
+      case 'price_asc':
+        arr.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+        break;
+      case 'price_desc':
+        arr.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+        break;
+      case 'rent_asc':
+        arr.sort((a, b) => (a.rentPricePerDay ?? 0) - (b.rentPricePerDay ?? 0));
+        break;
+      case 'rent_desc':
+        arr.sort((a, b) => (b.rentPricePerDay ?? 0) - (a.rentPricePerDay ?? 0));
+        break;
+      case 'recent':
+      default:
+        arr.sort((a, b) => byDateDesc(a.dateCreated, b.dateCreated));
+        break;
+    }
+  
+    return arr;
+  }, [filtered, search, sortKey]);
+
   const resetForm = () => {
     setTitle('');
     setDescription('');
