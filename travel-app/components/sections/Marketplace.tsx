@@ -250,12 +250,14 @@ const Marketplace: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-b from-white via-slate-50 to-white">
+    <section className="py-16 bg-gradient-to-b from-slate-50 via-white to-white">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-10 max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900">Marketplace</h2>
-          <p className="mt-2 text-slate-600 text-sm md:text-base">
+          <h2 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900">
+            Marketplace
+          </h2>
+          <p className="mt-2 text-slate-600">
             Find great gear and local deals from trekkers
           </p>
 
@@ -263,53 +265,91 @@ const Marketplace: React.FC = () => {
           <div className="mt-4 flex justify-center">
             <button
               onClick={() => setShowCreate((v) => !v)}
-              className="px-5 py-2.5 rounded-full bg-white text-slate-900 border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition"
+              className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-slate-900 border border-slate-200 shadow-sm hover:shadow-md transition-all"
             >
+              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-50 to-sky-50 opacity-0 group-hover:opacity-100 transition-opacity" />
               {showCreate ? 'Close' : 'Create Listing'}
             </button>
           </div>
 
-          {/* Filters + Sort */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <div className="inline-flex gap-2 bg-white rounded-full shadow-sm p-1 border border-slate-200">
-              <button
-                onClick={() => setFilterType('all')}
-                className={`px-4 py-2 rounded-full text-sm transition ${
-                  filterType === 'all' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setFilterType('sale')}
-                className={`px-4 py-2 rounded-full text-sm transition ${
-                  filterType === 'sale' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                For Sale
-              </button>
-              <button
-                onClick={() => setFilterType('rent')}
-                className={`px-4 py-2 rounded-full text-sm transition ${
-                  filterType === 'rent' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                For Rent
-              </button>
-            </div>
+          {/* Filters */}
+          <div className="mt-6 inline-flex gap-2 bg-white/70 backdrop-blur rounded-full shadow-sm p-1 border border-white/40">
+            <button
+              onClick={() => setFilterType('all')}
+              className={`px-4 py-2 rounded-full text-sm transition ${
+                filterType === 'all'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setFilterType('sale')}
+              className={`px-4 py-2 rounded-full text-sm transition ${
+                filterType === 'sale'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              For Sale
+            </button>
+            <button
+              onClick={() => setFilterType('rent')}
+              className={`px-4 py-2 rounded-full text-sm transition ${
+                filterType === 'rent'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              For Rent
+            </button>
+          </div>
 
-            <div className="inline-flex items-center gap-2 bg-white rounded-full shadow-sm px-3 py-1 border border-slate-200">
-              <span className="text-xs font-medium text-slate-600">Sort</span>
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as any)}
-                className="bg-transparent text-sm text-slate-700 outline-none"
+          {/* Premium toolbar: search, sort, view toggle */}
+          <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-3">
+            {/* Search */}
+            <div className="w-full md:w-96 relative">
+              <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-full pl-9 pr-3 py-2 bg-white/80 border border-slate-200 text-slate-900 placeholder:text-slate-400 shadow-sm focus:ring-2 focus:ring-indigo-200"
+                placeholder="Search items or categories"
+              />
+            </div>
+            {/* Sort */}
+            <select
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as any)}
+              className="rounded-full px-3 py-2 bg-white/80 border border-slate-200 text-slate-900 shadow-sm"
+              title="Sort by"
+            >
+              <option value="recent">Recent</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rent_asc">Rent: Low to High</option>
+              <option value="rent_desc">Rent: High to Low</option>
+            </select>
+            {/* View toggle */}
+            <div className="inline-flex rounded-full bg-white/80 border border-slate-200 shadow-sm overflow-hidden">
+              <button
+                className={`px-3 py-2 text-sm flex items-center gap-1 ${
+                  viewMode === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                }`}
+                onClick={() => setViewMode('grid')}
               >
-                <option value="relevance">Relevance</option>
-                <option value="newest">Newest</option>
-                <option value="priceLow">Price: Low to High</option>
-                <option value="priceHigh">Price: High to Low</option>
-              </select>
+                <LayoutGrid className="w-4 h-4" /> Grid
+              </button>
+              <button
+                className={`px-3 py-2 text-sm flex items-center gap-1 ${
+                  viewMode === 'list' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                }`}
+                onClick={() => setViewMode('list')}
+              >
+                <List className="w-4 h-4" /> List
+              </button>
             </div>
           </div>
         </div>

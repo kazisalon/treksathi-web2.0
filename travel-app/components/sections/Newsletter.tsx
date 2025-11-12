@@ -209,7 +209,7 @@ const JoinOurCommunity = () => {
               <div className="space-y-2 text-gray-600 text-sm">
                 <p>📧 hello@treksathi.com</p>
                 <p>📞 +977-1-4567890</p>
-                <p>📍 Thamel, Kathmandu, Nepal</p>
+                <p>📍 Koteshowr, Kathmandu, Nepal</p>
               </div>
             </div>
           </div>
