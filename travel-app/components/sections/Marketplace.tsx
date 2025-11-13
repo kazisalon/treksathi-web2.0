@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
-import { MapPin, Tag, BadgePercent, CheckCircle, XCircle, Plus, LogIn, LayoutGrid, List, Search } from 'lucide-react';
+import { MapPin, Tag, BadgePercent, CheckCircle, XCircle, Plus, LogIn, LayoutGrid, List, Search, Heart } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { TravelGuideAPI } from '../../lib/api';
@@ -123,8 +123,39 @@ const Marketplace: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [search, setSearch] = useState('');
 
+  // NEW: Category filter, saved favorites, and pagination
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [pageSize, setPageSize] = useState<number>(6);
+  
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('marketplaceSaved');
+      if (raw) setSavedIds(JSON.parse(raw));
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem('marketplaceSaved', JSON.stringify(savedIds));
+    } catch {}
+  }, [savedIds]);
+  
+  const isSaved = (id: string) => savedIds.includes(id);
+  const toggleSave = (id: string) =>
+    setSavedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const loadMore = () => setPageSize((p) => p + 6);
+  
+  const categories = useMemo(
+    () => Array.from(new Set(items.map((i) => i.category).filter(Boolean))).slice(0, 10),
+    [items]
+  );
+  
   const displayed = useMemo(() => {
     let arr = [...filtered];
+  
+    if (categoryFilter !== 'all') {
+      arr = arr.filter((i) => String(i.category).toLowerCase() === categoryFilter.toLowerCase());
+    }
   
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -161,7 +192,7 @@ const Marketplace: React.FC = () => {
     }
   
     return arr;
-  }, [filtered, search, sortKey]);
+  }, [filtered, search, sortKey, categoryFilter]);
 
   const resetForm = () => {
     setTitle('');
@@ -339,6 +370,7 @@ const Marketplace: React.FC = () => {
                   viewMode === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-700'
                 }`}
                 onClick={() => setViewMode('grid')}
+                aria-label="Grid view"
               >
                 <LayoutGrid className="w-4 h-4" /> Grid
               </button>
@@ -347,11 +379,37 @@ const Marketplace: React.FC = () => {
                   viewMode === 'list' ? 'bg-slate-900 text-white' : 'text-slate-700'
                 }`}
                 onClick={() => setViewMode('list')}
+                aria-label="List view"
               >
                 <List className="w-4 h-4" /> List
               </button>
             </div>
           </div>
+
+          {/* Category chips */}
+          {categories.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              <button
+                onClick={() => setCategoryFilter('all')}
+                className={`px-3 py-1.5 rounded-full text-sm border ${
+                  categoryFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'
+                }`}
+              >
+                All Categories
+              </button>
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCategoryFilter(c)}
+                  className={`px-3 py-1.5 rounded-full text-sm border ${
+                    categoryFilter === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Create Item (gated) */}
