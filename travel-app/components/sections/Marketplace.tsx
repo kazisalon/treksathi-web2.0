@@ -27,6 +27,7 @@ const formatPrice = (v?: number) => {
   return `Rs ${v.toLocaleString('en-IN')}`;
 };
 
+// At the top near badgeClass
 const badgeClass = 'px-2 py-0.5 text-xs rounded-full font-medium';
 
 const Marketplace: React.FC = () => {
@@ -660,124 +661,210 @@ const Marketplace: React.FC = () => {
         )}
 
         {/* Premium Grid/List and States */}
-        {loading && (
-          <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        )}
-
-        {!loading && error && (
-          <div className="max-w-2xl mx-auto text-center text-red-600 bg-red-50 border border-red-200 rounded-xl p-4">
-            {error}
-          </div>
-        )}
-
-        {!loading && !error && displayed.length === 0 && (
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="inline-block rounded-2xl border bg-white p-6 shadow-sm">
-              <p className="text-slate-700">No items match your filters.</p>
-              <p className="text-slate-500 text-sm">Try adjusting category, search, or sort.</p>
-            </div>
-          </div>
-        )}
-
         {!loading && !error && displayed.length > 0 && (
           <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'} gap-6`}>
             {displayed.slice(0, pageSize).map((item) => (
-              <div
-                key={item.id}
-                className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
-              >
-                <div className="relative h-56">
-                  <Image
-                    src={item.primaryImageUrl || ''}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span
-                      className={`${badgeClass} ${
-                        String(item.listingType).toLowerCase() === 'forrent'
-                          ? 'bg-indigo-100 text-indigo-700'
-                          : 'bg-amber-100 text-amber-700'
-                      }`}
-                    >
-                      {String(item.listingType).toLowerCase() === 'forrent' ? 'For Rent' : 'For Sale'}
-                    </span>
-                    <span className={`${badgeClass} bg-slate-100 text-slate-700 flex items-center gap-1`}>
-                      <Tag className="w-3 h-3" />
-                      {item.category}
-                    </span>
-                  </div>
-                  {/* Favorite */}
-                  <button
-                    onClick={() => toggleSave(item.id)}
-                    className={`absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full backdrop-blur bg-white/80 border border-white/60 shadow-sm transition-all ${
-                      isSaved(item.id) ? 'text-rose-600' : 'text-slate-700'
-                    }`}
-                    aria-label="Save item"
-                  >
-                    <Heart className={`w-5 h-5 ${isSaved(item.id) ? 'fill-rose-600' : ''}`} />
-                  </button>
-                </div>
-                <div className="p-4 space-y-3">
-                  <h3 className="text-lg font-semibold text-slate-900 line-clamp-2">{item.title}</h3>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-700">
-                      {String(item.listingType).toLowerCase() === 'forrent' ? (
-                        <>
-                          <BadgePercent className="w-4 h-4 text-indigo-600" />
-                          <span className="font-medium">{formatPrice(item.rentPricePerDay)}</span>
-                          <span className="text-xs text-slate-500">per day</span>
-                        </>
-                      ) : (
-                        <>
-                          <BadgePercent className="w-4 h-4 text-amber-600" />
-                          <span className="font-medium">{formatPrice(item.price)}</span>
-                        </>
-                      )}
+              // GRID view: premium vertical card
+              viewMode === 'grid' ? (
+                <div
+                  key={item.id}
+                  className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                >
+                  <div className="relative h-56">
+                    <Image
+                      src={item.primaryImageUrl || ''}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span
+                        className={`${badgeClass} ${
+                          String(item.listingType).toLowerCase() === 'forrent'
+                            ? 'bg-indigo-100 text-indigo-700'
+                            : 'bg-amber-100 text-amber-700'
+                        }`}
+                      >
+                        {String(item.listingType).toLowerCase() === 'forrent' ? 'For Rent' : 'For Sale'}
+                      </span>
+                      <span className={`${badgeClass} bg-slate-100 text-slate-700 flex items-center gap-1`}>
+                        <Tag className="w-3 h-3" />
+                        {item.category}
+                      </span>
                     </div>
-                    <span
-                      className={`inline-flex items-center gap-1 text-xs ${item.isAvailable ? 'text-green-700' : 'text-red-700'}`}
-                    >
-                      {item.isAvailable ? (
-                        <>
-                          <CheckCircle className="w-3 h-3" /> Available
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="w-3 h-3" /> Unavailable
-                        </>
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-slate-600">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      Nepal
-                    </span>
-                    <span>{item.ownerName || 'Owner'}</span>
-                  </div>
-                  <div className="pt-2 flex gap-2">
-                    <button className="flex-1 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm hover:bg-slate-800 transition-colors">View</button>
+                    {/* Favorite */}
                     <button
                       onClick={() => toggleSave(item.id)}
-                      className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
-                        isSaved(item.id)
-                          ? 'bg-rose-50 border-rose-200 text-rose-700'
-                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                      className={`absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full backdrop-blur bg-white/80 border border-white/60 shadow-sm transition-all hover:scale-105 ${
+                        isSaved(item.id) ? 'text-rose-600' : 'text-slate-700'
                       }`}
+                      aria-label="Save item"
                     >
-                      {isSaved(item.id) ? 'Saved' : 'Save'}
+                      <Heart className={`w-5 h-5 ${isSaved(item.id) ? 'fill-rose-600' : ''}`} />
                     </button>
                   </div>
+                  <div className="p-4 space-y-3">
+                    <h3 className="text-lg font-semibold text-slate-900 line-clamp-2">{item.title}</h3>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-slate-700">
+                        {String(item.listingType).toLowerCase() === 'forrent' ? (
+                          <>
+                            <BadgePercent className="w-4 h-4 text-indigo-600" />
+                            <span className="font-medium">{formatPrice(item.rentPricePerDay)}</span>
+                            <span className="text-xs text-slate-500">per day</span>
+                          </>
+                        ) : (
+                          <>
+                            <BadgePercent className="w-4 h-4 text-amber-600" />
+                            <span className="font-medium">{formatPrice(item.price)}</span>
+                          </>
+                        )}
+                      </div>
+                      <span
+                        className={`inline-flex items-center gap-1 text-xs ${item.isAvailable ? 'text-green-700' : 'text-red-700'}`}
+                      >
+                        {item.isAvailable ? (
+                          <>
+                            <CheckCircle className="w-3 h-3" /> Available
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="w-3 h-3" /> Unavailable
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-slate-600">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        Nepal
+                      </span>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                          {initials(item.ownerName)}
+                        </span>
+                        {item.ownerName || 'Owner'}
+                      </span>
+                    </div>
+                    <div className="pt-2 flex gap-2">
+                      <button className="flex-1 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm hover:bg-slate-800 transition-colors">View</button>
+                      <button
+                        onClick={() => toggleSave(item.id)}
+                        className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
+                          isSaved(item.id)
+                            ? 'bg-rose-50 border-rose-200 text-rose-700'
+                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        {isSaved(item.id) ? 'Saved' : 'Save'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                // LIST view: horizontal premium card
+                <div
+                  key={item.id}
+                  className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg"
+                >
+                  <div className="flex items-stretch">
+                    <div className="relative w-48 sm:w-56 md:w-64 h-40 sm:h-44 md:h-48 shrink-0">
+                      <Image
+                        src={item.primaryImageUrl || ''}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                      />
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span
+                          className={`${badgeClass} ${
+                            String(item.listingType).toLowerCase() === 'forrent'
+                              ? 'bg-indigo-100 text-indigo-700'
+                              : 'bg-amber-100 text-amber-700'
+                          }`}
+                        >
+                          {String(item.listingType).toLowerCase() === 'forrent' ? 'For Rent' : 'For Sale'}
+                        </span>
+                        <span className={`${badgeClass} bg-slate-100 text-slate-700 flex items-center gap-1`}>
+                          <Tag className="w-3 h-3" />
+                          {item.category}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => toggleSave(item.id)}
+                        className={`absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full backdrop-blur bg-white/80 border border-white/60 shadow-sm transition-all hover:scale-105 ${
+                          isSaved(item.id) ? 'text-rose-600' : 'text-slate-700'
+                        }`}
+                        aria-label="Save item"
+                      >
+                        <Heart className={`w-5 h-5 ${isSaved(item.id) ? 'fill-rose-600' : ''}`} />
+                      </button>
+                    </div>
+                    <div className="flex-1 p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-base sm:text-lg font-semibold text-slate-900 line-clamp-2">{item.title}</h3>
+                        <span
+                          className={`inline-flex items-center gap-1 text-xs ${
+                            item.isAvailable ? 'text-green-700' : 'text-red-700'
+                          }`}
+                        >
+                          {item.isAvailable ? (
+                            <>
+                              <CheckCircle className="w-3 h-3" /> Available
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3 h-3" /> Unavailable
+                            </>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-slate-700">
+                        {String(item.listingType).toLowerCase() === 'forrent' ? (
+                          <>
+                            <BadgePercent className="w-4 h-4 text-indigo-600" />
+                            <span className="font-medium">{formatPrice(item.rentPricePerDay)}</span>
+                            <span className="text-xs text-slate-500">per day</span>
+                          </>
+                        ) : (
+                          <>
+                            <BadgePercent className="w-4 h-4 text-amber-600" />
+                            <span className="font-medium">{formatPrice(item.price)}</span>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-sm text-slate-600">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-4 h-4" />
+                          Nepal
+                        </span>
+                        <span className="inline-flex items-center gap-2">
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                            {initials(item.ownerName)}
+                          </span>
+                          {item.ownerName || 'Owner'}
+                        </span>
+                      </div>
+                      <div className="pt-2 flex gap-2">
+                        <button className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm hover:bg-slate-800 transition-colors">View</button>
+                        <button
+                          onClick={() => toggleSave(item.id)}
+                          className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
+                            isSaved(item.id)
+                              ? 'bg-rose-50 border-rose-200 text-rose-700'
+                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          {isSaved(item.id) ? 'Saved' : 'Save'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
             ))}
           </div>
         )}
@@ -798,3 +885,6 @@ const Marketplace: React.FC = () => {
 };
 
 export default Marketplace;
+
+// Premium: small helper for owner avatar initials
+const initials = (name?: string) => (name || 'U').trim().charAt(0).toUpperCase();
