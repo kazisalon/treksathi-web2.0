@@ -27,7 +27,7 @@ const formatPrice = (v?: number) => {
   return `Rs ${v.toLocaleString('en-IN')}`;
 };
 
-// At the top near badgeClass
+// Near the top, just after badgeClass
 const badgeClass = 'px-2 py-0.5 text-xs rounded-full font-medium';
 
 const Marketplace: React.FC = () => {
@@ -662,13 +662,13 @@ const Marketplace: React.FC = () => {
 
         {/* Premium Grid/List and States */}
         {!loading && !error && displayed.length > 0 && (
+          // In the render section where displayed items are mapped
           <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'} gap-6`}>
             {displayed.slice(0, pageSize).map((item) => (
-              // GRID view: premium vertical card
               viewMode === 'grid' ? (
                 <div
                   key={item.id}
-                  className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                  className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:ring-1 hover:ring-indigo-200/60"
                 >
                   <div className="relative h-56">
                     <Image
@@ -722,9 +722,7 @@ const Marketplace: React.FC = () => {
                           </>
                         )}
                       </div>
-                      <span
-                        className={`inline-flex items-center gap-1 text-xs ${item.isAvailable ? 'text-green-700' : 'text-red-700'}`}
-                      >
+                      <span className={`inline-flex items-center gap-1 text-xs ${item.isAvailable ? 'text-green-700' : 'text-red-700'}`}>
                         {item.isAvailable ? (
                           <>
                             <CheckCircle className="w-3 h-3" /> Available
@@ -767,7 +765,7 @@ const Marketplace: React.FC = () => {
                 // LIST view: horizontal premium card
                 <div
                   key={item.id}
-                  className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg"
+                  className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:ring-1 hover:ring-indigo-200/60"
                 >
                   <div className="flex items-stretch">
                     <div className="relative w-48 sm:w-56 md:w-64 h-40 sm:h-44 md:h-48 shrink-0">
@@ -806,11 +804,7 @@ const Marketplace: React.FC = () => {
                     <div className="flex-1 p-4 space-y-3">
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="text-base sm:text-lg font-semibold text-slate-900 line-clamp-2">{item.title}</h3>
-                        <span
-                          className={`inline-flex items-center gap-1 text-xs ${
-                            item.isAvailable ? 'text-green-700' : 'text-red-700'
-                          }`}
-                        >
+                        <span className={`inline-flex items-center gap-1 text-xs ${item.isAvailable ? 'text-green-700' : 'text-red-700'}`}>
                           {item.isAvailable ? (
                             <>
                               <CheckCircle className="w-3 h-3" /> Available
