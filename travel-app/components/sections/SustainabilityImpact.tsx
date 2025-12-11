@@ -107,7 +107,7 @@ const SustainabilityImpact = () => {
             Sustainability & Impact
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Travel responsibly with us. Every journey creates positive impact for Nepal's communities and environment
+            Travel responsibly with us. 
           </p>
         </div>
 
