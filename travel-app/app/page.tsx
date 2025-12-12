@@ -1,7 +1,6 @@
 // ... existing code ...
 import Header from '@/components/layout/Header';
 import Hero from '@/components/sections/Hero';
-import NearbyDestinations from '@/components/sections/NearbyDestinations';
 import Posts from '@/components/sections/Posts'; // Travel Stories Section
 import FeaturedDestinations from '@/components/sections/FeaturedDestinations';
 import PopularTours from '@/components/sections/PopularTours'; // Now "Plan Your Path"
@@ -18,7 +17,6 @@ export default function Home() {
     <main className="min-h-screen">
       <Header />
       <Hero />
-      <NearbyDestinations />
       <Posts /> {/* Travel Stories */}
       <FeaturedDestinations />
       <Marketplace /> {/* Marketplace below Travel Stories */}
