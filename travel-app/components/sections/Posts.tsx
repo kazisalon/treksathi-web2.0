@@ -188,31 +188,31 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
   return (
     <>
       {/* Create Post Button */}
-      <div className="mb-12 max-w-3xl mx-auto">
+      <div className="mb-12 max-w-3xl mx-auto px-4">
         {isAuthenticated ? (
           <button
             onClick={() => setIsOpen(true)}
-            className="w-full bg-white border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 rounded-3xl p-8 transition-all duration-300 group shadow-sm hover:shadow-md"
+            className="w-full bg-white dark:bg-slate-900/40 border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500/50 hover:bg-blue-50/30 dark:hover:bg-blue-500/5 rounded-3xl p-8 transition-all duration-300 group shadow-sm hover:shadow-md backdrop-blur-xl"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300">
                 <Plus className="w-8 h-8" />
               </div>
               <div className="text-center">
-                <span className="text-xl font-bold text-slate-800 block mb-1">Share Your Journey</span>
-                <p className="text-slate-500 text-sm font-medium">Inspire fellow travelers with your authentic stories and photos</p>
+                <span className="text-xl font-bold text-slate-800 dark:text-slate-100 block mb-1">Share Your Journey</span>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Inspire fellow travelers with your authentic stories and photos</p>
               </div>
             </div>
           </button>
         ) : (
-          <div className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-8 text-center shadow-sm">
+          <div className="w-full bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 text-center shadow-sm backdrop-blur-xl">
             <div className="flex flex-col items-center gap-4 mb-6">
-              <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400">
+              <div className="w-14 h-14 bg-slate-100 dark:bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-400">
                 <Lock className="w-7 h-7" />
               </div>
               <div>
-                <span className="text-xl font-bold text-slate-800 block mb-1">Join the Community</span>
-                <p className="text-slate-500 text-sm font-medium">Log in to share your amazing experiences with the world</p>
+                <span className="text-xl font-bold text-slate-800 dark:text-slate-100 block mb-1">Join the Community</span>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Log in to share your amazing experiences with the world</p>
               </div>
             </div>
             <div className="flex gap-3 justify-center">
@@ -237,18 +237,18 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
 
       {/* Create Post Modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border dark:border-slate-800">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-800">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Create New Post
               </h2>
               <button
                 onClick={resetForm}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
               >
-                <X className="w-6 h-6 text-gray-500" />
+                <X className="w-6 h-6 text-gray-500 dark:text-slate-400" />
               </button>
             </div>
 
@@ -256,19 +256,19 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               {/* Error Display */}
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 rounded-lg p-4 flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <X className="w-3 h-3 text-white" />
                   </div>
                   <div>
-                    <p className="text-red-800 font-medium">Error</p>
-                    <p className="text-red-600 text-sm">{error}</p>
+                    <p className="text-red-800 dark:text-red-300 font-medium">Error</p>
+                    <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
                   </div>
                 </div>
               )}
               {/* Title */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                   Title *
                 </label>
                 <input
@@ -276,31 +276,31 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Give your post an amazing title..."
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   required
                 />
               </div>
 
               {/* Location */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                   Location
                 </label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-slate-500" />
                   <input
                     type="text"
                     value={formData.location}
                     onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                     placeholder="Where was this taken?"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                   Description *
                 </label>
                 <textarea
@@ -308,7 +308,7 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Share your travel story, tips, or experiences..."
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                   required
                 />
               </div>
@@ -366,7 +366,7 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                  className="flex-1 px-6 py-3 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors font-medium"
                 >
                   Cancel
                 </button>
@@ -570,21 +570,21 @@ const Posts: React.FC = () => {
 
   // Premium UI tokens
   const cardOuterClass =
-    'relative rounded-3xl p-[1px] bg-gradient-to-br from-slate-200/50 to-slate-300/30 shadow-sm transition-all duration-500';
+    'relative rounded-3xl p-[1px] bg-gradient-to-br from-slate-200/50 to-slate-300/30 dark:from-slate-700/50 dark:to-slate-800/30 shadow-sm transition-all duration-500';
   const cardInnerClass =
-    'rounded-3xl bg-white border border-slate-100 overflow-hidden shadow-[0_8px_20px_-8px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.15)] transition-all duration-300';
+    'rounded-3xl bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/50 overflow-hidden shadow-[0_8px_20px_-8px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.15)] backdrop-blur-xl transition-all duration-300';
   const imageWrapClass =
     'relative overflow-hidden group aspect-[16/10]';
   const imageClass =
     'w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700';
   const imageOverlayClass =
-    'absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300';
+    'absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-300';
   const avatarRingClass =
-    'ring-2 ring-white bg-slate-100 overflow-hidden';
+    'ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-800 overflow-hidden';
   const countPillClass =
-    'text-xs font-semibold text-slate-500';
+    'text-xs font-semibold text-slate-500 dark:text-slate-400';
   const metaChip =
-    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 text-slate-600 text-[11px] font-medium border border-slate-100';
+    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 text-[11px] font-medium border border-slate-100 dark:border-slate-700/50';
   const dividerClass = 'hidden'; // Removed visual divider
 
   // Aliases for travel-specific class tokens
@@ -993,27 +993,27 @@ const Posts: React.FC = () => {
       <div className="container mx-auto px-4">
         {/* Professional Section Header */}
         <div className={`text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-wider mb-6 border border-blue-100">
-            <Compass className="w-3 h-3" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/10 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 text-[10px] font-bold uppercase tracking-[0.1em] mb-6 border border-blue-100 dark:border-blue-800/50 backdrop-blur-sm">
+            <Compass className="w-3.5 h-3.5" />
             <span>Community Stories</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
             Travel Stories
           </h2>
 
-          <p className="text-lg text-slate-500 font-medium leading-relaxed mb-8">
+          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium leading-relaxed mb-8">
             Discover authentic perspectives and firsthand experiences shared by adventurers exploring the heart of Nepal and beyond.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
-              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-              <span className="text-sm font-bold text-slate-700">{posts.length} Stories Shared</span>
+            <div className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm backdrop-blur-sm">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{posts.length} Stories Shared</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm backdrop-blur-sm">
               <Navigation className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-bold text-slate-700">Verified Experiences</span>
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Verified Experiences</span>
             </div>
           </div>
         </div>
@@ -1035,17 +1035,17 @@ const Posts: React.FC = () => {
                   <div className="flex items-center justify-between p-5">
                     <div className="flex items-center space-x-3">
                       <div className={`w-9 h-9 rounded-full ${avatarRingClass} flex items-center justify-center`}>
-                        <User className="w-5 h-5 text-slate-400" />
+                        <User className="w-5 h-5 text-slate-400 dark:text-slate-500" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-800 leading-none mb-1">{post.userName || 'Explorer'}</span>
-                        <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-none mb-1">{post.userName || 'Explorer'}</span>
+                        <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold">
                           <Clock className="w-3 h-3" />
                           {formatDate(post.dateCreated)}
                         </div>
                       </div>
                     </div>
-                    <button className="p-2 hover:bg-slate-50 rounded-full transition-colors text-slate-400">
+                    <button className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-full transition-colors text-slate-400">
                       <MoreHorizontal className="w-5 h-5" />
                     </button>
                   </div>
@@ -1070,10 +1070,10 @@ const Posts: React.FC = () => {
 
                   {/* Body Content */}
                   <div className="p-5 pb-2">
-                    <h3 className="text-lg font-bold text-slate-900 leading-tight mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {post.title || 'Adventure Story'}
                     </h3>
-                    <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 leading-relaxed">
                       {post.description || 'Discover the details of this amazing journey...'}
                     </p>
 
@@ -1091,12 +1091,12 @@ const Posts: React.FC = () => {
                   </div>
 
                   {/* Action Buttons - Professionalized */}
-                  <div className="px-5 py-4 flex items-center justify-between border-t border-slate-50 mt-2">
+                  <div className="px-5 py-4 flex items-center justify-between border-t border-slate-50 dark:border-slate-800/50 mt-2">
                     <div className="flex items-center gap-6">
                       {/* Like */}
                       <button
                         onClick={() => handleLike(post.id)}
-                        className={`group flex items-center gap-2 transition-colors ${likedPosts.has(post.id) ? 'text-rose-500' : 'text-slate-400 hover:text-rose-500'
+                        className={`group flex items-center gap-2 transition-colors ${likedPosts.has(post.id) ? 'text-rose-500' : 'text-slate-400 hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400'
                           }`}
                       >
                         <Heart
@@ -1117,7 +1117,7 @@ const Posts: React.FC = () => {
                             if (isOpening) await initializeComments(post.id);
                           }
                         }}
-                        className="group flex items-center gap-2 text-slate-400 hover:text-blue-500 transition-colors"
+                        className="group flex items-center gap-2 text-slate-400 hover:text-blue-500 dark:text-slate-500 dark:hover:text-blue-400 transition-colors"
                       >
                         <MessageCircle className="w-5 h-5" />
                         <span className={countPillClass}>{post.commentCount || 0}</span>
@@ -1126,7 +1126,7 @@ const Posts: React.FC = () => {
                       {/* Share */}
                       <button
                         onClick={() => handleShare(post)}
-                        className="text-slate-400 hover:text-emerald-500 transition-colors"
+                        className="text-slate-400 hover:text-emerald-500 dark:text-slate-500 dark:hover:text-emerald-400 transition-colors"
                       >
                         <Share2 className="w-5 h-5" />
                       </button>
@@ -1135,7 +1135,7 @@ const Posts: React.FC = () => {
                     {/* Save */}
                     <button
                       onClick={() => handleBookmark(post.id)}
-                      className={`transition-colors ${bookmarkedPosts.has(post.id) ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'
+                      className={`transition-colors ${bookmarkedPosts.has(post.id) ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500 dark:text-slate-500 dark:hover:text-amber-400'
                         }`}
                     >
                       <Bookmark className={`w-5 h-5 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
@@ -1150,7 +1150,7 @@ const Posts: React.FC = () => {
                           const comments = postComments[post.id] || [];
                           return comments.length > 0 ? (
                             comments.map((comment) => (
-                              <div key={comment.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-xl">
+                              <div key={comment.id} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-slate-800/40 rounded-xl border border-transparent dark:border-slate-700/30">
                                 <div className="flex-shrink-0">
                                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-sm">
                                     <User className="w-4 h-4 text-white" />
@@ -1158,10 +1158,10 @@ const Posts: React.FC = () => {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center space-x-2 mb-1">
-                                    <span className="text-sm font-semibold text-gray-900">{comment.userName}</span>
-                                    <span className="text-xs text-gray-500">{formatDate(comment.dateCreated)}</span>
+                                    <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">{comment.userName}</span>
+                                    <span className="text-xs text-gray-500 dark:text-slate-500">{formatDate(comment.dateCreated)}</span>
                                   </div>
-                                  <p className="text-sm text-gray-700 break-words">{comment.text}</p>
+                                  <p className="text-sm text-gray-700 dark:text-slate-300 break-words">{comment.text}</p>
                                 </div>
                               </div>
                             ))
@@ -1184,7 +1184,7 @@ const Posts: React.FC = () => {
                               value={commentText}
                               onChange={(e) => setCommentText(e.target.value)}
                               placeholder="Write a thoughtful comment…"
-                              className="w-full p-3 pr-16 border bg-white/70 rounded-2xl resize-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-sm"
+                              className="w-full p-3 pr-16 border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/50 dark:text-white rounded-2xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm backdrop-blur-sm"
                               rows={1}
                               style={{ minHeight: '44px' }}
                               onKeyDown={(e) => {
@@ -1235,14 +1235,14 @@ const Posts: React.FC = () => {
         {/* Empty State */}
         {posts.length === 0 && !loading && (
           <div className="text-center py-16">
-            <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-12 max-w-2xl mx-auto border border-gray-200">
+            <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-slate-800/40 dark:to-slate-900/40 rounded-3xl p-12 max-w-2xl mx-auto border border-gray-200 dark:border-slate-700/50 backdrop-blur-xl">
               <div className="space-y-6">
-                <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto">
-                  <Heart className="w-10 h-10 text-blue-600" />
+                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-3xl flex items-center justify-center mx-auto">
+                  <Heart className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-2xl font-semibold text-gray-900">No Stories Yet</h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">No Stories Yet</h3>
+                  <p className="text-gray-600 dark:text-slate-400 leading-relaxed">
                     Be the first to share your travel adventure! Create a post and inspire others.
                   </p>
                 </div>
