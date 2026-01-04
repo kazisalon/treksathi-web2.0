@@ -73,30 +73,36 @@ const FeaturedDestinations = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
 
   const toggleFavorite = (id: number) => {
-    setFavorites(prev => 
-      prev.includes(id) 
+    setFavorites(prev =>
+      prev.includes(id)
         ? prev.filter(fav => fav !== id)
         : [...prev, id]
     );
   };
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-purple-600 mb-6">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-5 tracking-tight" style={{ fontFamily: 'var(--font-inter), system-ui, sans-serif' }}>
             Discover Nepal
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          </h2>
+          <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Where every mountain tells a story, every temple whispers ancient wisdom, and every trail leads to transformation
           </p>
-          
+
           {/* Icons */}
-          <div className="flex justify-center space-x-6 mt-8 text-3xl">
-            <span>🏔️</span>
-            <span>🙏</span>
-            <span>🕉️</span>
+          <div className="flex justify-center items-center gap-6 mt-8">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <span className="text-2xl">🏔️</span>
+            </div>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <span className="text-2xl">🙏</span>
+            </div>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <span className="text-2xl">🕉️</span>
+            </div>
           </div>
         </div>
 
@@ -106,7 +112,7 @@ const FeaturedDestinations = () => {
         {/* Top Destinations Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 mb-8">Top Destinations</h2>
-          
+
           {/* First Row - 3 cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {destinations.slice(0, 3).map((destination) => (
@@ -129,7 +135,7 @@ const FeaturedDestinations = () => {
                       onClick={() => toggleFavorite(destination.id)}
                       className="p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
                     >
-                      <Heart 
+                      <Heart
                         className={`w-5 h-5 ${favorites.includes(destination.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
                       />
                     </button>
@@ -140,11 +146,11 @@ const FeaturedDestinations = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-800 mb-2">{destination.name}</h3>
                   <p className="text-gray-600 mb-4">{destination.subtitle}</p>
-                  
+
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center text-gray-600">
                       <MapPin className="w-4 h-4 mr-1" />
@@ -155,7 +161,7 @@ const FeaturedDestinations = () => {
                       <span className="text-sm font-medium">{destination.rating}</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-gray-600">
                       <Users className="w-4 h-4 mr-1" />
@@ -174,7 +180,7 @@ const FeaturedDestinations = () => {
         {/* Pustinations Section */}
         <div>
           <h2 className="text-3xl font-bold text-gray-800 mb-8">Pustinations</h2>
-          
+
           {/* Second Row - 3 cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {destinations.slice(3, 6).map((destination) => (
@@ -197,7 +203,7 @@ const FeaturedDestinations = () => {
                       onClick={() => toggleFavorite(destination.id)}
                       className="p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
                     >
-                      <Heart 
+                      <Heart
                         className={`w-5 h-5 ${favorites.includes(destination.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
                       />
                     </button>
@@ -208,11 +214,11 @@ const FeaturedDestinations = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-800 mb-2">{destination.name}</h3>
                   <p className="text-gray-600 mb-4">{destination.subtitle}</p>
-                  
+
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center text-gray-600">
                       <MapPin className="w-4 h-4 mr-1" />
@@ -223,7 +229,7 @@ const FeaturedDestinations = () => {
                       <span className="text-sm font-medium">{destination.rating}</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-gray-600">
                       <Users className="w-4 h-4 mr-1" />
