@@ -42,12 +42,12 @@ const Hero = () => {
         const arr = Array.isArray(raw)
           ? raw
           : Array.isArray(raw?.posts)
-          ? raw.posts
-          : Array.isArray(raw?.data)
-          ? raw.data
-          : Array.isArray(raw?.results)
-          ? raw.results
-          : [];
+            ? raw.posts
+            : Array.isArray(raw?.data)
+              ? raw.data
+              : Array.isArray(raw?.results)
+                ? raw.results
+                : [];
 
         const normalize = (p: any): Story => ({
           id: p.id || p._id || `${Date.now()}-${Math.random()}`,
@@ -59,9 +59,9 @@ const Hero = () => {
           likesCount: Number(p.likesCount ?? p.likes ?? 0),
           commentCount: Number(
             p.commentCount ??
-              p.commentsCount ??
-              (Array.isArray(p.comments) ? p.comments.length : 0) ??
-              0
+            p.commentsCount ??
+            (Array.isArray(p.comments) ? p.comments.length : 0) ??
+            0
           ),
           location: p.location || p.place || 'Nepal',
           userName: p.userName || p.username || p.user?.name || 'Traveler',
@@ -111,7 +111,7 @@ const Hero = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         (prevIndex + 1) % backgroundImages.length
       );
     }, 5000); // Change image every 5 seconds
@@ -150,10 +150,10 @@ const Hero = () => {
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
   };
 
@@ -177,11 +177,11 @@ const Hero = () => {
             className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url('${image}')` }}
             initial={{ opacity: 0 }}
-            animate={{ 
+            animate={{
               opacity: index === currentImageIndex ? 1 : 0,
               scale: index === currentImageIndex ? 1.05 : 1
             }}
-            transition={{ 
+            transition={{
               duration: 1.5,
               ease: "easeInOut"
             }}
@@ -192,7 +192,7 @@ const Hero = () => {
       {/* Content Container */}
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center pt-16 sm:pt-20">
-          
+
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -205,16 +205,16 @@ const Hero = () => {
               Discover Amazing<br />
               Adventures
             </h1>
-            
+
             <div className="mb-8 max-w-lg space-y-3">
               <p className="text-xl text-yellow-300 font-semibold">
-                🏔️ सपना देखेको ठाउँमा जाऔं!
+                🏔️ सपना देखेको ठाउँमा .. Nepali
               </p>
               <p className="text-lg text-white/90 leading-relaxed">
                 Experience the magic of Nepal with expert local Sherpa guides
               </p>
             </div>
-            
+
 
           </motion.div>
 
@@ -255,7 +255,7 @@ const Hero = () => {
                         </div>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setIsCardVisible(false)}
                       className="text-gray-400 hover:text-gray-600 transition-all duration-200 hover:bg-gray-100 rounded-full p-2 hover:rotate-90"
                     >
@@ -273,7 +273,7 @@ const Hero = () => {
                   )}
                   {!loadingStories && !storiesError && currentStory && (
                     <>
-                      <img 
+                      <img
                         src={currentStory.imageUrl}
                         alt={currentStory.title}
                         className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
@@ -372,9 +372,8 @@ const Hero = () => {
                             key={idx}
                             aria-label={`Go to story ${idx + 1}`}
                             onClick={() => setActiveStoryIndex(idx)}
-                            className={`w-2.5 h-2.5 rounded-full ${
-                              idx === activeStoryIndex ? 'bg-indigo-600' : 'bg-gray-300'
-                            }`}
+                            className={`w-2.5 h-2.5 rounded-full ${idx === activeStoryIndex ? 'bg-indigo-600' : 'bg-gray-300'
+                              }`}
                           />
                         ))}
                       </div>
@@ -501,11 +500,10 @@ const Hero = () => {
           <button
             key={index}
             onClick={() => setCurrentImageIndex(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentImageIndex 
-                ? 'bg-red-500 scale-110' 
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentImageIndex
+                ? 'bg-red-500 scale-110'
                 : 'bg-white/50 hover:bg-white/70'
-            }`}
+              }`}
           />
         ))}
       </div>
