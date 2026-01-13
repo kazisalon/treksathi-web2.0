@@ -501,8 +501,8 @@ const Hero = () => {
             key={index}
             onClick={() => setCurrentImageIndex(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentImageIndex
-                ? 'bg-red-500 scale-110'
-                : 'bg-white/50 hover:bg-white/70'
+              ? 'bg-red-500 scale-110'
+              : 'bg-white/50 hover:bg-white/70'
               }`}
           />
         ))}
