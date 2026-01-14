@@ -19,7 +19,7 @@ const travelerStories = [
   },
   {
     id: 2,
-    title: "Sunrise Over Everest",
+    title: "Sunrise Everest",
     author: "Marcus Rodriguez",
     location: "Everest Base Camp",
     date: "October 2023",
