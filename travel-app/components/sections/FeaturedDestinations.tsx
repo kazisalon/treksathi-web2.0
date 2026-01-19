@@ -7,28 +7,28 @@ import Image from 'next/image';
 const destinations = [
   {
     id: 1,
-    name: "Himayaram Trunings",
-    subtitle: "Where ancient whispers meet modern souls",
+    name: "Himalayan Sunsets",
+    subtitle: "Witness the golden glow on snow-capped peaks",
     region: "Kathmandu Valley",
     users: "1,500+",
     price: "Popular",
-    rating: 4.5,
+    rating: 4.8,
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop"
   },
   {
     id: 2,
-    name: "Deer Mountain Plashing",
-    subtitle: "Where mountains kiss the sky",
+    name: "Phewa Lake Serenity",
+    subtitle: "Clarity of the mountains reflected in azure waters",
     region: "Pokhara Valley",
     users: "5,500+",
     price: "Best Seller",
-    rating: 4.8,
+    rating: 4.9,
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop"
   },
   {
     id: 3,
-    name: "Deep Mountain Blue Hardy",
-    subtitle: "Touch the roof of the world",
+    name: "Everest Base Camp",
+    subtitle: "Reach the threshold of the world's highest peak",
     region: "Everest Region",
     users: "2,584+",
     price: "Premium",
@@ -37,8 +37,8 @@ const destinations = [
   },
   {
     id: 4,
-    name: "Adventure & Roughsinging",
-    subtitle: "Journey through nature's symphony",
+    name: "Annapurna Sanctuary",
+    subtitle: "A natural amphitheater surrounded by giants",
     region: "Annapurna Region",
     users: "3,200+",
     price: "Recommended",
@@ -47,8 +47,8 @@ const destinations = [
   },
   {
     id: 5,
-    name: "Unveil the Sctuning",
-    subtitle: "Step into a timeless realm",
+    name: "Upper Mustang Trails",
+    subtitle: "Journey into the mythical last forbidden kingdom",
     region: "Upper Mustang",
     users: "1,800+",
     price: "Hidden Gem",
@@ -57,12 +57,12 @@ const destinations = [
   },
   {
     id: 6,
-    name: "Real Deeringean Plustions",
-    subtitle: "Where wild hearts roam free",
+    name: "Chitwan Wilderness",
+    subtitle: "Deep in the heart of sub-tropical jungles",
     region: "Chitwan National Park",
     users: "2,100+",
     price: "Wildlife",
-    rating: 4.4,
+    rating: 4.5,
     image: "https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=800&h=600&fit=crop"
   }
 ];
@@ -92,18 +92,6 @@ const FeaturedDestinations = () => {
             Where every mountain tells a story, every temple whispers ancient wisdom, and every trail leads to transformation
           </p>
 
-          {/* Icons */}
-          <div className="flex justify-center items-center gap-6 mt-8">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <span className="text-2xl">🏔️</span>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <span className="text-2xl">🙏</span>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <span className="text-2xl">🕉️</span>
-            </div>
-          </div>
         </div>
 
 
@@ -177,9 +165,9 @@ const FeaturedDestinations = () => {
           </div>
         </div>
 
-        {/* Pustinations Section */}
+        {/* Featured Experiences Section */}
         <div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">Pustinations</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Experiences</h2>
 
           {/* Second Row - 3 cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
