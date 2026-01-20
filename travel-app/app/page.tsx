@@ -8,7 +8,6 @@ import WhyChooseUs from '@/components/sections/WhyChooseUs'; // Now "Seasonal Ex
 import Testimonials from '@/components/sections/Testimonials'; // Now "Stories from Nepal"
 import Marketplace from '@/components/sections/Marketplace';
 
-import SustainabilityImpact from '@/components/sections/SustainabilityImpact';
 import Newsletter from '@/components/sections/Newsletter'; // Now "Join Our Community"
 import Footer from '@/components/layout/Footer';
 
