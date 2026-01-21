@@ -5,7 +5,6 @@ import Posts from '@/components/sections/Posts'; // Travel Stories Section
 import FeaturedDestinations from '@/components/sections/FeaturedDestinations';
 import PopularTours from '@/components/sections/PopularTours'; // Now "Plan Your Path"
 import WhyChooseUs from '@/components/sections/WhyChooseUs'; // Now "Seasonal Experiences"
-import Testimonials from '@/components/sections/Testimonials'; // Now "Stories from Nepal"
 import Marketplace from '@/components/sections/Marketplace';
 
 import Newsletter from '@/components/sections/Newsletter'; // Now "Join Our Community"
