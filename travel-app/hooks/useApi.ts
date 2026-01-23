@@ -36,7 +36,6 @@ export function useApi<T = any>() {
         ...options,
       };
 
-      // Add auth token if available
       const token = session?.accessToken || localStorage.getItem('authToken');
       if (token) {
         config.headers!.Authorization = `Bearer ${token}`;
@@ -48,20 +47,20 @@ export function useApi<T = any>() {
       setState(prev => ({ ...prev, data, loading: false }));
       return data;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.error || 
-                          error.message || 
-                          'An error occurred';
-      
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'An error occurred';
+
       setState(prev => ({ ...prev, error: errorMessage, loading: false }));
-      
+
       // Handle 401 errors
       if (error.response?.status === 401) {
         localStorage.removeItem('authToken');
         toast.error('Session expired. Please login again.');
         window.location.href = '/auth/signin';
       }
-      
+
       return null;
     }
   }, [session?.accessToken]);
@@ -96,7 +95,7 @@ export function useApi<T = any>() {
 // Specific API hooks
 export function useDestinations() {
   const api = useApi();
-  
+
   const getDestinations = useCallback((params?: any) => {
     return api.get('/api/Destinations', params);
   }, [api.get]);
@@ -114,7 +113,7 @@ export function useDestinations() {
 
 export function useTours() {
   const api = useApi();
-  
+
   const getTours = useCallback((params?: any) => {
     return api.get('/api/Tours', params);
   }, [api.get]);
@@ -132,7 +131,7 @@ export function useTours() {
 
 export function useBookings() {
   const api = useApi();
-  
+
   const getBookings = useCallback(() => {
     return api.get('/api/Bookings');
   }, [api.get]);
@@ -155,7 +154,7 @@ export function useBookings() {
 
 export function useProfile() {
   const api = useApi();
-  
+
   const getProfile = useCallback(() => {
     return api.get('/api/User/profile');
   }, [api.get]);
