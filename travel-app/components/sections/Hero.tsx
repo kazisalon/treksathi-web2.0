@@ -202,16 +202,16 @@ const Hero = () => {
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight">
               Namaste!<br />
-              Discover Amazing<br />
+              Discover Amazing 
               Adventures
             </h1>
 
             <div className="mb-8 max-w-lg space-y-3">
               <p className="text-xl text-yellow-300 font-semibold">
-                🏔️ सपना देखेको ठाउँमा .. Nepali
+              तपाईंको यात्राको विश्वासिलो साथी
               </p>
               <p className="text-lg text-white/90 leading-relaxed">
-                Experience the magic of Nepal with expert local Sherpa guides
+              Explore Nepal with a trusted travel companion.
               </p>
             </div>
 
