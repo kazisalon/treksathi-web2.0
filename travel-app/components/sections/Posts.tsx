@@ -158,7 +158,6 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
       setTimeout(() => document.body.removeChild(successMessage), 3000);
 
     } catch (error: any) {
-      console.error('Error creating post:', error);
 
       // Handle specific error cases
       if (error.response?.status === 401) {
@@ -465,27 +464,17 @@ const Posts: React.FC = () => {
     try {
       setLoading(true);
 
-      console.log('=== POSTS FETCH DEBUG ===');
-      console.log('User authenticated:', status === 'authenticated');
-      console.log('User session:', session?.user);
-      console.log('Auth token:', localStorage.getItem('authToken'));
-
       // Try to get posts with user data first (Instagram approach)
       let fetchedPosts;
       if (status === 'authenticated') {
         try {
           fetchedPosts = await TravelGuideAPI.getPostsWithUserData();
-          console.log('Fetched posts with user data:', fetchedPosts);
         } catch (userDataError) {
-          console.log('Failed to get posts with user data, falling back to regular posts');
           fetchedPosts = await TravelGuideAPI.getAllPosts();
         }
       } else {
         fetchedPosts = await TravelGuideAPI.getAllPosts();
       }
-
-      console.log('Final fetched posts:', fetchedPosts);
-      console.log('First post structure:', fetchedPosts[0]);
 
       // Normalize posts data to ensure all required fields exist
       const normalizedPosts = fetchedPosts.map((post: any) => ({
@@ -502,9 +491,6 @@ const Posts: React.FC = () => {
         dateCreated: post.dateCreated || post.createdAt || post.created || new Date().toISOString()
       }));
 
-      console.log('Normalized posts:', normalizedPosts);
-      console.log('First normalized post:', normalizedPosts[0]);
-
       setPosts(normalizedPosts);
 
       // cache posts for offline/timeout fallback
@@ -520,7 +506,6 @@ const Posts: React.FC = () => {
 
       setError(null);
     } catch (err) {
-      console.error('Error fetching posts:', err);
 
       // Fallback to cached posts if available
       try {
@@ -645,7 +630,6 @@ const Posts: React.FC = () => {
         prev.map(p => (p.id === postId ? { ...p, commentCount: mapped.length } : p))
       );
     } catch (err) {
-      console.error('Failed to fetch comments for post:', postId, err);
       if (!postComments[postId]) {
         setPostComments(prev => ({ ...prev, [postId]: [] }));
       }
@@ -734,7 +718,6 @@ const Posts: React.FC = () => {
 
       showToast(serverIsLiked ? '❤️ Post liked!' : '💔 Post unliked', 'success');
     } catch (error: any) {
-      console.error('=== LIKE ERROR ===', error);
 
       // Revert on failure
       setLikedPosts(prev => {
@@ -808,9 +791,7 @@ const Posts: React.FC = () => {
     try {
       await TravelGuideAPI.addComment(postId, comment);
       await initializeComments(postId);
-      console.log('Comment synced and refreshed from API');
     } catch (error) {
-      console.error('Failed to sync comment with API:', error);
       // Comment remains visible from optimistic update
     }
   };
@@ -836,7 +817,6 @@ const Posts: React.FC = () => {
         setTimeout(() => document.body.removeChild(successPrompt), 2000);
       }
     } catch (error) {
-      console.error('Error sharing:', error);
       const errorPrompt = document.createElement('div');
       errorPrompt.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
       errorPrompt.innerHTML = '❌ Failed to share';

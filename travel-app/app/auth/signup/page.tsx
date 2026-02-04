@@ -24,7 +24,7 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  
+
   const { register, handleSubmit, formState: { errors }, watch } = useForm<SignUpForm>();
   const password = watch('password');
 
@@ -46,19 +46,18 @@ export default function SignUp() {
         if (response.data.token) {
           localStorage.setItem('authToken', response.data.token);
         }
-        
+
         toast.success(response.data.message || 'खाता सफलतापूर्वक सिर्जना भयो / Account created successfully');
-        
+
         // Redirect to signin page
         router.push('/auth/signin');
       } else {
         toast.error(response.data.error || 'खाता सिर्जना गर्न सकिएन / Failed to create account');
       }
     } catch (error: any) {
-      console.error('Registration error:', error);
-      const errorMessage = error.response?.data?.error || 
-                          error.response?.data?.message || 
-                          'खाता सिर्जना गर्न सकिएन / Failed to create account';
+      const errorMessage = error.response?.data?.error ||
+        error.response?.data?.message ||
+        'खाता सिर्जना गर्न सकिएन / Failed to create account';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -103,7 +102,7 @@ export default function SignUp() {
                     <span className="text-xs text-gray-500 font-normal">Username</span>
                   </label>
                   <input
-                    {...register('username', { 
+                    {...register('username', {
                       required: 'प्रयोगकर्ता नाम आवश्यक छ / Username is required',
                       minLength: {
                         value: 3,
@@ -132,7 +131,7 @@ export default function SignUp() {
                     <span className="text-xs text-gray-500 font-normal">Email Address</span>
                   </label>
                   <input
-                    {...register('email', { 
+                    {...register('email', {
                       required: 'इमेल आवश्यक छ / Email is required',
                       pattern: {
                         value: /^\S+@\S+$/i,
@@ -157,7 +156,7 @@ export default function SignUp() {
                     <span className="text-xs text-gray-500 font-normal">Phone Number</span>
                   </label>
                   <input
-                    {...register('phoneNumber', { 
+                    {...register('phoneNumber', {
                       required: 'फोन नम्बर आवश्यक छ / Phone number is required',
                       pattern: {
                         value: /^[0-9]{10}$/,
@@ -182,7 +181,7 @@ export default function SignUp() {
                     <span className="text-xs text-gray-500 font-normal">Gender</span>
                   </label>
                   <select
-                    {...register('gender', { 
+                    {...register('gender', {
                       required: 'लिङ्ग चयन गर्नुहोस् / Please select gender'
                     })}
                     className="w-full bg-purple-50 border-2 border-purple-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300"
@@ -206,7 +205,7 @@ export default function SignUp() {
                     <span className="text-xs text-gray-500 font-normal">Alias / Display Name</span>
                   </label>
                   <input
-                    {...register('alias', { 
+                    {...register('alias', {
                       required: 'उपनाम आवश्यक छ / Alias is required',
                       minLength: {
                         value: 2,
@@ -232,7 +231,7 @@ export default function SignUp() {
                   </label>
                   <div className="relative">
                     <input
-                      {...register('password', { 
+                      {...register('password', {
                         required: 'पासवर्ड आवश्यक छ / Password is required',
                         minLength: {
                           value: 6,
@@ -270,7 +269,7 @@ export default function SignUp() {
                   </label>
                   <div className="relative">
                     <input
-                      {...register('confirmPassword', { 
+                      {...register('confirmPassword', {
                         required: 'पासवर्ड पुष्टि आवश्यक छ / Password confirmation is required',
                         validate: value => value === password || 'पासवर्ड मेल खाएन / Passwords do not match'
                       })}

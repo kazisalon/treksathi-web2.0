@@ -44,8 +44,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('API Error:', error);
-    
+
     if (error.response?.status === 401) {
       // Handle unauthorized access
       if (typeof window !== 'undefined') {
@@ -53,7 +52,7 @@ apiClient.interceptors.response.use(
         window.location.href = '/auth/signin';
       }
     }
-    
+
     // Extract error message from different response formats
     let errorMessage = 'An error occurred';
     if (error.response?.data) {
@@ -64,14 +63,14 @@ apiClient.interceptors.response.use(
       } else if (error.response.data.error) {
         errorMessage = error.response.data.error;
       } else if (error.response.data.errors) {
-        errorMessage = Array.isArray(error.response.data.errors) 
+        errorMessage = Array.isArray(error.response.data.errors)
           ? error.response.data.errors.join(', ')
           : error.response.data.errors;
       }
     } else if (error.message) {
       errorMessage = error.message;
     }
-    
+
     error.message = errorMessage;
     return Promise.reject(error);
   }
@@ -122,12 +121,12 @@ export class TravelGuideAPI {
   static async register(data: RegisterRequest): Promise<RegisterResponse> {
     try {
       const response: AxiosResponse<RegisterResponse> = await apiClient.post('/api/Authentication/register', data);
-      
+
       // Store token if provided
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
       }
-      
+
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Registration failed');
@@ -137,12 +136,12 @@ export class TravelGuideAPI {
   static async login(data: LoginRequest): Promise<LoginResponse> {
     try {
       const response: AxiosResponse<LoginResponse> = await apiClient.post('/api/Authentication/login', data);
-      
+
       // Store token if provided
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
       }
-      
+
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Login failed');
@@ -153,7 +152,7 @@ export class TravelGuideAPI {
     try {
       await apiClient.post('/api/Authentication/logout');
     } catch (error) {
-      console.error('Logout error:', error);
+      // Silently handle logout errors
     } finally {
       localStorage.removeItem('authToken');
     }
@@ -222,7 +221,6 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await getWithRetry('/api/Marketplace/all', {}, 2, 1500);
       return response.data;
     } catch (error: any) {
-      console.error('Get marketplace items error:', error);
       throw new Error(error.message || 'Failed to fetch marketplace items');
     }
   }
@@ -232,7 +230,6 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await getWithRetry(`/api/Marketplace/${id}`, {}, 2, 1500);
       return response.data;
     } catch (error: any) {
-      console.error('Get marketplace item error:', error);
       throw new Error(error.message || 'Failed to fetch marketplace item');
     }
   }
@@ -246,7 +243,6 @@ export class TravelGuideAPI {
       } : undefined);
       return response.data;
     } catch (error: any) {
-      console.error('Create marketplace item error:', error);
       throw new Error(error.response?.data?.message || error.message || 'Failed to create marketplace item');
     }
   }
@@ -257,7 +253,6 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await apiClient.put('/api/Marketplace/update', data);
       return response.data;
     } catch (error: any) {
-      console.error('Update marketplace item error:', error);
       throw new Error(error.response?.data?.message || error.message || 'Failed to update marketplace item');
     }
   }
@@ -268,7 +263,6 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await apiClient.delete(`/api/Marketplace/${itemId}`);
       return response.data;
     } catch (error: any) {
-      console.error('Delete marketplace item error:', error);
       throw new Error(error.response?.data?.message || error.message || 'Failed to delete marketplace item');
     }
   }
@@ -297,19 +291,15 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await getWithRetry('/api/Post/all', {}, 2, 1500);
       return response.data;
     } catch (error) {
-      console.error('Get posts error:', error);
       throw error;
     }
   }
 
   static async getPostsWithUserData(): Promise<any> {
     try {
-      console.log('API: Getting posts with user-specific data');
       const response: AxiosResponse = await getWithRetry('/api/Post/all', {}, 2, 1500);
-      console.log('Posts response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Get posts with user data error:', error);
       throw error;
     }
   }
@@ -319,7 +309,6 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await getWithRetry(`/api/Post/${id}`, {}, 2, 1500);
       return response.data;
     } catch (error) {
-      console.error('Get post by ID error:', error);
       throw error;
     }
   }
@@ -329,7 +318,6 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await apiClient.get(`/api/Post/user/${userId}`);
       return response.data;
     } catch (error) {
-      console.error('Get posts by user error:', error);
       throw error;
     }
   }
@@ -343,7 +331,6 @@ export class TravelGuideAPI {
       });
       return response.data;
     } catch (error) {
-      console.error('Create post error:', error);
       throw error;
     }
   }
@@ -353,7 +340,6 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await apiClient.put(`/api/Post/update/${postId}`, data);
       return response.data;
     } catch (error) {
-      console.error('Update post error:', error);
       throw error;
     }
   }
@@ -363,20 +349,17 @@ export class TravelGuideAPI {
       const response: AxiosResponse = await apiClient.delete(`/api/Post/delete/${postId}`);
       return response.data;
     } catch (error) {
-      console.error('Delete post error:', error);
       throw error;
     }
   }
 
   static async likePost(postId: string): Promise<any> {
     try {
-      console.log('API: Liking post via proxy', postId);
-  
       const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  
+
       const response: AxiosResponse = await axios.post(
         `/api/proxy/post/${encodeURIComponent(postId)}/like`,
-        {}, // send empty JSON object instead of null
+        {},
         {
           headers: {
             'Content-Type': 'application/json',
@@ -386,50 +369,37 @@ export class TravelGuideAPI {
           },
         }
       );
-  
-      console.log('API: Like response (proxy):', response.data);
+
       return response.data;
     } catch (error: any) {
-      console.error('Like post error (proxy):', error);
       throw error;
     }
   }
 
   static async addComment(postId: string, comment: string): Promise<any> {
     try {
-      console.log('API: Adding comment to post', postId);
-      
       // Try different request body formats that the API might expect
       const possibleFormats = [
-        { text: comment },           // Common format
-        { content: comment },        // Alternative format
-        { comment: comment },        // Current format
-        { message: comment },        // Another alternative
-        { body: comment },           // Body format
-        comment                      // Just the string
+        { text: comment },
+        { content: comment },
+        { comment: comment },
+        { message: comment },
+        { body: comment },
+        comment
       ];
-      
+
       for (let i = 0; i < possibleFormats.length; i++) {
         try {
           const requestBody = possibleFormats[i];
-          console.log(`Trying format ${i + 1}:`, requestBody);
-          
           const response: AxiosResponse = await apiClient.post(`/api/Post/${postId}/comment`, requestBody);
-          console.log('Comment API response:', response.data);
           return response.data;
         } catch (error: any) {
-          console.log(`Format ${i + 1} failed:`, error.response?.status, error.response?.data);
-          
-          // If this is the last format, throw the error
           if (i === possibleFormats.length - 1) {
             throw error;
           }
-          // Otherwise, continue to next format
         }
       }
     } catch (error: any) {
-      console.error('Add comment error:', error);
-      console.error('Error response:', error.response?.data);
       throw error;
     }
   }
@@ -439,7 +409,6 @@ export class TravelGuideAPI {
   static async getUserLikedPosts(): Promise<string[]> {
     // Note: This endpoint is not available in the current API documentation
     // Returning empty array to prevent 404 errors
-    console.log('API: getUserLikedPosts - endpoint not available, returning empty array');
     return [];
   }
 }
