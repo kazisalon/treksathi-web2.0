@@ -167,7 +167,7 @@ const Hero = () => {
   const currentDestination = destinationData.find(d => d.name === selectedDestination) || destinationData[0];
 
   return (
-    <section className="relative min-h-[80vh] flex items-center py-20">
+    <section className="relative min-h-screen flex items-center py-20">
       {/* Background Image Carousel */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-blue-400/20 z-10"></div>
@@ -202,16 +202,16 @@ const Hero = () => {
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight">
               Namaste!<br />
-              Discover Amazing 
+              Discover Amazing
               Adventures
             </h1>
 
             <div className="mb-8 max-w-lg space-y-3">
               <p className="text-xl text-yellow-300 font-semibold">
-              तपाईंको यात्राको विश्वासिलो साथी
+                तपाईंको यात्राको विश्वासिलो साथी
               </p>
               <p className="text-lg text-white/90 leading-relaxed">
-              Explore Nepal with a trusted travel companion.
+                Explore Nepal with a trusted travel companion.
               </p>
             </div>
 
