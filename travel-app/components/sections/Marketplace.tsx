@@ -47,10 +47,10 @@ const Marketplace: React.FC = () => {
         const arr = Array.isArray(raw)
           ? raw
           : Array.isArray(raw?.data)
-          ? raw.data
-          : Array.isArray(raw?.results)
-          ? raw.results
-          : [];
+            ? raw.data
+            : Array.isArray(raw?.results)
+              ? raw.results
+              : [];
 
         const normalized: MarketplaceItem[] = arr.map((it: any) => ({
           id: it.id || it._id,
@@ -128,36 +128,36 @@ const Marketplace: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [pageSize, setPageSize] = useState<number>(6);
-  
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem('marketplaceSaved');
       if (raw) setSavedIds(JSON.parse(raw));
-    } catch {}
+    } catch { }
   }, []);
   useEffect(() => {
     try {
       localStorage.setItem('marketplaceSaved', JSON.stringify(savedIds));
-    } catch {}
+    } catch { }
   }, [savedIds]);
-  
+
   const isSaved = (id: string) => savedIds.includes(id);
   const toggleSave = (id: string) =>
     setSavedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   const loadMore = () => setPageSize((p) => p + 6);
-  
+
   const categories = useMemo(
     () => Array.from(new Set(items.map((i) => i.category).filter(Boolean))).slice(0, 10),
     [items]
   );
-  
+
   const displayed = useMemo(() => {
     let arr = [...filtered];
-  
+
     if (categoryFilter !== 'all') {
       arr = arr.filter((i) => String(i.category).toLowerCase() === categoryFilter.toLowerCase());
     }
-  
+
     if (search.trim()) {
       const q = search.toLowerCase();
       arr = arr.filter(
@@ -166,13 +166,13 @@ const Marketplace: React.FC = () => {
           (i.category || '').toLowerCase().includes(q)
       );
     }
-  
+
     const byDateDesc = (a?: string, b?: string) => {
       const ta = a ? Date.parse(a) : 0;
       const tb = b ? Date.parse(b) : 0;
       return tb - ta;
     };
-  
+
     switch (sortKey) {
       case 'price_asc':
         arr.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
@@ -191,7 +191,7 @@ const Marketplace: React.FC = () => {
         arr.sort((a, b) => byDateDesc(a.dateCreated, b.dateCreated));
         break;
     }
-  
+
     return arr;
   }, [filtered, search, sortKey, categoryFilter]);
 
@@ -298,15 +298,27 @@ const Marketplace: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-b from-slate-50 via-white to-white">
-      <div className="container mx-auto px-4">
+    <section className="py-24 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+        <div className="absolute top-20 left-20 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className="text-center mb-10 max-w-4xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900">
+        <div className="text-center mb-16 max-w-4xl mx-auto">
+          <div className="inline-block mb-4">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
+              <Tag className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-700">Buy, Sell & Rent</span>
+            </div>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
             Marketplace
           </h2>
-          <p className="mt-2 text-slate-600">
-            Find great gear and local deals from trekkers
+          <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+            Discover amazing gear and local deals from fellow trekkers. Buy, sell, or rent equipment for your next adventure.
           </p>
 
           {/* Create Listing CTA */}
@@ -324,31 +336,28 @@ const Marketplace: React.FC = () => {
           <div className="mt-6 inline-flex gap-2 bg-white/70 backdrop-blur rounded-full shadow-sm p-1 border border-white/40">
             <button
               onClick={() => setFilterType('all')}
-              className={`px-4 py-2 rounded-full text-sm transition ${
-                filterType === 'all'
+              className={`px-4 py-2 rounded-full text-sm transition ${filterType === 'all'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'text-slate-700 hover:bg-slate-100'
-              }`}
+                }`}
             >
               All
             </button>
             <button
               onClick={() => setFilterType('sale')}
-              className={`px-4 py-2 rounded-full text-sm transition ${
-                filterType === 'sale'
+              className={`px-4 py-2 rounded-full text-sm transition ${filterType === 'sale'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'text-slate-700 hover:bg-slate-100'
-              }`}
+                }`}
             >
               For Sale
             </button>
             <button
               onClick={() => setFilterType('rent')}
-              className={`px-4 py-2 rounded-full text-sm transition ${
-                filterType === 'rent'
+              className={`px-4 py-2 rounded-full text-sm transition ${filterType === 'rent'
                   ? 'bg-slate-900 text-white shadow-sm'
                   : 'text-slate-700 hover:bg-slate-100'
-              }`}
+                }`}
             >
               For Rent
             </button>
@@ -383,18 +392,16 @@ const Marketplace: React.FC = () => {
             {/* View toggle */}
             <div className="inline-flex rounded-full bg-white/80 border border-slate-200 shadow-sm overflow-hidden">
               <button
-                className={`px-3 py-2 text-sm flex items-center gap-1 ${
-                  viewMode === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-700'
-                }`}
+                className={`px-3 py-2 text-sm flex items-center gap-1 ${viewMode === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                  }`}
                 onClick={() => setViewMode('grid')}
                 aria-label="Grid view"
               >
                 <LayoutGrid className="w-4 h-4" /> Grid
               </button>
               <button
-                className={`px-3 py-2 text-sm flex items-center gap-1 ${
-                  viewMode === 'list' ? 'bg-slate-900 text-white' : 'text-slate-700'
-                }`}
+                className={`px-3 py-2 text-sm flex items-center gap-1 ${viewMode === 'list' ? 'bg-slate-900 text-white' : 'text-slate-700'
+                  }`}
                 onClick={() => setViewMode('list')}
                 aria-label="List view"
               >
@@ -408,9 +415,8 @@ const Marketplace: React.FC = () => {
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <button
                 onClick={() => setCategoryFilter('all')}
-                className={`px-3 py-1.5 rounded-full text-sm border ${
-                  categoryFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'
-                }`}
+                className={`px-3 py-1.5 rounded-full text-sm border ${categoryFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'
+                  }`}
               >
                 All Categories
               </button>
@@ -418,9 +424,8 @@ const Marketplace: React.FC = () => {
                 <button
                   key={c}
                   onClick={() => setCategoryFilter(c)}
-                  className={`px-3 py-1.5 rounded-full text-sm border ${
-                    categoryFilter === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'
-                  }`}
+                  className={`px-3 py-1.5 rounded-full text-sm border ${categoryFilter === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'
+                    }`}
                 >
                   {c}
                 </button>
@@ -446,7 +451,7 @@ const Marketplace: React.FC = () => {
                   </button>
                 )}
               </div>
-        
+
               {!isAuthenticated ? (
                 <p className="text-slate-700 text-sm">
                   Only logged-in users can list items. Please sign in to continue.
@@ -463,197 +468,197 @@ const Marketplace: React.FC = () => {
                       required
                       className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
                       placeholder="Offroad Bike on sale"
-                  />
-                </div>
-        
-                {/* Description */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700">Description</label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={4}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
-                    placeholder="Brief details about the item..."
-                />
-                </div>
-        
-                {/* Category */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Category</label>
-                  <input
-                    type="text"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
-                    placeholder="e.g., Mountain Bike"
-                />
-                </div>
-        
-                {/* Listing Type */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Listing Type</label>
-                  <select
-                    value={listingType}
-                    onChange={(e) => setListingType(e.target.value as 'ForSale' | 'ForRent')}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black"
-                >
-                  <option value="ForSale">For Sale</option>
-                  <option value="ForRent">For Rent</option>
-                </select>
-                </div>
-        
-                {/* Price (only for sale) */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Price</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                    disabled={listingType !== 'ForSale'}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black disabled:bg-slate-100 placeholder:text-slate-500"
-                    placeholder="e.g., 210000"
-                />
-                </div>
-        
-                {/* Rent per day (rent) */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Rent Per Day</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={rentPerDay}
-                    onChange={(e) => setRentPerDay(e.target.value === '' ? '' : Number(e.target.value))}
-                    disabled={listingType !== 'ForRent'}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black disabled:bg-slate-100 placeholder:text-slate-500"
-                    placeholder="e.g., 1500"
-                />
-                </div>
-        
-                {/* Condition */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Condition</label>
-                  <select
-                    value={condition}
-                    onChange={(e) => setCondition(e.target.value as 'New' | 'Good' | 'Used' | 'Fair')}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black"
-                >
-                  <option value="New">New</option>
-                  <option value="Good">Good</option>
-                  <option value="Used">Used</option>
-                  <option value="Fair">Fair</option>
-                </select>
-                </div>
-        
-                {/* Deposit */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Deposit</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={deposit}
-                    onChange={(e) => setDeposit(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
-                    placeholder="e.g., 5000"
-                />
-                </div>
-        
-                {/* Images: upload from computer */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700">Images</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageFiles}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black"
-                />
-                {imagePreviews.length > 0 && (
-                  <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {imagePreviews.map((src, i) => (
-                      <div key={i} className="relative w-full h-24 rounded-lg overflow-hidden border">
-                        <Image src={src} alt={`Preview ${i + 1}`} fill className="object-cover" />
-                      </div>
-                    ))}
+                    />
                   </div>
-                )}
-                </div>
-        
-                {/* Location */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Location</label>
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
-                    placeholder="e.g., Nepal"
-                />
-                </div>
-        
-                {/* Latitude */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Latitude</label>
-                  <input
-                    type="number"
-                    step="0.000001"
-                    value={latitude}
-                    onChange={(e) => setLatitude(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
-                    placeholder="e.g., 27.7172"
-                />
-                </div>
-        
-                {/* Longitude */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">Longitude</label>
-                  <input
-                    type="number"
-                    step="0.000001"
-                    value={longitude}
-                    onChange={(e) => setLongitude(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
-                    placeholder="e.g., 85.3240"
-                />
-                </div>
-        
-                {/* Tags */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700">Tags (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={tagsInput}
-                    onChange={(e) => setTagsInput(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
-                    placeholder="bike, mountain, gear"
-                />
-                </div>
-        
-                {/* Actions */}
-                <div className="md:col-span-2 flex gap-2">
-                  <button
-                    type="submit"
-                    disabled={creating}
-                    className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm disabled:opacity-50"
-                  >
-                    {creating ? 'Listing…' : 'Post Item'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="px-4 py-2 rounded-lg bg-white border text-slate-700 text-sm"
-                  >
-                    Reset
-                  </button>
-                </div>
-        
-                {/* Feedback */}
-                {createError && <div className="md:col-span-2 text-sm text-red-600">{createError}</div>}
-                {createSuccess && <div className="md:col-span-2 text-sm text-green-700">{createSuccess}</div>}
+
+                  {/* Description */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700">Description</label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={4}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
+                      placeholder="Brief details about the item..."
+                    />
+                  </div>
+
+                  {/* Category */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Category</label>
+                    <input
+                      type="text"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
+                      placeholder="e.g., Mountain Bike"
+                    />
+                  </div>
+
+                  {/* Listing Type */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Listing Type</label>
+                    <select
+                      value={listingType}
+                      onChange={(e) => setListingType(e.target.value as 'ForSale' | 'ForRent')}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black"
+                    >
+                      <option value="ForSale">For Sale</option>
+                      <option value="ForRent">For Rent</option>
+                    </select>
+                  </div>
+
+                  {/* Price (only for sale) */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Price</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                      disabled={listingType !== 'ForSale'}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black disabled:bg-slate-100 placeholder:text-slate-500"
+                      placeholder="e.g., 210000"
+                    />
+                  </div>
+
+                  {/* Rent per day (rent) */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Rent Per Day</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={rentPerDay}
+                      onChange={(e) => setRentPerDay(e.target.value === '' ? '' : Number(e.target.value))}
+                      disabled={listingType !== 'ForRent'}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black disabled:bg-slate-100 placeholder:text-slate-500"
+                      placeholder="e.g., 1500"
+                    />
+                  </div>
+
+                  {/* Condition */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Condition</label>
+                    <select
+                      value={condition}
+                      onChange={(e) => setCondition(e.target.value as 'New' | 'Good' | 'Used' | 'Fair')}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black"
+                    >
+                      <option value="New">New</option>
+                      <option value="Good">Good</option>
+                      <option value="Used">Used</option>
+                      <option value="Fair">Fair</option>
+                    </select>
+                  </div>
+
+                  {/* Deposit */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Deposit</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={deposit}
+                      onChange={(e) => setDeposit(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
+                      placeholder="e.g., 5000"
+                    />
+                  </div>
+
+                  {/* Images: upload from computer */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700">Images</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageFiles}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black"
+                    />
+                    {imagePreviews.length > 0 && (
+                      <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {imagePreviews.map((src, i) => (
+                          <div key={i} className="relative w-full h-24 rounded-lg overflow-hidden border">
+                            <Image src={src} alt={`Preview ${i + 1}`} fill className="object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Location */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Location</label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
+                      placeholder="e.g., Nepal"
+                    />
+                  </div>
+
+                  {/* Latitude */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Latitude</label>
+                    <input
+                      type="number"
+                      step="0.000001"
+                      value={latitude}
+                      onChange={(e) => setLatitude(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
+                      placeholder="e.g., 27.7172"
+                    />
+                  </div>
+
+                  {/* Longitude */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">Longitude</label>
+                    <input
+                      type="number"
+                      step="0.000001"
+                      value={longitude}
+                      onChange={(e) => setLongitude(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
+                      placeholder="e.g., 85.3240"
+                    />
+                  </div>
+
+                  {/* Tags */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700">Tags (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={tagsInput}
+                      onChange={(e) => setTagsInput(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 bg-white text-black placeholder:text-slate-500"
+                      placeholder="bike, mountain, gear"
+                    />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="md:col-span-2 flex gap-2">
+                    <button
+                      type="submit"
+                      disabled={creating}
+                      className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm disabled:opacity-50"
+                    >
+                      {creating ? 'Listing…' : 'Post Item'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className="px-4 py-2 rounded-lg bg-white border text-slate-700 text-sm"
+                    >
+                      Reset
+                    </button>
+                  </div>
+
+                  {/* Feedback */}
+                  {createError && <div className="md:col-span-2 text-sm text-red-600">{createError}</div>}
+                  {createSuccess && <div className="md:col-span-2 text-sm text-green-700">{createSuccess}</div>}
                 </form>
               )}
             </div>
@@ -681,11 +686,10 @@ const Marketplace: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="absolute top-3 left-3 flex gap-2">
                       <span
-                        className={`${badgeClass} ${
-                          String(item.listingType).toLowerCase() === 'forrent'
+                        className={`${badgeClass} ${String(item.listingType).toLowerCase() === 'forrent'
                             ? 'bg-indigo-100 text-indigo-700'
                             : 'bg-amber-100 text-amber-700'
-                        }`}
+                          }`}
                       >
                         {String(item.listingType).toLowerCase() === 'forrent' ? 'For Rent' : 'For Sale'}
                       </span>
@@ -697,9 +701,8 @@ const Marketplace: React.FC = () => {
                     {/* Favorite */}
                     <button
                       onClick={() => toggleSave(item.id)}
-                      className={`absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full backdrop-blur bg-white/80 border border-white/60 shadow-sm transition-all hover:scale-105 ${
-                        isSaved(item.id) ? 'text-rose-600' : 'text-slate-700'
-                      }`}
+                      className={`absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full backdrop-blur bg-white/80 border border-white/60 shadow-sm transition-all hover:scale-105 ${isSaved(item.id) ? 'text-rose-600' : 'text-slate-700'
+                        }`}
                       aria-label="Save item"
                     >
                       <Heart className={`w-5 h-5 ${isSaved(item.id) ? 'fill-rose-600' : ''}`} />
@@ -750,11 +753,10 @@ const Marketplace: React.FC = () => {
                       <button className="flex-1 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm hover:bg-slate-800 transition-colors">View</button>
                       <button
                         onClick={() => toggleSave(item.id)}
-                        className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
-                          isSaved(item.id)
+                        className={`px-4 py-2 rounded-lg border text-sm transition-colors ${isSaved(item.id)
                             ? 'bg-rose-50 border-rose-200 text-rose-700'
                             : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                        }`}
+                          }`}
                       >
                         {isSaved(item.id) ? 'Saved' : 'Save'}
                       </button>
@@ -778,11 +780,10 @@ const Marketplace: React.FC = () => {
                       />
                       <div className="absolute top-3 left-3 flex gap-2">
                         <span
-                          className={`${badgeClass} ${
-                            String(item.listingType).toLowerCase() === 'forrent'
+                          className={`${badgeClass} ${String(item.listingType).toLowerCase() === 'forrent'
                               ? 'bg-indigo-100 text-indigo-700'
                               : 'bg-amber-100 text-amber-700'
-                          }`}
+                            }`}
                         >
                           {String(item.listingType).toLowerCase() === 'forrent' ? 'For Rent' : 'For Sale'}
                         </span>
@@ -793,9 +794,8 @@ const Marketplace: React.FC = () => {
                       </div>
                       <button
                         onClick={() => toggleSave(item.id)}
-                        className={`absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full backdrop-blur bg-white/80 border border-white/60 shadow-sm transition-all hover:scale-105 ${
-                          isSaved(item.id) ? 'text-rose-600' : 'text-slate-700'
-                        }`}
+                        className={`absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full backdrop-blur bg-white/80 border border-white/60 shadow-sm transition-all hover:scale-105 ${isSaved(item.id) ? 'text-rose-600' : 'text-slate-700'
+                          }`}
                         aria-label="Save item"
                       >
                         <Heart className={`w-5 h-5 ${isSaved(item.id) ? 'fill-rose-600' : ''}`} />
@@ -846,11 +846,10 @@ const Marketplace: React.FC = () => {
                         <button className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm hover:bg-slate-800 transition-colors">View</button>
                         <button
                           onClick={() => toggleSave(item.id)}
-                          className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
-                            isSaved(item.id)
+                          className={`px-4 py-2 rounded-lg border text-sm transition-colors ${isSaved(item.id)
                               ? 'bg-rose-50 border-rose-200 text-rose-700'
                               : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                          }`}
+                            }`}
                         >
                           {isSaved(item.id) ? 'Saved' : 'Save'}
                         </button>

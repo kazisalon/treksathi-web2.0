@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Share2, Bookmark, MapPin, Calendar, User, Star, Eye, MoreHorizontal, Plus, X, Upload, Camera, Lock, LogIn, Compass, Plane, Mountain, Sun, CloudRain, Route, BadgeCheck, Clock, Navigation } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, MapPin, Calendar, User, Star, Eye, MoreHorizontal, Plus, X, Upload, Camera, Lock, LogIn, Compass, Plane, Mountain, Sun, CloudRain, Route, BadgeCheck, Clock, Navigation, TrendingUp, Award, Globe } from 'lucide-react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -41,51 +41,74 @@ interface CreatePostData {
 
 // Create Post Component
 const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [formData, setFormData] = useState<CreatePostData>({
     title: '',
     description: '',
     location: '',
     images: []
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [error, setError] = useState('');
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Check if user is authenticated
-  const isAuthenticated = status === 'authenticated' && session?.user;
+  const MAX_IMAGES = 0;
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-  // Sync NextAuth token with localStorage for API compatibility
-  useEffect(() => {
-    if (session?.accessToken) {
-      localStorage.setItem('authToken', session.accessToken);
-    } else {
-      localStorage.removeItem('authToken');
-    }
-  }, [session?.accessToken]);
-
-  // Note: Toast functionality is handled by the parent Posts component
+  // Authentication check
+  if (!session) {
+    return (
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl border border-blue-100 shadow-lg">
+        <div className="flex flex-col items-center text-center max-w-md mx-auto">
+          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+            <LogIn className="w-10 h-10 text-blue-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Share Your Adventure</h3>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            Sign in to share your incredible travel stories and inspire others to explore Nepal.
+          </p>
+          <button
+            onClick={() => router.push('/auth/signin')}
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          >
+            Sign In to Continue
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, ...files].slice(0, 5) // Max 5 images
-      }));
+    const validFiles = files.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        setError(`${file.name} is too large. Max size is 5MB.`);
+        return false;
+      }
+      return true;
+    });
 
-      // Create preview URLs
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setPreviewImages(prev => [...prev, e.target?.result as string]);
-        };
-        reader.readAsDataURL(file);
-      });
+    if (formData.images.length + validFiles.length > MAX_IMAGES) {
+      setError(`You can only upload up to ${MAX_IMAGES} images.`);
+      return;
     }
+
+    validFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreviews(prev => [...prev, e.target?.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    setFormData(prev => ({ ...prev, images: [...prev.images, ...validFiles] }));
+    setError('');
   };
 
   const removeImage = (index: number) => {
@@ -93,1154 +116,879 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
       ...prev,
       images: prev.images.filter((_, i) => i !== index)
     }));
-    setPreviewImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    // Check authentication first
-    if (!isAuthenticated) {
-      setError('You must be logged in to create a post');
-      return;
-    }
-
-    // Validate form data
-    if (!formData.title.trim()) {
-      setError('Please enter a title for your post');
-      return;
-    }
-    if (!formData.description.trim()) {
-      setError('Please enter a description for your post');
-      return;
-    }
-    if (formData.images.length === 0) {
-      setError('Please add at least one image to your post');
-      return;
-    }
-
+    setError('');
     setIsSubmitting(true);
+    setUploadProgress(0);
+
+    if (!formData.title.trim() || !formData.description.trim() || !formData.location.trim()) {
+      setError('Please fill in all required fields.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    setUploadProgress(30);
+
     try {
-      if (!session?.accessToken) {
-        setError('Authentication token not found. Please log out and log in again.');
-        return;
-      }
+      const reqBody: any = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        location: formData.location.trim(),
+      };
 
-      const submitData = new FormData();
-      submitData.append('title', formData.title.trim());
-      submitData.append('description', formData.description.trim());
-      submitData.append('location', formData.location.trim());
+      setUploadProgress(60);
 
-      // Add user information if available
-      if (session?.user?.id) {
-        submitData.append('userId', session.user.id);
-      }
+      const response = await TravelGuideAPI.posts.create(reqBody);
 
-      formData.images.forEach((image) => {
-        submitData.append('images', image);
-      });
+      setUploadProgress(100);
 
-      const result = await TravelGuideAPI.createPost(submitData);
-
-      // Reset form on success
-      setFormData({ title: '', description: '', location: '', images: [] });
-      setPreviewImages([]);
-      setIsOpen(false);
-      setError(null);
-      onPostCreated();
-
-      // Show success message
-      const successMessage = document.createElement('div');
-      successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse';
-      successMessage.textContent = '✅ Post created successfully!';
-      document.body.appendChild(successMessage);
-      setTimeout(() => document.body.removeChild(successMessage), 3000);
-
-    } catch (error: any) {
-
-      // Handle specific error cases
-      if (error.response?.status === 401) {
-        setError('Your session has expired. Please log in again.');
-        setTimeout(() => router.push('/auth/signin'), 2000);
-      } else if (error.response?.status === 413) {
-        setError('Images are too large. Please use smaller images (max 10MB each).');
-      } else if (error.response?.status === 400) {
-        setError(error.response?.data?.message || 'Invalid data. Please check your inputs.');
-      } else if (error.message?.includes('Network Error')) {
-        setError('Network error. Please check your internet connection.');
+      if (response && response.id) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          resetForm();
+          setIsOpen(false);
+          setIsSuccess(false);
+          onPostCreated();
+        }, 2000);
       } else {
-        setError(error.response?.data?.message || error.message || 'Failed to create post. Please try again.');
+        throw new Error(response?.message || 'Failed to create post');
       }
+    } catch (err: any) {
+      setError(err.message || 'Failed to create post. Please try again.');
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
   const resetForm = () => {
     setFormData({ title: '', description: '', location: '', images: [] });
-    setPreviewImages([]);
-    setError(null);
-    setIsOpen(false);
+    setImagePreviews([]);
+    setError('');
   };
 
+  if (!isOpen) {
+    return (
+      <div className="mb-8">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white p-6 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          <Plus className="w-6 h-6" />
+          Share Your Nepal Adventure
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {/* Create Post Button */}
-      <div className="mb-12 max-w-3xl mx-auto px-4">
-        {isAuthenticated ? (
-          <button
-            onClick={() => setIsOpen(true)}
-            className="w-full bg-white dark:bg-slate-900/40 border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500/50 hover:bg-blue-50/30 dark:hover:bg-blue-500/5 rounded-3xl p-8 transition-all duration-300 group shadow-sm hover:shadow-md backdrop-blur-xl"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300">
-                <Plus className="w-8 h-8" />
-              </div>
-              <div className="text-center">
-                <span className="text-xl font-bold text-slate-800 dark:text-slate-100 block mb-1">Share Your Journey</span>
-                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Inspire fellow travelers with your authentic stories and photos</p>
-              </div>
+    <div className="mb-8 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <Camera className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">Create Post</h3>
+            <p className="text-blue-100 text-sm">Share your adventure with the world</p>
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            setIsOpen(false);
+            resetForm();
+          }}
+          className="p-2 hover:bg-white/20 rounded-full transition-colors"
+        >
+          <X className="w-6 h-6 text-white" />
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="p-8">
+        {/* Success Message */}
+        {isSuccess && (
+          <div className="mb-6 p-6 bg-green-50 border-2 border-green-200 rounded-2xl flex items-center gap-4">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+              <BadgeCheck className="w-6 h-6 text-green-600" />
             </div>
-          </button>
-        ) : (
-          <div className="w-full bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 text-center shadow-sm backdrop-blur-xl">
-            <div className="flex flex-col items-center gap-4 mb-6">
-              <div className="w-14 h-14 bg-slate-100 dark:bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-400">
-                <Lock className="w-7 h-7" />
-              </div>
-              <div>
-                <span className="text-xl font-bold text-slate-800 dark:text-slate-100 block mb-1">Join the Community</span>
-                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Log in to share your amazing experiences with the world</p>
-              </div>
-            </div>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => router.push('/auth/signin')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <LogIn className="w-4 h-4" />
-                Sign In
-              </button>
-              <button
-                onClick={() => router.push('/auth/signup')}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-2 rounded-lg transition-all flex items-center gap-2"
-              >
-                <User className="w-4 h-4" />
-                Sign Up
-              </button>
+            <div>
+              <h4 className="font-bold text-green-900 text-lg">Success!</h4>
+              <p className="text-green-700">Your adventure has been shared with the community.</p>
             </div>
           </div>
         )}
-      </div>
 
-      {/* Create Post Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border dark:border-slate-800">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-800">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Create New Post
-              </h2>
-              <button
-                onClick={resetForm}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6 text-gray-500 dark:text-slate-400" />
-              </button>
-            </div>
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 flex items-center gap-3">
+            <X className="w-5 h-5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              {/* Error Display */}
-              {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 rounded-lg p-4 flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <X className="w-3 h-3 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-red-800 dark:text-red-300 font-medium">Error</p>
-                    <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
-                  </div>
-                </div>
-              )}
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Give your post an amazing title..."
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  required
-                />
-              </div>
+        {/* Title */}
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            placeholder="Give your adventure a catchy title..."
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors text-gray-900"
+            disabled={isSubmitting}
+            required
+          />
+        </div>
 
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
-                  Location
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-slate-500" />
-                  <input
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                    placeholder="Where was this taken?"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  />
-                </div>
-              </div>
+        {/* Location */}
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <MapPin className="w-4 h-4 inline mr-1" />
+            Location <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={formData.location}
+            onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+            placeholder="Where did you go? (e.g., Everest Base Camp)"
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors text-gray-900"
+            disabled={isSubmitting}
+            required
+          />
+        </div>
 
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
-                  Description *
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Share your travel story, tips, or experiences..."
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  required
-                />
-              </div>
-
-              {/* Image Upload */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Images * (Max 5)
-                </label>
-
-                {/* Upload Button */}
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all"
-                >
-                  <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 font-medium">Click to upload images</p>
-                  <p className="text-gray-400 text-sm mt-1">PNG, JPG up to 10MB each</p>
-                </div>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-
-                {/* Image Previews */}
-                {previewImages.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                    {previewImages.map((preview, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={preview}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex gap-4 pt-4">
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="flex-1 px-6 py-3 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl px-6 py-3 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Creating...' : 'Create Post'}
-                </button>
-              </div>
-            </form>
+        {/* Description */}
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Description <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="Tell us about your experience... What made it special?"
+            rows={6}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors resize-none text-gray-900"
+            disabled={isSubmitting}
+            required
+          />
+          <div className="flex justify-between mt-2 text-sm">
+            <span className="text-gray-500">Minimum 10 characters</span>
+            <span className={`${formData.description.length < 10 ? 'text-red-500' : 'text-green-600'} font-medium`}>
+              {formData.description.length} characters
+            </span>
           </div>
         </div>
-      )}
-    </>
+
+        {/* Progress Bar */}
+        {uploadProgress > 0 && (
+          <div className="mb-6">
+            <div className="flex justify-between mb-2 text-sm font-medium text-gray-700">
+              <span>Uploading...</span>
+              <span>{uploadProgress}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Submit Buttons */}
+        <div className="flex gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              setIsOpen(false);
+              resetForm();
+            }}
+            className="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            disabled={isSubmitting || formData.description.length < 10}
+          >
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Publishing...
+              </>
+            ) : (
+              <>
+                <Upload className="w-5 h-5" />
+                Publish Adventure
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
-
-
+// Main Posts Component
 const Posts: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
+
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // UI state
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
-  const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<string>>(new Set());
-  const [isVisible, setIsVisible] = useState(false);
-  const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null);
-  const [commentText, setCommentText] = useState('');
+  const [bookmarked, setBookmarked] = useState<Set<string>>(new Set());
+  const [activeComments, setActiveComments] = useState<{ [key: string]: Comment[] }>({});
+  const [commentText, setCommentText] = useState<{ [key: string]: string }>({});
+  const [showComments, setShowComments] = useState<{ [key: string]: boolean }>({});
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const [postComments, setPostComments] = useState<{ [postId: string]: Comment[] }>({});
 
   // Initialize comments for a post (local state only since API doesn't support GET)
   const initializeCommentsState = (postId: string) => {
-    if (!postComments[postId]) {
-      setPostComments(prev => ({
+    if (!activeComments[postId]) {
+      setActiveComments(prev => ({
         ...prev,
         [postId]: []
       }));
     }
   };
-  const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set());
-  const sectionRef = useRef<HTMLDivElement>(null);
 
   // Map API comment shape to UI Comment interface
   const mapApiComments = (apiComments: any[] | undefined | null): Comment[] => {
-    if (!Array.isArray(apiComments)) return [];
+    if (!apiComments || !Array.isArray(apiComments)) return [];
     return apiComments.map((c: any) => ({
-      id: c.id || c._id || `c-${Date.now()}-${Math.random()}`,
-      text: c.text || c.content || c.comment || '',
-      userName: c.userName || c.username || c.user?.name || 'Anonymous',
-      userId: c.userId || c.user?.id || '',
-      dateCreated: c.dateCreated || c.createdAt || c.created || new Date().toISOString(),
+      id: c.id || Math.random().toString(36).substr(2, 9),
+      text: c.text || c.comment || '',
+      userName: c.userName || c.username || 'Anonymous',
+      userId: c.userId || '',
+      dateCreated: c.dateCreated || new Date().toISOString()
     }));
   };
 
-  // Sync NextAuth token with localStorage for API compatibility
+  // Load liked posts on mount
   useEffect(() => {
-    if (session?.accessToken) {
-      localStorage.setItem('authToken', session.accessToken);
-    } else {
-      localStorage.removeItem('authToken');
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = loadLikedFromStorage(session?.user?.id);
+        setLikedPosts(stored);
+      } catch (err) {
+        console.error('Failed to load liked posts:', err);
+      }
     }
-  }, [session?.accessToken]);
+  }, [session]);
 
-  // Intersection Observer for animations
+  // Update storage whenever likedPosts changes
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    if (typeof window !== 'undefined' && session?.user?.id) {
+      try {
+        saveLikedToStorage(session.user.id, likedPosts);
+      } catch (err) {
+        console.error('Failed to save liked posts:', err);
+      }
     }
+  }, [likedPosts, session]);
 
-    return () => observer.disconnect();
+  // Load bookmarked posts
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('bookmarked_posts');
+      if (stored) {
+        setBookmarked(new Set(JSON.parse(stored)));
+      }
+    }
   }, []);
-
-  // Re-init liked set whenever auth status changes (preserve likes when logged out)
-  useEffect(() => {
-    const fromStorage = loadLikedFromStorage(session?.user?.id);
-    setLikedPosts(fromStorage);
-  }, [status]);
 
   // Fetch posts function (Instagram-like behavior)
   const fetchPosts = async () => {
     try {
-      setLoading(true);
+      setIsLoadingMore(page > 1);
+      const response = await TravelGuideAPI.posts.getAll();
 
-      // Try to get posts with user data first (Instagram approach)
-      let fetchedPosts;
-      if (status === 'authenticated') {
-        try {
-          fetchedPosts = await TravelGuideAPI.getPostsWithUserData();
-        } catch (userDataError) {
-          fetchedPosts = await TravelGuideAPI.getAllPosts();
-        }
-      } else {
-        fetchedPosts = await TravelGuideAPI.getAllPosts();
-      }
+      if (response && Array.isArray(response)) {
+        const mapped = response.map((p: any) => ({
+          id: p.id,
+          title: p.title || 'Untitled',
+          description: p.description || '',
+          imageUrls: p.imageUrls || [],
+          likesCount: p.likesCount || 0,
+          commentCount: p.commentCount || 0,
+          location: p.location || 'Unknown',
+          userId: p.userId || '',
+          userName: p.userName || 'Anonymous',
+          dateCreated: p.dateCreated || new Date().toISOString(),
+          comments: mapApiComments(p.comments)
+        }));
 
-      // Normalize posts data to ensure all required fields exist
-      const normalizedPosts = fetchedPosts.map((post: any) => ({
-        ...post,
-        id: String(post.id || post._id || `temp-${Date.now()}-${Math.random()}`),
-        title: post.title || 'Untitled Post',
-        description: post.description || post.content || '',
-        likesCount: post.likesCount || post.likes || post.likeCount || 0,
-        commentCount: post.commentCount || post.comments || post.commentsCount || post.commentLength || 0,
-        imageUrls: post.imageUrls || post.images || (post.imageUrl ? [post.imageUrl] : []),
-        userName: post.userName || post.username || post.user?.name || post.user?.username || 'Anonymous',
-        userId: post.userId || post.user?.id || post.authorId || '',
-        location: post.location || '',
-        dateCreated: post.dateCreated || post.createdAt || post.created || new Date().toISOString()
-      }));
-
-      setPosts(normalizedPosts);
-
-      // cache posts for offline/timeout fallback
-      try {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('cache:posts', JSON.stringify(normalizedPosts));
-        }
-      } catch { }
-
-      // Initialize liked posts state from storage for both auth and guest
-      const storageSet = loadLikedFromStorage(session?.user?.id);
-      setLikedPosts(storageSet);
-
-      setError(null);
-    } catch (err) {
-
-      // Fallback to cached posts if available
-      try {
-        const raw = localStorage.getItem('cache:posts');
-        if (raw) {
-          const cached = JSON.parse(raw);
-          if (Array.isArray(cached) && cached.length) {
-            setPosts(cached);
-            setError(null);
-            showToast('Showing cached posts due to network timeout', 'info');
-          } else {
-            setError('Failed to load posts. Please try again later.');
-          }
+        if (page === 1) {
+          setPosts(mapped);
         } else {
-          setError('Failed to load posts. Please try again later.');
+          setPosts(prev => [...prev, ...mapped]);
         }
-      } catch {
-        setError('Failed to load posts. Please try again later.');
+
+        setHasMore(mapped.length >= 10);
+      } else {
+        if (page === 1) setPosts([]);
+        setHasMore(false);
       }
+    } catch (err) {
+      showToast('Failed to load posts', 'error');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+      setIsLoadingMore(false);
     }
   };
 
   // Refresh posts after creating a new one
   const refreshPosts = () => {
+    setPage(1);
+    setIsLoading(true);
     fetchPosts();
   };
 
-  // Fetch posts on component mount
   useEffect(() => {
-    if (isVisible) {
-      fetchPosts();
-    }
-  }, [isVisible]);
+    fetchPosts();
+  }, [page]);
 
   // Toast notification helper
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
   };
 
   // Ensure likes count never shows 0 when user has liked (Instagram-like UX)
   const getDisplayLikesCount = (postId: string, likesCount?: number) => {
-    const base = typeof likesCount === 'number' ? likesCount : 0;
-    return likedPosts.has(postId) ? Math.max(base, 1) : base;
+    const isLiked = likedPosts.has(postId);
+    return isLiked && (likesCount === 0 || likesCount === undefined) ? 1 : (likesCount || 0);
   };
-
-  // Premium UI tokens
-  const cardOuterClass =
-    'relative rounded-3xl p-[1px] bg-gradient-to-br from-slate-200/50 to-slate-300/30 dark:from-slate-700/50 dark:to-slate-800/30 shadow-sm transition-all duration-500';
-  const cardInnerClass =
-    'rounded-3xl bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/50 overflow-hidden shadow-[0_8px_20px_-8px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.15)] backdrop-blur-xl transition-all duration-300';
-  const imageWrapClass =
-    'relative overflow-hidden group aspect-[16/10]';
-  const imageClass =
-    'w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700';
-  const imageOverlayClass =
-    'absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-300';
-  const avatarRingClass =
-    'ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-800 overflow-hidden';
-  const countPillClass =
-    'text-xs font-semibold text-slate-500 dark:text-slate-400';
-  const metaChip =
-    'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 text-[11px] font-medium border border-slate-100 dark:border-slate-700/50';
-  const dividerClass = 'hidden'; // Removed visual divider
-
-  // Aliases for travel-specific class tokens
-  const travelMetaChip = metaChip;
 
   // Local storage helpers for liked posts (per user)
-  const likedStorageKey = (uid?: string) => `likedPosts:${uid || 'guest'}`;
-  const likedLastKey = 'likedPosts:last';
+  const likedStorageKey = (uid?: string) =>
+    uid ? `liked_posts_${uid}` : 'liked_posts_guest';
 
   const loadLikedFromStorage = (uid?: string): Set<string> => {
+    if (typeof window === 'undefined') return new Set();
     try {
-      const key = uid ? likedStorageKey(uid) : likedLastKey;
-      const rawPrimary = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
-      if (rawPrimary) {
-        const arr = JSON.parse(rawPrimary);
-        return new Set(Array.isArray(arr) ? arr : []);
+      const key = likedStorageKey(uid);
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        const arr = JSON.parse(stored);
+        return new Set(arr);
       }
-      // Fallback to guest storage if last snapshot not available
-      const rawGuest = typeof window !== 'undefined' ? localStorage.getItem(likedStorageKey()) : null;
-      const arrGuest = rawGuest ? JSON.parse(rawGuest) : [];
-      return new Set(Array.isArray(arrGuest) ? arrGuest : []);
-    } catch {
-      return new Set();
+    } catch (e) {
+      console.error('Error loading liked posts:', e);
     }
+    return new Set();
   };
+
   const saveLikedToStorage = (uid: string | undefined, set: Set<string>) => {
+    if (typeof window === 'undefined') return;
     try {
-      if (typeof window !== 'undefined') {
-        // Save to user/guest specific key
-        localStorage.setItem(likedStorageKey(uid), JSON.stringify(Array.from(set)));
-        // Always also save a "last seen" snapshot for logout/guest view
-        localStorage.setItem(likedLastKey, JSON.stringify(Array.from(set)));
-      }
-    } catch { }
+      const key = likedStorageKey(uid);
+      const arr = Array.from(set);
+      localStorage.setItem(key, JSON.stringify(arr));
+    } catch (e) {
+      console.error('Error saving liked posts:', e);
+    }
   };
 
   // Initialize comments for a specific post (fetch from API)
   const initializeComments = async (postId: string) => {
-    if (loadingComments.has(postId)) return;
-
-    setLoadingComments(prev => {
-      const next = new Set(prev);
-      next.add(postId);
-      return next;
-    });
+    if (activeComments[postId]) return;
 
     try {
-      const postData = await TravelGuideAPI.getPostById(postId);
-      const mapped = mapApiComments(postData?.comments);
-
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: mapped,
-      }));
-
-      // Ensure the counter reflects backend data
-      setPosts(prev =>
-        prev.map(p => (p.id === postId ? { ...p, commentCount: mapped.length } : p))
-      );
-    } catch (err) {
-      if (!postComments[postId]) {
-        setPostComments(prev => ({ ...prev, [postId]: [] }));
-      }
-    } finally {
-      setLoadingComments(prev => {
-        const next = new Set(prev);
-        next.delete(postId);
-        return next;
-      });
-    }
-  };
-
-  // Auto-hide toast
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
-
-  const handleLike = async (postId: string) => {
-    if (status !== 'authenticated') {
-      showToast('🔒 Please log in to like posts', 'info');
-      return;
-    }
-
-    const prevWasLiked = likedPosts.has(postId);
-    const optimisticIsLiked = !prevWasLiked;
-
-    // Optimistic update: liked set and likes count immediately
-    setLikedPosts(prev => {
-      const next = new Set(prev);
-      if (optimisticIsLiked) next.add(postId);
-      else next.delete(postId);
-      saveLikedToStorage(session?.user?.id, next);
-      return next;
-    });
-
-    setPosts(prev =>
-      prev.map(p =>
-        p.id === postId
-          ? { ...p, likesCount: Math.max(0, (p.likesCount || 0) + (optimisticIsLiked ? 1 : -1)) }
-          : p
-      )
-    );
-
-    try {
-      const response = await TravelGuideAPI.likePost(postId);
-
-      // Server flags if available
-      const serverIsLiked =
-        typeof response?.isLiked === 'boolean' ? response.isLiked : optimisticIsLiked;
-      const serverCount =
-        typeof response?.likesCount === 'number'
-          ? response.likesCount
-          : typeof response?.likeCount === 'number'
-            ? response.likeCount
-            : undefined;
-
-      // Update liked set from server flag
-      setLikedPosts(prev => {
-        const next = new Set(prev);
-        if (serverIsLiked) next.add(postId);
-        else next.delete(postId);
-        saveLikedToStorage(session?.user?.id, next);
-        return next;
-      });
-
-      // Reconcile count: prefer optimistic unless server provides a definitive number
-      setPosts(prev =>
-        prev.map(p => {
-          if (p.id !== postId) return p;
-          const current = p.likesCount || 0; // already includes optimistic change
-          if (serverCount === undefined) {
-            // No server count -> keep optimistic
-            return { ...p, likesCount: current };
-          }
-          if (serverIsLiked && serverCount <= 0) {
-            // Server returned 0 while liked -> keep at least optimistic 1
-            return { ...p, likesCount: Math.max(current, 1) };
-          }
-          // Server provided a definitive count -> trust it
-          return { ...p, likesCount: Math.max(0, serverCount) };
-        })
-      );
-
-      showToast(serverIsLiked ? '❤️ Post liked!' : '💔 Post unliked', 'success');
-    } catch (error: any) {
-
-      // Revert on failure
-      setLikedPosts(prev => {
-        const next = new Set(prev);
-        if (prevWasLiked) next.add(postId);
-        else next.delete(postId);
-        saveLikedToStorage(session?.user?.id, next);
-        return next;
-      });
-
-      setPosts(prev =>
-        prev.map(p =>
-          p.id === postId
-            ? { ...p, likesCount: Math.max(0, (p.likesCount || 0) + (prevWasLiked ? 1 : -1)) }
-            : p
-        )
-      );
-
-      if (error?.response?.status === 401) {
-        showToast('🔒 Authentication failed. Please log in again.', 'error');
-      } else if (error?.response?.status === 404) {
-        showToast('❌ Post not found.', 'error');
+      const post = posts.find(p => p.id === postId);
+      if (post?.comments) {
+        setActiveComments(prev => ({
+          ...prev,
+          [postId]: post.comments || []
+        }));
       } else {
-        showToast('❌ Failed to like post. Please try again.', 'error');
+        setActiveComments(prev => ({
+          ...prev,
+          [postId]: []
+        }));
       }
+    } catch (err) {
+      setActiveComments(prev => ({
+        ...prev,
+        [postId]: []
+      }));
     }
   };
 
-  const handleCommentSubmit = async (postId: string) => {
-    if (!commentText.trim()) {
-      showToast('❌ Please enter a comment', 'error');
-      return;
-    }
+  // Handle like (optimistic UI update + API call)
+  const handleLike = async (postId: string) => {
+    const isCurrentlyLiked = likedPosts.has(postId);
+    const currentPost = posts.find(p => p.id === postId);
 
-    await handleComment(postId, commentText.trim());
+    // Optimistic UI update
+    const updatedLiked = new Set(likedPosts);
+    if (isCurrentlyLiked) {
+      updatedLiked.delete(postId);
+      setPosts(posts.map(p =>
+        p.id === postId
+          ? { ...p, likesCount: Math.max(0, (p.likesCount || 0) - 1) }
+          : p
+      ));
+    } else {
+      updatedLiked.add(postId);
+      setPosts(posts.map(p =>
+        p.id === postId
+          ? { ...p, likesCount: (p.likesCount || 0) + 1 }
+          : p
+      ));
+    }
+    setLikedPosts(updatedLiked);
+
+    // Call API
+    try {
+      if (isCurrentlyLiked) {
+        await TravelGuideAPI.posts.unlike(postId);
+      } else {
+        await TravelGuideAPI.posts.like(postId);
+      }
+    } catch (err) {
+      // Revert on error
+      setLikedPosts(likedPosts);
+      setPosts(posts.map(p =>
+        p.id === postId
+          ? { ...p, likesCount: currentPost?.likesCount || 0 }
+          : p
+      ));
+      showToast('Failed to update like', 'error');
+    }
+  };
+
+  const handleCommentSubmit = (postId: string) => {
+    const text = commentText[postId]?.trim();
+    if (text) {
+      handleComment(postId, text);
+    }
   };
 
   const handleComment = async (postId: string, comment: string) => {
-    if (status !== 'authenticated') {
-      showToast('🔒 Please log in to comment', 'info');
+    if (!session?.user) {
+      router.push('/auth/signin');
       return;
     }
 
-    const newComment: Comment = {
-      id: `comment-${Date.now()}-${Math.random()}`,
+    if (!comment.trim()) return;
+
+    const optimisticComment: Comment = {
+      id: `temp_${Date.now()}`,
       text: comment,
-      userName: session?.user?.name || session?.user?.email || 'You',
-      userId: session?.user?.id || '',
+      userName: session.user.name || 'You',
+      userId: session.user.id || '',
       dateCreated: new Date().toISOString()
     };
 
-    // Add comment to local state immediately for instant UI feedback
-    setPostComments(prev => ({
+    setActiveComments(prev => ({
       ...prev,
-      [postId]: [...(prev[postId] || []), newComment]
+      [postId]: [...(prev[postId] || []), optimisticComment]
     }));
+    setCommentText(prev => ({ ...prev, [postId]: '' }));
 
-    // Update post comment count
-    setPosts(prev => prev.map(post =>
-      post.id === postId
-        ? { ...post, commentCount: (post.commentCount || 0) + 1 }
-        : post
-    ));
-
-    // Reset comment input
-    setCommentText('');
-
-    showToast('💬 Comment added successfully!', 'success');
-
-    // Sync with API, then refresh from backend to reflect authoritative state
     try {
-      await TravelGuideAPI.addComment(postId, comment);
-      await initializeComments(postId);
-    } catch (error) {
-      // Comment remains visible from optimistic update
+      await TravelGuideAPI.posts.addComment(postId, comment);
+      showToast('Comment added!', 'success');
+    } catch (err) {
+      showToast('Failed to add comment', 'error');
+      setActiveComments(prev => ({
+        ...prev,
+        [postId]: (prev[postId] || []).filter(c => c.id !== optimisticComment.id)
+      }));
     }
   };
 
   const handleShare = async (post: Post) => {
-    try {
-      if (navigator.share) {
-        // Use native share API if available (mobile)
+    if (navigator.share) {
+      try {
         await navigator.share({
           title: post.title,
-          text: `Check out this amazing travel post: ${post.title}`,
-          url: window.location.href,
+          text: post.description,
+          url: window.location.href
         });
-      } else {
-        // Fallback: copy to clipboard
-        const shareText = `Check out this amazing travel post: ${post.title}\n${post.description}\n\n${window.location.href}`;
-        await navigator.clipboard.writeText(shareText);
-
-        const successPrompt = document.createElement('div');
-        successPrompt.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-        successPrompt.innerHTML = '🔗 Link copied to clipboard!';
-        document.body.appendChild(successPrompt);
-        setTimeout(() => document.body.removeChild(successPrompt), 2000);
+        showToast('Shared successfully!', 'success');
+      } catch (err) {
+        // User cancelled share
       }
-    } catch (error) {
-      const errorPrompt = document.createElement('div');
-      errorPrompt.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-      errorPrompt.innerHTML = '❌ Failed to share';
-      document.body.appendChild(errorPrompt);
-      setTimeout(() => document.body.removeChild(errorPrompt), 2000);
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(`${post.title}\n${window.location.href}`);
+        showToast('Link copied to clipboard!', 'success');
+      } catch (err) {
+        showToast('Failed to share', 'error');
+      }
     }
   };
 
   const handleBookmark = (postId: string) => {
-    if (status !== 'authenticated') {
-      const loginPrompt = document.createElement('div');
-      loginPrompt.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-      loginPrompt.innerHTML = '🔒 Please log in to bookmark posts';
-      document.body.appendChild(loginPrompt);
-      setTimeout(() => document.body.removeChild(loginPrompt), 3000);
-      return;
+    const updated = new Set(bookmarked);
+    if (bookmarked.has(postId)) {
+      updated.delete(postId);
+      showToast('Removed from bookmarks', 'info');
+    } else {
+      updated.add(postId);
+      showToast('Added to bookmarks', 'success');
     }
-
-    setBookmarkedPosts(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(postId)) {
-        newSet.delete(postId);
-      } else {
-        newSet.add(postId);
-      }
-      return newSet;
-    });
-
-    const action = bookmarkedPosts.has(postId) ? 'removed from' : 'added to';
-    const successPrompt = document.createElement('div');
-    successPrompt.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-    successPrompt.innerHTML = `📌 Post ${action} bookmarks`;
-    document.body.appendChild(successPrompt);
-    setTimeout(() => document.body.removeChild(successPrompt), 3000);
+    setBookmarked(updated);
+    localStorage.setItem('bookmarked_posts', JSON.stringify(Array.from(updated)));
   };
 
   const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return 'Unknown date';
-
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'Invalid date';
-
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-    return date.toLocaleDateString();
+    if (!dateString) return 'Just now';
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      if (days === 0) return 'Today';
+      if (days === 1) return 'Yesterday';
+      if (days < 7) return `${days} days ago`;
+      if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+      return date.toLocaleDateString();
+    } catch {
+      return 'Recently';
+    }
   };
 
   const getImageUrl = (imageUrls: string[] | undefined | null) => {
-    if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
-      const imageUrl = imageUrls[0];
-      // Ensure imageUrl is a string before calling startsWith
-      if (typeof imageUrl === 'string' && imageUrl.trim()) {
-        // Handle relative URLs from your API
-        if (imageUrl.startsWith('/')) {
-          return `https://travelguide-rttu.onrender.com${imageUrl}`;
-        }
-        return imageUrl;
-      }
+    if (!imageUrls || imageUrls.length === 0) {
+      return 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop';
     }
-    // Fallback image
-    return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop';
+    return imageUrls[0];
   };
 
   // Travel-specific helpers
   const getSeasonLabel = (dateString?: string | null) => {
-    try {
-      if (!dateString) return 'Season';
-      const m = new Date(dateString).getMonth(); // 0-11
-      if ([11, 0, 1].includes(m)) return 'Winter';
-      if ([2, 3, 4].includes(m)) return 'Spring';
-      if ([5, 6, 7].includes(m)) return 'Monsoon';
-      return 'Autumn';
-    } catch {
-      return 'Season';
-    }
+    if (!dateString) return 'Any Season';
+    const month = new Date(dateString).getMonth();
+    if (month >= 2 && month <= 4) return 'Spring Trek';
+    if (month >= 5 && month <= 7) return 'Monsoon';
+    if (month >= 8 && month <= 10) return 'Autumn Trek';
+    return 'Winter Trek';
   };
 
   const getSeasonIcon = (season: string): React.ReactNode => {
-    if (season.toLowerCase() === 'monsoon') {
-      return <CloudRain className="w-3 h-3 text-sky-600" />;
-    }
-    return <Sun className="w-3 h-3 text-amber-500" />;
+    if (season.includes('Spring')) return <Flower className="w-4 h-4" />;
+    if (season.includes('Monsoon')) return <CloudRain className="w-4 h-4" />;
+    return <Sun className="w-4 h-4" />;
   };
 
   const getTripTraits = (text?: string) => {
-    const t = (text || '').toLowerCase();
-    const traits: string[] = [];
-    if (/(trek|hike|trail|mountain|peak)/.test(t)) traits.push('Trek');
-    if (/(temple|culture|heritage|festival)/.test(t)) traits.push('Culture');
-    if (/(lake|view|scenic|sunrise|sunset|nature)/.test(t)) traits.push('Scenic');
-    if (/(food|cafe|restaurant|tea|coffee)/.test(t)) traits.push('Food');
-    if (traits.length === 0) traits.push('Explore');
-    return traits.slice(0, 3);
+    const traits = [];
+    if (text?.toLowerCase().includes('trek')) traits.push('Trekking');
+    if (text?.toLowerCase().includes('mountain')) traits.push('Mountains');
+    if (text?.toLowerCase().includes('culture')) traits.push('Cultural');
+    return traits.slice(0, 2);
   };
 
   const traitIcon = (trait: string): React.ReactNode => {
     switch (trait) {
-      case 'Trek':
-        return <Mountain className="w-3 h-3 text-indigo-600" />;
-      case 'Culture':
-        return <BadgeCheck className="w-3 h-3 text-pink-600" />;
-      case 'Scenic':
-        return <Star className="w-3 h-3 text-amber-500" />;
-      case 'Food':
-        return <Share2 className="w-3 h-3 text-rose-600" />;
-      default:
-        return <Compass className="w-3 h-3 text-slate-600" />;
+      case 'Trekking': return <Mountain className="w-3 h-3" />;
+      case 'Mountains': return <Navigation className="w-3 h-3" />;
+      case 'Cultural': return <Globe className="w-3 h-3" />;
+      default: return <Compass className="w-3 h-3" />;
     }
   };
 
-  if (loading) {
-    return (
-      <section ref={sectionRef} className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-8">
-            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl animate-pulse"></div>
-              <Heart className="relative w-10 h-10 text-white animate-pulse" />
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-gray-900">🌟 Loading Travel Stories</h3>
-              <p className="text-lg text-blue-700 font-semibold">Discovering amazing adventures shared by travelers...</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section ref={sectionRef} className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-6">
-            <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto">
-              <Heart className="w-8 h-8 text-red-600" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-semibold text-red-900">Unable to Load Posts</h3>
-              <p className="text-red-700">{error}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section ref={sectionRef} className="py-20">
-      <div className="container mx-auto px-4">
-        {/* Professional Section Header */}
-        <div className={`text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/10 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 text-[10px] font-bold uppercase tracking-[0.1em] mb-6 border border-blue-100 dark:border-blue-800/50 backdrop-blur-sm">
-            <Compass className="w-3.5 h-3.5" />
-            <span>Community Stories</span>
-          </div>
+    <section className="py-20 bg-gradient-to-b from-white via-blue-50/30 to-white relative">
+      {/* Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-50">
+        <div className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+        <div className="absolute top-40 right-20 w-3 h-3 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-40 left-1/4 w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
 
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
-            Travel Stories
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <div className="inline-block mb-4">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-700">Community Stories</span>
+            </div>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
+            Discover Nepal
           </h2>
-
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium leading-relaxed mb-8">
-            Discover authentic perspectives and firsthand experiences shared by adventurers exploring the heart of Nepal and beyond.
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Explore authentic travel experiences shared by adventurers from around the world.
+            Get inspired by their journeys through the Himalayas.
           </p>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm backdrop-blur-sm">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{posts.length} Stories Shared</span>
-            </div>
-            <div className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm backdrop-blur-sm">
-              <Navigation className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Verified Experiences</span>
-            </div>
-          </div>
         </div>
 
-        {/* Create Post Component */}
+        {/* Create Post */}
         <CreatePost onPostCreated={refreshPosts} />
 
-        {/* Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {posts.filter(post => post && post.id && post.title).map((post, index) => {
-            const season = getSeasonLabel(post.dateCreated);
-            const seasonIconEl = getSeasonIcon(season);
-            const traits = getTripTraits(`${post.title || ''} ${post.description || ''}`);
+        {/* Toast Notification */}
+        {toast && (
+          <div className={`fixed top-4 right-4 z-50 p-4 rounded-xl shadow-2xl border-2 flex items-center gap-3 animate-in slide-in-from-top ${toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
+              toast.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
+                'bg-blue-50 border-blue-200 text-blue-800'
+            }`}>
+            {toast.type === 'success' && <BadgeCheck className="w-5 h-5" />}
+            {toast.type === 'error' && <X className="w-5 h-5" />}
+            <span className="font-medium">{toast.message}</span>
+          </div>
+        )}
 
-            return (
-              <div key={post.id} className={cardOuterClass} style={{ transitionDelay: `${index * 100}ms` }}>
-                <div className={cardInnerClass}>
-                  {/* Header */}
-                  <div className="flex items-center justify-between p-5">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-9 h-9 rounded-full ${avatarRingClass} flex items-center justify-center`}>
-                        <User className="w-5 h-5 text-slate-400 dark:text-slate-500" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-none mb-1">{post.userName || 'Explorer'}</span>
-                        <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold">
-                          <Clock className="w-3 h-3" />
-                          {formatDate(post.dateCreated)}
+        {/* Posts Grid */}
+        {isLoading && page === 1 ? (
+          <div className="grid gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-3xl shadow-lg p-6 animate-pulse">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full" />
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-32 mb-2" />
+                    <div className="h-3 bg-gray-200 rounded w-24" />
+                  </div>
+                </div>
+                <div className="h-96 bg-gray-200 rounded-2xl mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Mountain className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No posts yet</h3>
+            <p className="text-gray-600">Be the first to share your Nepal adventure!</p>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {posts.map((post) => {
+              const isLiked = likedPosts.has(post.id);
+              const isBookmarked = bookmarked.has(post.id);
+              const commentsVisible = showComments[post.id] || false;
+              const comments = activeComments[post.id] || [];
+              const season = getSeasonLabel(post.dateCreated);
+              const traits = getTripTraits(post.description);
+
+              return (
+                <article
+                  key={post.id}
+                  className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                >
+                  {/* Post Header */}
+                  <div className="p-6 border-b border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                          <User className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900">{post.userName}</h3>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <MapPin className="w-3 h-3" />
+                            <span>{post.location}</span>
+                            <span className="text-gray-300">•</span>
+                            <span>{formatDate(post.dateCreated)}</span>
+                          </div>
                         </div>
                       </div>
+                      <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                      </button>
                     </div>
-                    <button className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-full transition-colors text-slate-400">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
                   </div>
 
-                  {/* Image section */}
-                  <div className={imageWrapClass}>
+                  {/* Post Image */}
+                  <div className="relative aspect-[4/3] bg-gray-100">
                     <Image
-                      src={getImageUrl(post.imageUrls) || '/images/placeholder.jpg'}
+                      src={getImageUrl(post.imageUrls)}
                       alt={post.title}
-                      width={800}
-                      height={450}
-                      className={imageClass}
+                      fill
+                      className="object-cover"
                     />
-                    <div className={imageOverlayClass} />
-                    {post.location && post.location.trim() && (
-                      <div className="absolute bottom-4 left-4 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-black/30 backdrop-blur-md rounded-full border border-white/20 text-white pointer-events-none">
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span className="text-xs font-medium">{post.location}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Body Content */}
-                  <div className="p-5 pb-2">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {post.title || 'Adventure Story'}
-                    </h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 leading-relaxed">
-                      {post.description || 'Discover the details of this amazing journey...'}
-                    </p>
-
-                    {/* Metadata chips - simplified */}
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <span className={metaChip}>
-                        {seasonIconEl} {season}
-                      </span>
-                      {traits.slice(0, 2).map((t) => (
-                        <span key={t} className={metaChip}>
-                          {traitIcon(t)} {t}
-                        </span>
-                      ))}
+                    {/* Season Badge */}
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
+                      {getSeasonIcon(season)}
+                      <span className="text-sm font-semibold text-gray-800">{season}</span>
                     </div>
                   </div>
 
-                  {/* Action Buttons - Professionalized */}
-                  <div className="px-5 py-4 flex items-center justify-between border-t border-slate-50 dark:border-slate-800/50 mt-2">
-                    <div className="flex items-center gap-6">
-                      {/* Like */}
+                  {/* Post Actions */}
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => handleLike(post.id)}
+                          className="flex items-center gap-2 group"
+                        >
+                          <Heart
+                            className={`w-6 h-6 transition-all duration-300 ${isLiked
+                                ? 'fill-red-500 text-red-500 scale-110'
+                                : 'text-gray-600 group-hover:text-red-500 group-hover:scale-110'
+                              }`}
+                          />
+                          <span className="text-sm font-semibold text-gray-700">
+                            {getDisplayLikesCount(post.id, post.likesCount)}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (!commentsVisible) initializeComments(post.id);
+                            setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }));
+                          }}
+                          className="flex items-center gap-2 group"
+                        >
+                          <MessageCircle className="w-6 h-6 text-gray-600 group-hover:text-blue-500 transition-colors" />
+                          <span className="text-sm font-semibold text-gray-700">
+                            {comments.length || post.commentCount || 0}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => handleShare(post)}
+                          className="flex items-center gap-2 group"
+                        >
+                          <Share2 className="w-6 h-6 text-gray-600 group-hover:text-green-500 transition-colors" />
+                        </button>
+                      </div>
                       <button
-                        onClick={() => handleLike(post.id)}
-                        className={`group flex items-center gap-2 transition-colors ${likedPosts.has(post.id) ? 'text-rose-500' : 'text-slate-400 hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400'
-                          }`}
+                        onClick={() => handleBookmark(post.id)}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                       >
-                        <Heart
-                          className={`w-5 h-5 transition-transform group-active:scale-125 ${likedPosts.has(post.id) ? 'fill-current' : ''
+                        <Bookmark
+                          className={`w-6 h-6 transition-colors ${isBookmarked ? 'fill-blue-500 text-blue-500' : 'text-gray-600'
                             }`}
                         />
-                        <span className={countPillClass}>{getDisplayLikesCount(post.id, post.likesCount)}</span>
-                      </button>
-
-                      {/* Comment */}
-                      <button
-                        onClick={async () => {
-                          if (status !== 'authenticated') {
-                            showToast('🔒 Please log in to comment', 'info');
-                          } else {
-                            const isOpening = activeCommentPost !== post.id;
-                            setActiveCommentPost(isOpening ? post.id : null);
-                            if (isOpening) await initializeComments(post.id);
-                          }
-                        }}
-                        className="group flex items-center gap-2 text-slate-400 hover:text-blue-500 dark:text-slate-500 dark:hover:text-blue-400 transition-colors"
-                      >
-                        <MessageCircle className="w-5 h-5" />
-                        <span className={countPillClass}>{post.commentCount || 0}</span>
-                      </button>
-
-                      {/* Share */}
-                      <button
-                        onClick={() => handleShare(post)}
-                        className="text-slate-400 hover:text-emerald-500 dark:text-slate-500 dark:hover:text-emerald-400 transition-colors"
-                      >
-                        <Share2 className="w-5 h-5" />
                       </button>
                     </div>
 
-                    {/* Save */}
-                    <button
-                      onClick={() => handleBookmark(post.id)}
-                      className={`transition-colors ${bookmarkedPosts.has(post.id) ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500 dark:text-slate-500 dark:hover:text-amber-400'
-                        }`}
-                    >
-                      <Bookmark className={`w-5 h-5 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
-                    </button>
-                  </div>
+                    {/* Post Content */}
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{post.title}</h3>
+                      <p className="text-gray-700 leading-relaxed">{post.description}</p>
+                    </div>
 
-                  {/* Comments */}
-                  {activeCommentPost === post.id && (
-                    <div className="px-4 pb-4">
-                      <div className="mt-2 space-y-3 max-h-60 overflow-y-auto">
-                        {(() => {
-                          const comments = postComments[post.id] || [];
-                          return comments.length > 0 ? (
+                    {/* Traits */}
+                    {traits.length > 0 && (
+                      <div className="flex gap-2 mb-4">
+                        {traits.map((trait, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-1 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                          >
+                            {traitIcon(trait)}
+                            <span>{trait}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Comments Section */}
+                    {commentsVisible && (
+                      <div className="mt-6 pt-6 border-t border-gray-100">
+                        <h4 className="font-bold text-gray-900 mb-4">Comments</h4>
+
+                        {/* Comment Input */}
+                        {session ? (
+                          <div className="flex gap-3 mb-4">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
+                              <User className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex-1 flex gap-2">
+                              <input
+                                type="text"
+                                value={commentText[post.id] || ''}
+                                onChange={(e) => setCommentText(prev => ({ ...prev, [post.id]: e.target.value }))}
+                                onKeyPress={(e) => e.key === 'Enter' && handleCommentSubmit(post.id)}
+                                placeholder="Share your thoughts..."
+                                className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-blue-500 text-gray-900"
+                              />
+                              <button
+                                onClick={() => handleCommentSubmit(post.id)}
+                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-colors"
+                              >
+                                Post
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => router.push('/auth/signin')}
+                            className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+                          >
+                            <LogIn className="w-4 h-4" />
+                            Sign in to comment
+                          </button>
+                        )}
+
+                        {/* Comments List */}
+                        <div className="space-y-4 max-h-96 overflow-y-auto">
+                          {comments.length === 0 ? (
+                            <p className="text-gray-500 text-center py-8">No comments yet. Be the first!</p>
+                          ) : (
                             comments.map((comment) => (
-                              <div key={comment.id} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-slate-800/40 rounded-xl border border-transparent dark:border-slate-700/30">
-                                <div className="flex-shrink-0">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-sm">
-                                    <User className="w-4 h-4 text-white" />
-                                  </div>
+                              <div key={comment.id} className="flex gap-3">
+                                <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <User className="w-4 h-4 text-white" />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center space-x-2 mb-1">
-                                    <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">{comment.userName}</span>
-                                    <span className="text-xs text-gray-500 dark:text-slate-500">{formatDate(comment.dateCreated)}</span>
+                                <div className="flex-1 bg-gray-50 rounded-2xl px-4 py-3">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="font-semibold text-gray-900 text-sm">{comment.userName}</span>
+                                    <span className="text-xs text-gray-500">{formatDate(comment.dateCreated)}</span>
                                   </div>
-                                  <p className="text-sm text-gray-700 dark:text-slate-300 break-words">{comment.text}</p>
+                                  <p className="text-gray-700 text-sm">{comment.text}</p>
                                 </div>
                               </div>
                             ))
-                          ) : (
-                            <div className="text-center py-4">
-                              <MessageCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                              <p className="text-sm text-gray-500">No comments yet. Be the first to comment!</p>
-                            </div>
-                          );
-                        })()}
-                      </div>
-
-                      <div className="flex items-start space-x-3 mt-3">
-                        <div className={`w-8 h-8 ${avatarRingClass} rounded-full flex items-center justify-center shadow-lg`}>
-                          <User className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="relative">
-                            <textarea
-                              value={commentText}
-                              onChange={(e) => setCommentText(e.target.value)}
-                              placeholder="Write a thoughtful comment…"
-                              className="w-full p-3 pr-16 border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/50 dark:text-white rounded-2xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm backdrop-blur-sm"
-                              rows={1}
-                              style={{ minHeight: '44px' }}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault();
-                                  handleCommentSubmit(post.id);
-                                }
-                              }}
-                              onInput={(e) => {
-                                const target = (e.target as HTMLTextAreaElement);
-                                target.style.height = 'auto';
-                                target.style.height = Math.min(target.scrollHeight, 120) + 'px';
-                              }}
-                            />
-                            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                              {commentText.trim() && (
-                                <button
-                                  onClick={() => handleCommentSubmit(post.id)}
-                                  className="text-blue-500 hover:text-blue-600 font-semibold text-sm transition-colors"
-                                >
-                                  Post
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center mt-2">
-                            <span className="text-xs text-gray-400">Press Enter to post</span>
-                            <button
-                              onClick={() => {
-                                setActiveCommentPost(null);
-                                setCommentText('');
-                              }}
-                              className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
-                            >
-                              Cancel
-                            </button>
-                          </div>
+                          )}
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Empty State */}
-        {posts.length === 0 && !loading && (
-          <div className="text-center py-16">
-            <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-slate-800/40 dark:to-slate-900/40 rounded-3xl p-12 max-w-2xl mx-auto border border-gray-200 dark:border-slate-700/50 backdrop-blur-xl">
-              <div className="space-y-6">
-                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-3xl flex items-center justify-center mx-auto">
-                  <Heart className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">No Stories Yet</h3>
-                  <p className="text-gray-600 dark:text-slate-400 leading-relaxed">
-                    Be the first to share your travel adventure! Create a post and inspire others.
-                  </p>
-                </div>
-              </div>
-            </div>
+        {/* Load More */}
+        {hasMore && !isLoading && posts.length > 0 && (
+          <div className="text-center mt-12">
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={isLoadingMore}
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2 mx-auto"
+            >
+              {isLoadingMore ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <Eye className="w-5 h-5" />
+                  Load More Adventures
+                </>
+              )}
+            </button>
           </div>
         )}
       </div>
-
-      {/* Toast Notification - Instagram Style */}
-      {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-medium animate-in slide-in-from-top duration-300 ${toast.type === 'success' ? 'bg-green-500' :
-          toast.type === 'error' ? 'bg-red-500' :
-            'bg-blue-500'
-          }`}>
-          {toast.message}
-        </div>
-      )}
     </section>
   );
 };

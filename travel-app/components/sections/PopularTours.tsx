@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mountain, Compass, Heart, Flower, ArrowRight, MapPin, Clock, Star } from 'lucide-react';
+import { Mountain, Compass, Heart, Flower, ArrowRight, MapPin, Clock, Star, Users, CheckCircle, Sparkles, Trophy, Globe } from 'lucide-react';
 import Image from 'next/image';
 
 const travelerTypes = [
@@ -9,28 +9,31 @@ const travelerTypes = [
     id: 'adventurer',
     title: 'Adventurer',
     icon: Mountain,
-    description: 'Seeking thrills and challenges',
+    description: 'Pushing limits and conquering peaks',
     color: 'from-orange-500 to-red-500',
     bgColor: 'bg-orange-50',
-    textColor: 'text-orange-600'
+    textColor: 'text-orange-600',
+    borderColor: 'border-orange-500'
   },
   {
     id: 'cultural',
     title: 'Cultural Explorer',
     icon: Compass,
-    description: 'Immersing in traditions and heritage',
-    color: 'from-blue-500 to-purple-500',
+    description: 'Discovering traditions and heritage',
+    color: 'from-blue-500 to-cyan-500',
     bgColor: 'bg-blue-50',
-    textColor: 'text-blue-600'
+    textColor: 'text-blue-600',
+    borderColor: 'border-blue-500'
   },
   {
     id: 'relaxed',
-    title: 'Relaxed Nomad',
+    title: 'Leisure Traveler',
     icon: Heart,
-    description: 'Enjoying peaceful moments',
-    color: 'from-green-500 to-teal-500',
+    description: 'Enjoying scenic beauty at your pace',
+    color: 'from-green-500 to-emerald-500',
     bgColor: 'bg-green-50',
-    textColor: 'text-green-600'
+    textColor: 'text-green-600',
+    borderColor: 'border-green-500'
   },
   {
     id: 'spiritual',
@@ -39,7 +42,8 @@ const travelerTypes = [
     description: 'Finding inner peace and wisdom',
     color: 'from-purple-500 to-pink-500',
     bgColor: 'bg-purple-50',
-    textColor: 'text-purple-600'
+    textColor: 'text-purple-600',
+    borderColor: 'border-purple-500'
   }
 ];
 
@@ -53,30 +57,35 @@ const recommendations = {
       difficulty: "Challenging",
       price: "$1,299",
       rating: 4.9,
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
-      highlights: ["5,364m altitude", "Sherpa culture", "Kala Patthar sunrise"]
+      reviews: 1250,
+      image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=600&h=400&fit=crop",
+      highlights: ["Epic views", "High altitude", "Sherpa culture"],
+      badge: "Best Seller"
     },
     {
       id: 2,
-      title: "Annapurna Circuit",
+      title: "Annapurna Circuit Trek",
       location: "Annapurna Region",
-      duration: "16 days",
-      difficulty: "Moderate",
-      price: "$999",
+      duration: "17 days",
+      difficulty: "Challenging",
+      price: "$1,199",
       rating: 4.8,
+      reviews: 980,
       image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=400&fit=crop",
-      highlights: ["Thorong La Pass", "Diverse landscapes", "Hot springs"]
+      highlights: ["Diverse landscapes", "Thorong La Pass", "Hot springs"]
     },
     {
       id: 3,
       title: "Manaslu Circuit Trek",
       location: "Manaslu Region",
-      duration: "18 days",
+      duration: "16 days",
       difficulty: "Challenging",
       price: "$1,199",
       rating: 4.7,
+      reviews: 620,
       image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=400&fit=crop",
-      highlights: ["Remote trails", "Larkya La Pass", "Untouched nature"]
+      highlights: ["Remote trails", "Larkya La Pass", "Untouched nature"],
+      badge: "Hidden Gem"
     }
   ],
   cultural: [
@@ -88,28 +97,32 @@ const recommendations = {
       difficulty: "Easy",
       price: "$399",
       rating: 4.7,
-      image: "https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=600&h=400&fit=crop",
-      highlights: ["UNESCO sites", "Local markets", "Traditional crafts"]
+      reviews: 840,
+      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=400&fit=crop",
+      highlights: ["UNESCO sites", "Ancient temples", "Living culture"],
+      badge: "Top Rated"
     },
     {
       id: 5,
-      title: "Upper Mustang Trek",
-      location: "Mustang Region",
-      duration: "10 days",
-      difficulty: "Moderate",
-      price: "$1,199",
-      rating: 4.9,
-      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=400&fit=crop",
-      highlights: ["Lo Manthang", "Ancient monasteries", "Tibetan culture"]
+      title: "Newari Cultural Experience",
+      location: "Bhaktapur & Patan",
+      duration: "3 days",
+      difficulty: "Easy",
+      price: "$199",
+      rating: 4.6,
+      reviews: 520,
+      image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&h=400&fit=crop",
+      highlights: ["Traditional cuisine", "Artisan workshops", "Ancient palaces"]
     },
     {
       id: 6,
-      title: "Newari Culture Experience",
-      location: "Bhaktapur",
-      duration: "3 days",
+      title: "Tharu Village Homestay",
+      location: "Chitwan Plains",
+      duration: "4 days",
       difficulty: "Easy",
       price: "$299",
       rating: 4.6,
+      reviews: 380,
       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
       highlights: ["Pottery making", "Traditional architecture", "Local festivals"]
     }
@@ -123,28 +136,32 @@ const recommendations = {
       difficulty: "Easy",
       price: "$349",
       rating: 4.5,
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
-      highlights: ["Phewa Lake", "Mountain views", "Spa treatments"]
+      reviews: 680,
+      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=400&fit=crop",
+      highlights: ["Lakeside relaxation", "Boating", "Mountain views"],
+      badge: "Recommended"
     },
     {
       id: 8,
-      title: "Chitwan Wildlife Safari",
-      location: "Chitwan National Park",
-      duration: "3 days",
+      title: "Nagarkot Sunrise Escape",
+      location: "Kathmandu Valley",
+      duration: "2 days",
       difficulty: "Easy",
-      price: "$299",
-      rating: 4.6,
-      image: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=600&h=400&fit=crop",
-      highlights: ["Rhino spotting", "Jungle safari", "Canoe rides"]
+      price: "$159",
+      rating: 4.4,
+      reviews: 420,
+      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
+      highlights: ["Sunrise views", "Spa & wellness", "Nature walks"]
     },
     {
       id: 9,
-      title: "Bandipur Hill Station",
-      location: "Bandipur",
-      duration: "2 days",
+      title: "Bandipur Heritage Walk",
+      location: "Central Nepal",
+      duration: "3 days",
       difficulty: "Easy",
       price: "$199",
       rating: 4.4,
+      reviews: 310,
       image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=400&fit=crop",
       highlights: ["Himalayan views", "Historic town", "Peaceful walks"]
     }
@@ -158,28 +175,32 @@ const recommendations = {
       difficulty: "Moderate",
       price: "$1,099",
       rating: 4.8,
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
-      highlights: ["Sacred lakes", "Meditation sessions", "Gokyo Ri sunrise"]
+      reviews: 540,
+      image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=600&h=400&fit=crop",
+      highlights: ["Sacred lakes", "Morning meditation", "Spiritual guides"],
+      badge: "New"
     },
     {
       id: 11,
-      title: "Lumbini Pilgrimage",
-      location: "Lumbini",
-      duration: "3 days",
+      title: "Kopan Monastery Retreat",
+      location: "Kathmandu",
+      duration: "7 days",
       difficulty: "Easy",
-      price: "$249",
+      price: "$499",
       rating: 4.7,
-      image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop",
-      highlights: ["Buddha's birthplace", "Monasteries", "Peace pagoda"]
+      reviews: 380,
+      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=400&fit=crop",
+      highlights: ["Buddhist teachings", "Meditation practice", "Peaceful environment"]
     },
     {
       id: 12,
-      title: "Muktinath Temple Trek",
+      title: "Muktinath Pilgrimage",
       location: "Mustang Region",
-      duration: "7 days",
+      duration: "10 days",
       difficulty: "Moderate",
       price: "$699",
       rating: 4.6,
+      reviews: 290,
       image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&h=400&fit=crop",
       highlights: ["Sacred temple", "Eternal flames", "Spiritual journey"]
     }
@@ -188,194 +209,256 @@ const recommendations = {
 
 const PlanYourPath = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
 
   const handleTypeSelection = (typeId: string) => {
-    setSelectedType(typeId);
-    setShowRecommendations(true);
+    setSelectedType(typeId === selectedType ? null : typeId);
   };
 
   const resetSelection = () => {
     setSelectedType(null);
-    setShowRecommendations(false);
   };
 
+  const toggleFavorite = (id: number) => {
+    const updated = new Set(favorites);
+    if (favorites.has(id)) {
+      updated.delete(id);
+    } else {
+      updated.add(id);
+    }
+    setFavorites(updated);
+  };
+
+  const getBadgeColor = (badge?: string) => {
+    switch (badge) {
+      case 'Best Seller': return 'bg-gradient-to-r from-green-500 to-emerald-500';
+      case 'Top Rated': return 'bg-gradient-to-r from-yellow-500 to-amber-500';
+      case 'Recommended': return 'bg-gradient-to-r from-blue-500 to-indigo-500';
+      case 'Hidden Gem': return 'bg-gradient-to-r from-purple-500 to-pink-500';
+      case 'New': return 'bg-gradient-to-r from-orange-500 to-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getIconForBadge = (badge?: string) => {
+    switch (badge) {
+      case 'Best Seller': return <Trophy className="w-3 h-3" />;
+      case 'Top Rated': return <Star className="w-3 h-3 fill-current" />;
+      case 'Recommended': return <CheckCircle className="w-3 h-3" />;
+      case 'Hidden Gem': return <Sparkles className="w-3 h-3" />;
+      case 'New': return <Globe className="w-3 h-3" />;
+      default: return null;
+    }
+  };
+
+  const currentRecommendations = selectedType
+    ? recommendations[selectedType as keyof typeof recommendations]
+    : [];
+
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50 to-teal-50 relative overflow-hidden">
-      {/* Clean Background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-100/30 to-teal-100/30"></div>
+    <section className="py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+        <div className="absolute top-20 left-20 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
+        {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">
+          <div className="inline-block mb-4">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
+              <Compass className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-700">Personalized Recommendations</span>
+            </div>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
             Plan Your Path
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            What kind of traveler are you? Let us guide you to your perfect Nepal adventure
+            Tell us what kind of traveler you are, and we'll curate the perfect Nepal experience just for you.
           </p>
         </div>
 
-        {!showRecommendations ? (
-          /* Traveler Type Selection */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {travelerTypes.map((type) => {
-              const IconComponent = type.icon;
-              return (
-                <div
-                  key={type.id}
-                  onClick={() => handleTypeSelection(type.id)}
-                  className="bg-white rounded-xl p-8 text-center cursor-pointer transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl group border border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-                >
-                  <div className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br ${type.color} flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 shadow-lg`}>
-                    <IconComponent className="w-10 h-10 text-white" />
+        {/* Traveler Type Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {travelerTypes.map((type) => {
+            const Icon = type.icon;
+            const isSelected = selectedType === type.id;
+
+            return (
+              <button
+                key={type.id}
+                onClick={() => handleTypeSelection(type.id)}
+                className={`relative p-8 rounded-3xl border-2 transition-all duration-500 transform ${isSelected
+                    ? `${type.borderColor} ${type.bgColor} scale-105 shadow-2xl`
+                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg hover:-translate-y-1'
+                  }`}
+              >
+                {/* Selection Indicator */}
+                {isSelected && (
+                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                    <CheckCircle className="w-5 h-5 text-white" />
                   </div>
-                  
-                  <h3 className="text-2xl font-bold text-gray-800 mb-3">
+                )}
+
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${type.color} flex items-center justify-center mb-4 shadow-lg ${isSelected ? 'scale-110' : ''
+                    } transition-transform duration-300`}>
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className={`text-xl font-bold mb-2 ${isSelected ? type.textColor : 'text-gray-900'
+                    }`}>
                     {type.title}
                   </h3>
-                  
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {type.description}
                   </p>
-
-                  <div className="mt-6">
-                    <div className="inline-flex items-center text-blue-600 font-medium group-hover:translate-x-2 transition-transform duration-300">
-                      Explore
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </div>
-                  </div>
                 </div>
-              );
-            })}
-          </div>
-        ) : (
-          /* Recommendations */
-          <div className="space-y-8">
-            {/* Back Button */}
-            <div className="text-center">
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Recommendations */}
+        {selectedType && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex items-center justify-between mb-10">
+              <div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                  Perfect For You
+                </h3>
+                <p className="text-gray-600">
+                  Handpicked tours matching your travel style
+                </p>
+              </div>
               <button
                 onClick={resetSelection}
-                className="text-blue-600 hover:text-blue-800 font-medium flex items-center mx-auto transition-colors duration-300"
+                className="px-6 py-3 bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300 rounded-xl font-semibold text-gray-700 transition-all duration-300"
               >
-                ← Back to traveler types
+                Reset
               </button>
             </div>
 
-            {/* Selected Type Header */}
-            {selectedType && (
-              <div className="text-center mb-12">
-                <div className={`inline-flex items-center ${travelerTypes.find(t => t.id === selectedType)?.bgColor} rounded-full px-6 py-3 mb-4`}>
-                  {(() => {
-                    const type = travelerTypes.find(t => t.id === selectedType);
-                    if (type) {
-                      const IconComponent = type.icon;
-                      return (
-                        <>
-                          <IconComponent className={`w-6 h-6 ${type.textColor} mr-3`} />
-                          <span className={`font-semibold ${type.textColor}`}>
-                            Perfect for {type.title}s
-                          </span>
-                        </>
-                      );
-                    }
-                    return null;
-                  })()} 
-                </div>
-                <h3 className="text-3xl font-bold text-slate-800">
-                  Recommended Experiences
-                </h3>
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {currentRecommendations.map((tour) => {
+                const isFavorite = favorites.has(tour.id);
 
-            {/* Recommendations Grid */}
-            {selectedType && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {recommendations[selectedType as keyof typeof recommendations].map((rec, index) => (
+                return (
                   <div
-                    key={rec.id}
-                    className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 opacity-0 animate-fadeIn group"
-                    style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
+                    key={tour.id}
+                    className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
                   >
-                    <div className="relative overflow-hidden">
+                    {/* Image */}
+                    <div className="relative aspect-[4/3] overflow-hidden">
                       <Image
-                        src={rec.image}
-                        alt={rec.title}
-                        width={600}
-                        height={400}
-                        className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+                        src={tour.image}
+                        alt={tour.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
                       />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-white/90 text-slate-800 px-3 py-1 rounded-full text-sm font-medium">
-                          {rec.difficulty}
-                        </span>
-                      </div>
-                      <div className="absolute top-4 right-4">
-                        <div className="flex items-center bg-white/90 rounded-full px-2 py-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                          <span className="text-sm font-medium">{rec.rating}</span>
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                      {/* Badge */}
+                      {tour.badge && (
+                        <div className={`absolute top-4 left-4 ${getBadgeColor(tour.badge)} text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-lg`}>
+                          {getIconForBadge(tour.badge)}
+                          <span>{tour.badge}</span>
                         </div>
+                      )}
+
+                      {/* Favorite Button */}
+                      <button
+                        onClick={() => toggleFavorite(tour.id)}
+                        className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300"
+                      >
+                        <Heart
+                          className={`w-5 h-5 transition-all duration-300 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                            }`}
+                        />
+                      </button>
+
+                      {/* Difficulty Badge */}
+                      <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800 shadow">
+                        {tour.difficulty}
                       </div>
                     </div>
 
+                    {/* Content */}
                     <div className="p-6">
-                      <div className="flex items-center text-sm text-slate-500 mb-3">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {rec.location}
-                        <Clock className="w-4 h-4 ml-4 mr-1" />
-                        {rec.duration}
+                      <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
+                        <MapPin className="w-4 h-4" />
+                        <span>{tour.location}</span>
                       </div>
 
-                      <h4 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors duration-300">
-                        {rec.title}
+                      <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                        {tour.title}
                       </h4>
 
+                      {/* Highlights */}
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {rec.highlights.map((highlight, idx) => (
+                        {tour.highlights.map((highlight, idx) => (
                           <span
                             key={idx}
-                            className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs"
+                            className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
                           >
                             {highlight}
                           </span>
                         ))}
                       </div>
 
-                      <div className="flex items-center justify-between">
-                        <div className="text-2xl font-bold text-slate-800">
-                          {rec.price}
+                      {/* Stats */}
+                      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm font-bold text-gray-900">{tour.rating}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <Users className="w-4 h-4" />
+                            <span className="text-xs">{tour.reviews}</span>
+                          </div>
                         </div>
-                        <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-full font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center group">
-                          Book Now
-                          <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" />
+                        <div className="flex items-center gap-1 text-gray-600">
+                          <Clock className="w-4 h-4" />
+                          <span className="text-sm font-medium">{tour.duration}</span>
+                        </div>
+                      </div>
+
+                      {/* Price & CTA */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-gray-500 text-xs block">From</span>
+                          <span className="text-2xl font-bold text-gray-900">{tour.price}</span>
+                        </div>
+                        <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 group">
+                          <span>Book Now</span>
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </button>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!selectedType && (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Compass className="w-12 h-12 text-blue-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Adventure Style</h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Select a traveler type above to discover tours perfectly matched to your interests and preferences.
+            </p>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out;
-        }
-      `}</style>
     </section>
   );
 };
