@@ -308,13 +308,14 @@ const Marketplace: React.FC = () => {
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="text-center mb-16 max-w-4xl mx-auto">
-          <div className="inline-block mb-4">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
-              <Tag className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">Buy, Sell & Rent</span>
+          {/* Section Header with Enhanced Styling */}
+          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
+              <Tag className="w-6 h-6 text-blue-600 animate-pulse" />
+              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Buy, Sell & Rent</span>
             </div>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
+          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
             Marketplace
           </h2>
           <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
@@ -337,8 +338,8 @@ const Marketplace: React.FC = () => {
             <button
               onClick={() => setFilterType('all')}
               className={`px-4 py-2 rounded-full text-sm transition ${filterType === 'all'
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-700 hover:bg-slate-100'
                 }`}
             >
               All
@@ -346,8 +347,8 @@ const Marketplace: React.FC = () => {
             <button
               onClick={() => setFilterType('sale')}
               className={`px-4 py-2 rounded-full text-sm transition ${filterType === 'sale'
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-700 hover:bg-slate-100'
                 }`}
             >
               For Sale
@@ -355,8 +356,8 @@ const Marketplace: React.FC = () => {
             <button
               onClick={() => setFilterType('rent')}
               className={`px-4 py-2 rounded-full text-sm transition ${filterType === 'rent'
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-700 hover:bg-slate-100'
                 }`}
             >
               For Rent
@@ -673,7 +674,7 @@ const Marketplace: React.FC = () => {
               viewMode === 'grid' ? (
                 <div
                   key={item.id}
-                  className="group relative bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:ring-1 hover:ring-indigo-200/60"
+                  className="group relative bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/50 overflow-hidden transition-all duration-700 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.01] hover:border-blue-300/50"
                 >
                   <div className="relative h-56">
                     <Image
@@ -687,8 +688,8 @@ const Marketplace: React.FC = () => {
                     <div className="absolute top-3 left-3 flex gap-2">
                       <span
                         className={`${badgeClass} ${String(item.listingType).toLowerCase() === 'forrent'
-                            ? 'bg-indigo-100 text-indigo-700'
-                            : 'bg-amber-100 text-amber-700'
+                          ? 'bg-indigo-100 text-indigo-700'
+                          : 'bg-amber-100 text-amber-700'
                           }`}
                       >
                         {String(item.listingType).toLowerCase() === 'forrent' ? 'For Rent' : 'For Sale'}
@@ -754,8 +755,8 @@ const Marketplace: React.FC = () => {
                       <button
                         onClick={() => toggleSave(item.id)}
                         className={`px-4 py-2 rounded-lg border text-sm transition-colors ${isSaved(item.id)
-                            ? 'bg-rose-50 border-rose-200 text-rose-700'
-                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                          ? 'bg-rose-50 border-rose-200 text-rose-700'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                           }`}
                       >
                         {isSaved(item.id) ? 'Saved' : 'Save'}
@@ -781,8 +782,8 @@ const Marketplace: React.FC = () => {
                       <div className="absolute top-3 left-3 flex gap-2">
                         <span
                           className={`${badgeClass} ${String(item.listingType).toLowerCase() === 'forrent'
-                              ? 'bg-indigo-100 text-indigo-700'
-                              : 'bg-amber-100 text-amber-700'
+                            ? 'bg-indigo-100 text-indigo-700'
+                            : 'bg-amber-100 text-amber-700'
                             }`}
                         >
                           {String(item.listingType).toLowerCase() === 'forrent' ? 'For Rent' : 'For Sale'}
@@ -847,8 +848,8 @@ const Marketplace: React.FC = () => {
                         <button
                           onClick={() => toggleSave(item.id)}
                           className={`px-4 py-2 rounded-lg border text-sm transition-colors ${isSaved(item.id)
-                              ? 'bg-rose-50 border-rose-200 text-rose-700'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700'
+                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                             }`}
                         >
                           {isSaved(item.id) ? 'Saved' : 'Save'}

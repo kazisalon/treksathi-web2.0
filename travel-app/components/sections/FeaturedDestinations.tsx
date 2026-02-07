@@ -113,24 +113,25 @@ const FeaturedDestinations = () => {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
-      {/* Animated Background Elements */}
+    <section className="py-28 bg-gradient-to-b from-white via-blue-50/40 to-purple-50/20 relative overflow-hidden">
+      {/* Enhanced Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-1/3 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-1/4 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+        <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute top-1/3 right-10 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
-              <MapPin className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">Top Destinations</span>
+          {/* Section Header with Enhanced Styling */}
+          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
+              <MapPin className="w-6 h-6 text-blue-600 animate-pulse" />
+              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Top Destinations</span>
             </div>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
+          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
             Top Destinations
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -152,7 +153,9 @@ const FeaturedDestinations = () => {
                 onMouseEnter={() => setHoveredCard(destination.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
-                <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+                <div className="group bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 hover:scale-[1.02] border border-gray-200/50 hover:border-blue-300/50 relative">
+                  {/* Shine Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                   {/* Image Container */}
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <Image
@@ -163,26 +166,26 @@ const FeaturedDestinations = () => {
                         }`}
                     />
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    {/* Enhanced Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-                    {/* Badge */}
+                    {/* Enhanced Badge */}
                     {destination.badge && (
-                      <div className={`absolute top-4 left-4 ${getBadgeColor(destination.badge)} text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-lg`}>
+                      <div className={`absolute top-4 left-4 ${getBadgeColor(destination.badge)} text-white px-5 py-2.5 rounded-full text-xs font-extrabold flex items-center gap-2 shadow-2xl backdrop-blur-sm border border-white/30 group-hover:scale-110 transition-transform duration-300`}>
                         {getBadgeIcon(destination.badge)}
                         <span>{destination.badge}</span>
                       </div>
                     )}
 
-                    {/* Favorite Button */}
+                    {/* Enhanced Favorite Button */}
                     <button
                       onClick={() => toggleFavorite(destination.id)}
-                      className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300"
+                      className="absolute top-4 right-4 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl hover:scale-125 hover:rotate-12 transition-all duration-300 border border-white/50"
                     >
                       <Heart
-                        className={`w-5 h-5 transition-all duration-300 ${isFavorite
-                            ? 'fill-red-500 text-red-500'
-                            : 'text-gray-600'
+                        className={`w-6 h-6 transition-all duration-500 ${isFavorite
+                          ? 'fill-red-500 text-red-500 animate-pulse'
+                          : 'text-gray-600 hover:text-red-500'
                           }`}
                       />
                     </button>
@@ -196,17 +199,17 @@ const FeaturedDestinations = () => {
                     </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                  {/* Content with Enhanced Typography */}
+                  <div className="p-6 relative z-10">
+                    <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:via-indigo-600 group-hover:to-purple-600 transition-all duration-300 leading-tight">
                       {destination.name}
                     </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
+                    <p className="text-base text-gray-600 mb-5 leading-relaxed">
                       {destination.subtitle}
                     </p>
 
-                    {/* Stats */}
-                    <div className="flex items-center justify-between mb-4">
+                    {/* Enhanced Stats */}
+                    <div className="flex items-center justify-between mb-5">
                       <div className="flex items-center gap-4">
                         {/* Rating */}
                         <div className="flex items-center gap-1">
@@ -227,10 +230,10 @@ const FeaturedDestinations = () => {
                       </div>
                     </div>
 
-                    {/* CTA Button */}
-                    <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group">
+                    {/* Enhanced CTA Button */}
+                    <button className="w-full py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold text-base transition-all duration-300 shadow-lg hover:shadow-2xl flex items-center justify-center gap-2 group/btn transform hover:scale-[1.02]">
                       <span>Explore Destination</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform duration-300" />
                     </button>
                   </div>
                 </div>

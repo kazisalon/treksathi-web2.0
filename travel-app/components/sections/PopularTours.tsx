@@ -266,13 +266,14 @@ const PlanYourPath = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
-              <Compass className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">Personalized Recommendations</span>
+          {/* Section Header with Enhanced Styling */}
+          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
+              <Compass className="w-6 h-6 text-blue-600 animate-pulse" />
+              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Personalized Recommendations</span>
             </div>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
+          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
             Plan Your Path
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -290,9 +291,9 @@ const PlanYourPath = () => {
               <button
                 key={type.id}
                 onClick={() => handleTypeSelection(type.id)}
-                className={`relative p-8 rounded-3xl border-2 transition-all duration-500 transform ${isSelected
-                    ? `${type.borderColor} ${type.bgColor} scale-105 shadow-2xl`
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg hover:-translate-y-1'
+                className={`relative p-10 rounded-3xl border-2 transition-all duration-700 transform ${isSelected
+                  ? `${type.borderColor} ${type.bgColor} scale-110 shadow-2xl ring-4 ring-offset-4 ${type.textColor}/20`
+                  : 'border-gray-200 bg-white/90 backdrop-blur-sm hover:border-gray-300 hover:shadow-xl hover:-translate-y-2 hover:scale-105'
                   }`}
               >
                 {/* Selection Indicator */}
@@ -303,15 +304,17 @@ const PlanYourPath = () => {
                 )}
 
                 <div className="flex flex-col items-center text-center">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${type.color} flex items-center justify-center mb-4 shadow-lg ${isSelected ? 'scale-110' : ''
-                    } transition-transform duration-300`}>
-                    <Icon className="w-8 h-8 text-white" />
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${type.color} flex items-center justify-center mb-6 shadow-2xl ${isSelected ? 'scale-125 rotate-12' : ''
+                    } transition-all duration-700`}
+                  >
+                    <Icon className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className={`text-xl font-bold mb-2 ${isSelected ? type.textColor : 'text-gray-900'
-                    }`}>
+                  <h3 className={`text-2xl font-extrabold mb-3 ${isSelected ? type.textColor : 'text-gray-900'
+                    } transition-colors`}
+                  >
                     {type.title}
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-base text-gray-600 leading-relaxed">
                     {type.description}
                   </p>
                 </div>
@@ -347,7 +350,7 @@ const PlanYourPath = () => {
                 return (
                   <div
                     key={tour.id}
-                    className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
+                    className="group bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 hover:scale-[1.02] border border-gray-200/50 hover:border-blue-300/50"
                   >
                     {/* Image */}
                     <div className="relative aspect-[4/3] overflow-hidden">

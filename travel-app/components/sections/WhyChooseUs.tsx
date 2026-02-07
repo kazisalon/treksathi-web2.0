@@ -87,13 +87,14 @@ const WhyChooseUs = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
-              <Award className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">Why Choose Us</span>
+          {/* Section Header with Enhanced Styling */}
+          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
+              <Award className="w-6 h-6 text-blue-600 animate-pulse" />
+              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Why Choose Us</span>
             </div>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
+          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
             Why Choose TrekSathi?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -109,22 +110,23 @@ const WhyChooseUs = () => {
             return (
               <div
                 key={index}
-                className="group bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 relative overflow-hidden"
+                className="group bg-white/90 backdrop-blur-sm p-10 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 hover:scale-[1.02] border border-gray-200/50 hover:border-blue-300/50 relative overflow-hidden"
               >
-                {/* Hover Gradient Background */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                {/* Enhanced Hover Gradient Background */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-700`} />
 
                 <div className="relative">
-                  {/* Icon */}
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                    <Icon className="w-8 h-8 text-white" />
+                  {/* Icon with Enhanced Animation */}
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 shadow-2xl group-hover:scale-125 group-hover:rotate-12 transition-all duration-700`}
+                  >
+                    <Icon className="w-10 h-10 text-white" />
                   </div>
 
-                  {/* Content */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                  {/* Content with Enhanced Typography */}
+                  <h3 className="text-2xl font-extrabold text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:via-indigo-600 group-hover:to-purple-600 transition-all duration-300">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-base text-gray-600 leading-relaxed mb-5">
                     {feature.description}
                   </p>
 

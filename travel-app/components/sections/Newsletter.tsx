@@ -122,20 +122,20 @@ const JoinOurCommunity = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Main CTA Section */}
         <div className="text-center mb-16">
-          {/* Badge */}
-          <div className="inline-block mb-4">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
-              <Users className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">Join 10,000+ Adventurers</span>
+          {/* Enhanced Badge */}
+          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
+              <Users className="w-6 h-6 text-blue-600 animate-pulse" />
+              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Join 10,000+ Adventurers</span>
             </div>
           </div>
 
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif leading-tight">
+          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
             Join Our Community
           </h2>
 
           <div className="max-w-4xl mx-auto mb-12">
-            <blockquote className="text-2xl md:text-3xl font-serif text-gray-700 italic leading-relaxed mb-6">
+            <blockquote className="text-3xl md:text-4xl font-serif text-gray-700 italic leading-relaxed mb-8">
               "The world waits, but Nepal whispers first."
             </blockquote>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
@@ -144,18 +144,18 @@ const JoinOurCommunity = () => {
             </p>
           </div>
 
-          {/* Newsletter Signup Card */}
-          <div className="bg-white rounded-3xl p-10 md:p-12 shadow-2xl border border-gray-100 mb-12 max-w-3xl mx-auto relative overflow-hidden">
-            {/* Decorative gradient */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
+          {/* Enhanced Newsletter Signup Card */}
+          <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-12 md:p-14 shadow-2xl border border-gray-200/50 mb-12 max-w-3xl mx-auto relative overflow-hidden">
+            {/* Enhanced decorative gradient */}
+            <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
 
             <div className="flex items-center justify-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
                 <Mail className="w-8 h-8 text-white" />
               </div>
               <div className="text-left">
-                <h3 className="text-2xl font-bold text-gray-900">Stay Connected</h3>
-                <p className="text-gray-600">Get weekly inspiration & exclusive offers</p>
+                <h3 className="text-3xl font-extrabold text-gray-900">Stay Connected</h3>
+                <p className="text-lg text-gray-600 font-medium">Get weekly inspiration & exclusive offers</p>
               </div>
             </div>
 

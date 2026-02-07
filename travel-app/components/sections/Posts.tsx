@@ -709,24 +709,24 @@ const Posts: React.FC = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-blue-50/30 to-white relative">
-      {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-50">
-        <div className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-        <div className="absolute top-40 right-20 w-3 h-3 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-40 left-1/4 w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+    <section className="py-24 bg-gradient-to-b from-white via-blue-50/40 to-purple-50/20 relative overflow-hidden">
+      {/* Enhanced Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute top-40 right-20 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-40 left-1/3 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" style={{ animationDelay: '4s' }} />
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 px-6 py-3 rounded-full">
-              <TrendingUp className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-semibold text-blue-700">Community Stories</span>
+          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
+              <TrendingUp className="w-6 h-6 text-blue-600 animate-pulse" />
+              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Community Stories</span>
             </div>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-serif">
+          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
             Discover Nepal
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -741,8 +741,8 @@ const Posts: React.FC = () => {
         {/* Toast Notification */}
         {toast && (
           <div className={`fixed top-4 right-4 z-50 p-4 rounded-xl shadow-2xl border-2 flex items-center gap-3 animate-in slide-in-from-top ${toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
-              toast.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
-                'bg-blue-50 border-blue-200 text-blue-800'
+            toast.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
+              'bg-blue-50 border-blue-200 text-blue-800'
             }`}>
             {toast.type === 'success' && <BadgeCheck className="w-5 h-5" />}
             {toast.type === 'error' && <X className="w-5 h-5" />}
@@ -789,7 +789,7 @@ const Posts: React.FC = () => {
               return (
                 <article
                   key={post.id}
-                  className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                  className="group bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200/50 hover:border-blue-300/50 hover:-translate-y-2 hover:scale-[1.01]"
                 >
                   {/* Post Header */}
                   <div className="p-6 border-b border-gray-100">
@@ -814,18 +814,20 @@ const Posts: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Post Image */}
-                  <div className="relative aspect-[4/3] bg-gray-100">
+                  {/* Post Image with Enhanced Overlay */}
+                  <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                     <Image
                       src={getImageUrl(post.imageUrls)}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    {/* Season Badge */}
-                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    {/* Season Badge with Enhanced Style */}
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full flex items-center gap-2 shadow-xl border border-white/50 group-hover:scale-110 transition-transform duration-300">
                       {getSeasonIcon(season)}
-                      <span className="text-sm font-semibold text-gray-800">{season}</span>
+                      <span className="text-sm font-bold text-gray-800">{season}</span>
                     </div>
                   </div>
 
@@ -835,15 +837,15 @@ const Posts: React.FC = () => {
                       <div className="flex items-center gap-4">
                         <button
                           onClick={() => handleLike(post.id)}
-                          className="flex items-center gap-2 group"
+                          className="flex items-center gap-2 group px-3 py-2 rounded-full hover:bg-red-50 transition-all duration-300"
                         >
                           <Heart
-                            className={`w-6 h-6 transition-all duration-300 ${isLiked
-                                ? 'fill-red-500 text-red-500 scale-110'
-                                : 'text-gray-600 group-hover:text-red-500 group-hover:scale-110'
+                            className={`w-7 h-7 transition-all duration-500 ${isLiked
+                              ? 'fill-red-500 text-red-500 scale-110 animate-pulse'
+                              : 'text-gray-600 group-hover:text-red-500 group-hover:scale-125 group-hover:rotate-12'
                               }`}
                           />
-                          <span className="text-sm font-semibold text-gray-700">
+                          <span className={`text-base font-bold transition-colors ${isLiked ? 'text-red-500' : 'text-gray-700 group-hover:text-red-500'}`}>
                             {getDisplayLikesCount(post.id, post.likesCount)}
                           </span>
                         </button>
@@ -852,44 +854,44 @@ const Posts: React.FC = () => {
                             if (!commentsVisible) initializeComments(post.id);
                             setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }));
                           }}
-                          className="flex items-center gap-2 group"
+                          className="flex items-center gap-2 group px-3 py-2 rounded-full hover:bg-blue-50 transition-all duration-300"
                         >
-                          <MessageCircle className="w-6 h-6 text-gray-600 group-hover:text-blue-500 transition-colors" />
-                          <span className="text-sm font-semibold text-gray-700">
+                          <MessageCircle className="w-7 h-7 text-gray-600 group-hover:text-blue-600 group-hover:scale-110 transition-all duration-300" />
+                          <span className="text-base font-bold text-gray-700 group-hover:text-blue-600 transition-colors">
                             {comments.length || post.commentCount || 0}
                           </span>
                         </button>
                         <button
                           onClick={() => handleShare(post)}
-                          className="flex items-center gap-2 group"
+                          className="flex items-center gap-2 group px-3 py-2 rounded-full hover:bg-green-50 transition-all duration-300"
                         >
-                          <Share2 className="w-6 h-6 text-gray-600 group-hover:text-green-500 transition-colors" />
+                          <Share2 className="w-7 h-7 text-gray-600 group-hover:text-green-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
                         </button>
                       </div>
                       <button
                         onClick={() => handleBookmark(post.id)}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-3 hover:bg-yellow-50 rounded-full transition-all duration-300 hover:scale-110"
                       >
                         <Bookmark
-                          className={`w-6 h-6 transition-colors ${isBookmarked ? 'fill-blue-500 text-blue-500' : 'text-gray-600'
+                          className={`w-7 h-7 transition-all duration-300 ${isBookmarked ? 'fill-yellow-500 text-yellow-500 scale-110' : 'text-gray-600 hover:text-yellow-600'
                             }`}
                         />
                       </button>
                     </div>
 
-                    {/* Post Content */}
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{post.title}</h3>
-                      <p className="text-gray-700 leading-relaxed">{post.description}</p>
+                    {/* Post Content with Enhanced Typography */}
+                    <div className="mb-6">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-blue-700 transition-colors duration-300">{post.title}</h3>
+                      <p className="text-lg text-gray-700 leading-relaxed">{post.description}</p>
                     </div>
 
-                    {/* Traits */}
+                    {/* Traits with Enhanced Badges */}
                     {traits.length > 0 && (
-                      <div className="flex gap-2 mb-4">
+                      <div className="flex flex-wrap gap-2 mb-6">
                         {traits.map((trait, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-1 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                            className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-4 py-2 rounded-full text-sm font-bold border border-blue-100 hover:scale-105 hover:shadow-md transition-all duration-300 cursor-pointer"
                           >
                             {traitIcon(trait)}
                             <span>{trait}</span>
