@@ -113,28 +113,23 @@ const FeaturedDestinations = () => {
   };
 
   return (
-    <section className="py-28 bg-gradient-to-b from-white via-blue-50/40 to-purple-50/20 relative overflow-hidden">
-      {/* Enhanced Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-1/3 right-10 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-      </div>
+    <section className="py-20 bg-white">
+      {/* Clean background */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          {/* Section Header with Enhanced Styling */}
-          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
-            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
-              <MapPin className="w-6 h-6 text-blue-600 animate-pulse" />
-              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Top Destinations</span>
-            </div>
+          {/* Section Header */}
+          <div className="inline-block mb-4">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
+              <MapPin className="w-4 h-4" />
+              Top Destinations
+            </span>
           </div>
-          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Top Destinations
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Embark on a journey through Nepal's most breathtaking landscapes.
             From ancient temples to towering peaks, your adventure awaits.
           </p>
@@ -153,9 +148,7 @@ const FeaturedDestinations = () => {
                 onMouseEnter={() => setHoveredCard(destination.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
-                <div className="group bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3 hover:scale-[1.02] border border-gray-200/50 hover:border-blue-300/50 relative">
-                  {/* Shine Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200">
                   {/* Image Container */}
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <Image

@@ -308,14 +308,14 @@ const Marketplace: React.FC = () => {
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="text-center mb-16 max-w-4xl mx-auto">
-          {/* Section Header with Enhanced Styling */}
-          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
-            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
-              <Tag className="w-6 h-6 text-blue-600 animate-pulse" />
-              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Buy, Sell & Rent</span>
-            </div>
+          {/* Section Header */}
+          <div className="inline-block mb-4">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
+              <Tag className="w-4 h-4" />
+              Buy, Sell & Rent
+            </span>
           </div>
-          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Marketplace
           </h2>
           <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
@@ -674,7 +674,7 @@ const Marketplace: React.FC = () => {
               viewMode === 'grid' ? (
                 <div
                   key={item.id}
-                  className="group relative bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/50 overflow-hidden transition-all duration-700 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.01] hover:border-blue-300/50"
+                  className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 overflow-hidden"
                 >
                   <div className="relative h-56">
                     <Image

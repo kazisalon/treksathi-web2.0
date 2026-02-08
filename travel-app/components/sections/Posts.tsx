@@ -709,24 +709,19 @@ const Posts: React.FC = () => {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white via-blue-50/40 to-purple-50/20 relative overflow-hidden">
-      {/* Enhanced Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-40 right-20 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-40 left-1/3 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" style={{ animationDelay: '4s' }} />
-      </div>
+    <section className="py-20 bg-gray-50">
+      {/* Clean simple background */}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block mb-6 animate-in fade-in slide-in duration-700">
-            <div className="flex items-center gap-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 px-8 py-4 rounded-full shadow-lg border border-blue-200/50">
-              <TrendingUp className="w-6 h-6 text-blue-600 animate-pulse" />
-              <span className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700">Community Stories</span>
-            </div>
+          <div className="inline-block mb-4">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
+              <TrendingUp className="w-4 h-4" />
+              Community Stories
+            </span>
           </div>
-          <h2 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 mb-8 font-serif leading-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Discover Nepal
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -789,7 +784,7 @@ const Posts: React.FC = () => {
               return (
                 <article
                   key={post.id}
-                  className="group bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200/50 hover:border-blue-300/50 hover:-translate-y-2 hover:scale-[1.01]"
+                  className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200"
                 >
                   {/* Post Header */}
                   <div className="p-6 border-b border-gray-100">
@@ -814,20 +809,18 @@ const Posts: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Post Image with Enhanced Overlay */}
-                  <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                  {/* Post Image */}
+                  <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
                     <Image
                       src={getImageUrl(post.imageUrls)}
                       alt={post.title}
                       fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="object-cover"
                     />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    {/* Season Badge with Enhanced Style */}
-                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full flex items-center gap-2 shadow-xl border border-white/50 group-hover:scale-110 transition-transform duration-300">
+                    {/* Season Badge */}
+                    <div className="absolute top-3 left-3 bg-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
                       {getSeasonIcon(season)}
-                      <span className="text-sm font-bold text-gray-800">{season}</span>
+                      <span className="text-xs font-semibold text-gray-700">{season}</span>
                     </div>
                   </div>
 
@@ -854,44 +847,44 @@ const Posts: React.FC = () => {
                             if (!commentsVisible) initializeComments(post.id);
                             setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }));
                           }}
-                          className="flex items-center gap-2 group px-3 py-2 rounded-full hover:bg-blue-50 transition-all duration-300"
+                          className="flex items-center gap-1.5 hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors"
                         >
-                          <MessageCircle className="w-7 h-7 text-gray-600 group-hover:text-blue-600 group-hover:scale-110 transition-all duration-300" />
-                          <span className="text-base font-bold text-gray-700 group-hover:text-blue-600 transition-colors">
+                          <MessageCircle className="w-5 h-5 text-gray-500 hover:text-blue-600" />
+                          <span className="text-sm font-medium text-gray-700">
                             {comments.length || post.commentCount || 0}
                           </span>
                         </button>
                         <button
                           onClick={() => handleShare(post)}
-                          className="flex items-center gap-2 group px-3 py-2 rounded-full hover:bg-green-50 transition-all duration-300"
+                          className="flex items-center gap-1.5 hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors"
                         >
-                          <Share2 className="w-7 h-7 text-gray-600 group-hover:text-green-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
+                          <Share2 className="w-5 h-5 text-gray-500 hover:text-green-600" />
                         </button>
                       </div>
                       <button
                         onClick={() => handleBookmark(post.id)}
-                        className="p-3 hover:bg-yellow-50 rounded-full transition-all duration-300 hover:scale-110"
+                        className="p-1.5 hover:bg-gray-50 rounded-lg transition-colors"
                       >
                         <Bookmark
-                          className={`w-7 h-7 transition-all duration-300 ${isBookmarked ? 'fill-yellow-500 text-yellow-500 scale-110' : 'text-gray-600 hover:text-yellow-600'
+                          className={`w-5 h-5 transition-colors ${isBookmarked ? 'fill-blue-600 text-blue-600' : 'text-gray-500 hover:text-blue-600'
                             }`}
                         />
                       </button>
                     </div>
 
-                    {/* Post Content with Enhanced Typography */}
-                    <div className="mb-6">
-                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-blue-700 transition-colors duration-300">{post.title}</h3>
-                      <p className="text-lg text-gray-700 leading-relaxed">{post.description}</p>
+                    {/* Post Content */}
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
+                      <p className="text-sm text-gray-600 leading-relaxed">{post.description}</p>
                     </div>
 
-                    {/* Traits with Enhanced Badges */}
+                    {/* Traits */}
                     {traits.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-6">
+                      <div className="flex flex-wrap gap-2 mb-4">
                         {traits.map((trait, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-4 py-2 rounded-full text-sm font-bold border border-blue-100 hover:scale-105 hover:shadow-md transition-all duration-300 cursor-pointer"
+                            className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs font-medium"
                           >
                             {traitIcon(trait)}
                             <span>{trait}</span>
