@@ -104,7 +104,7 @@ const NearbyDestinations = () => {
           'Accept': 'application/json',
         },
         body: JSON.stringify(testPayload),
-        signal: AbortSignal.timeout(15000) // 15 second timeout for test
+        signal: AbortSignal.timeout(15000) 
       });
       
       console.log('🧪 Test response status:', response.status, response.statusText);
