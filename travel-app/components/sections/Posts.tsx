@@ -709,24 +709,22 @@ const Posts: React.FC = () => {
   };
 
   return (
-    <section className="py-20 bg-gray-50">
-      {/* Clean simple background */}
+    <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg">
+          <div className="inline-block mb-5">
+            <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 bg-blue-100 px-5 py-2.5 rounded-full border-2 border-blue-200">
               <TrendingUp className="w-4 h-4" />
               Community Stories
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-5 tracking-tight">
             Discover Nepal
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore authentic travel experiences shared by adventurers from around the world.
-            Get inspired by their journeys through the Himalayas.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Share your adventures, connect with fellow travelers, and discover inspiring stories from across Nepal.
           </p>
         </div>
 
@@ -784,7 +782,7 @@ const Posts: React.FC = () => {
               return (
                 <article
                   key={post.id}
-                  className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200"
+                  className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-blue-300 hover:-translate-y-1"
                 >
                   {/* Post Header */}
                   <div className="p-6 border-b border-gray-100">
@@ -810,17 +808,19 @@ const Posts: React.FC = () => {
                   </div>
 
                   {/* Post Image */}
-                  <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                  <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                     <Image
                       src={getImageUrl(post.imageUrls)}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                     {/* Season Badge */}
-                    <div className="absolute top-3 left-3 bg-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg border border-white/50">
                       {getSeasonIcon(season)}
-                      <span className="text-xs font-semibold text-gray-700">{season}</span>
+                      <span className="text-sm font-bold text-gray-800">{season}</span>
                     </div>
                   </div>
 
@@ -830,15 +830,15 @@ const Posts: React.FC = () => {
                       <div className="flex items-center gap-4">
                         <button
                           onClick={() => handleLike(post.id)}
-                          className="flex items-center gap-2 group px-3 py-2 rounded-full hover:bg-red-50 transition-all duration-300"
+                          className="flex items-center gap-2 hover:bg-red-50 px-3 py-2 rounded-lg transition-all duration-200"
                         >
                           <Heart
-                            className={`w-7 h-7 transition-all duration-500 ${isLiked
-                              ? 'fill-red-500 text-red-500 scale-110 animate-pulse'
-                              : 'text-gray-600 group-hover:text-red-500 group-hover:scale-125 group-hover:rotate-12'
+                            className={`w-6 h-6 transition-all duration-200 ${isLiked
+                              ? 'fill-red-500 text-red-500 scale-110'
+                              : 'text-gray-600 hover:text-red-500 hover:scale-110'
                               }`}
                           />
-                          <span className={`text-base font-bold transition-colors ${isLiked ? 'text-red-500' : 'text-gray-700 group-hover:text-red-500'}`}>
+                          <span className={`text-sm font-semibold ${isLiked ? 'text-red-500' : 'text-gray-700'}`}>
                             {getDisplayLikesCount(post.id, post.likesCount)}
                           </span>
                         </button>
@@ -847,35 +847,35 @@ const Posts: React.FC = () => {
                             if (!commentsVisible) initializeComments(post.id);
                             setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }));
                           }}
-                          className="flex items-center gap-1.5 hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors"
+                          className="flex items-center gap-2 hover:bg-blue-50 px-3 py-2 rounded-lg transition-all duration-200"
                         >
-                          <MessageCircle className="w-5 h-5 text-gray-500 hover:text-blue-600" />
-                          <span className="text-sm font-medium text-gray-700">
+                          <MessageCircle className="w-6 h-6 text-gray-600 hover:text-blue-600 transition-colors" />
+                          <span className="text-sm font-semibold text-gray-700">
                             {comments.length || post.commentCount || 0}
                           </span>
                         </button>
                         <button
                           onClick={() => handleShare(post)}
-                          className="flex items-center gap-1.5 hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors"
+                          className="flex items-center gap-2 hover:bg-green-50 px-3 py-2 rounded-lg transition-all duration-200"
                         >
-                          <Share2 className="w-5 h-5 text-gray-500 hover:text-green-600" />
+                          <Share2 className="w-6 h-6 text-gray-600 hover:text-green-600 transition-colors" />
                         </button>
                       </div>
                       <button
                         onClick={() => handleBookmark(post.id)}
-                        className="p-1.5 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="p-2 hover:bg-blue-50 rounded-lg transition-all duration-200"
                       >
                         <Bookmark
-                          className={`w-5 h-5 transition-colors ${isBookmarked ? 'fill-blue-600 text-blue-600' : 'text-gray-500 hover:text-blue-600'
+                          className={`w-6 h-6 transition-all duration-200 ${isBookmarked ? 'fill-blue-600 text-blue-600 scale-110' : 'text-gray-600 hover:text-blue-600 hover:scale-110'
                             }`}
                         />
                       </button>
                     </div>
 
                     {/* Post Content */}
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
-                      <p className="text-sm text-gray-600 leading-relaxed">{post.description}</p>
+                    <div className="mb-5">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">{post.title}</h3>
+                      <p className="text-base text-gray-600 leading-relaxed line-clamp-3">{post.description}</p>
                     </div>
 
                     {/* Traits */}
@@ -884,7 +884,7 @@ const Posts: React.FC = () => {
                         {traits.map((trait, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs font-medium"
+                            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-blue-100 hover:shadow-sm transition-shadow"
                           >
                             {traitIcon(trait)}
                             <span>{trait}</span>
