@@ -112,7 +112,6 @@ const NearbyDestinations = () => {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ External API test successful!', data);
         return { success: true, data };
       } else {
         const errorText = await response.text();
