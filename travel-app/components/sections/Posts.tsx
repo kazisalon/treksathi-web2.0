@@ -715,7 +715,7 @@ const Posts: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <div className="inline-block mb-5">
-            <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 bg-blue-100 px-5 py-2.5 rounded-full border-2 border-blue-200">
+            <span className="inline-flex items-center gap-2 text-sm font-bold text-gray-700 bg-gray-100 px-5 py-2.5 rounded-full border-2 border-gray-200">
               <TrendingUp className="w-4 h-4" />
               Community Stories
             </span>
@@ -782,7 +782,7 @@ const Posts: React.FC = () => {
               return (
                 <article
                   key={post.id}
-                  className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-blue-300 hover:-translate-y-1"
+                  className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-gray-400 hover:-translate-y-1"
                 >
                   {/* Post Header */}
                   <div className="p-6 border-b border-gray-100">
@@ -847,9 +847,9 @@ const Posts: React.FC = () => {
                             if (!commentsVisible) initializeComments(post.id);
                             setShowComments(prev => ({ ...prev, [post.id]: !prev[post.id] }));
                           }}
-                          className="flex items-center gap-2 hover:bg-blue-50 px-3 py-2 rounded-lg transition-all duration-200"
+                          className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition-all duration-200"
                         >
-                          <MessageCircle className="w-6 h-6 text-gray-600 hover:text-blue-600 transition-colors" />
+                          <MessageCircle className="w-6 h-6 text-gray-600 hover:text-gray-900 transition-colors" />
                           <span className="text-sm font-semibold text-gray-700">
                             {comments.length || post.commentCount || 0}
                           </span>
@@ -863,10 +863,10 @@ const Posts: React.FC = () => {
                       </div>
                       <button
                         onClick={() => handleBookmark(post.id)}
-                        className="p-2 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
                       >
                         <Bookmark
-                          className={`w-6 h-6 transition-all duration-200 ${isBookmarked ? 'fill-blue-600 text-blue-600 scale-110' : 'text-gray-600 hover:text-blue-600 hover:scale-110'
+                          className={`w-6 h-6 transition-all duration-200 ${isBookmarked ? 'fill-amber-600 text-amber-600 scale-110' : 'text-gray-600 hover:text-amber-600 hover:scale-110'
                             }`}
                         />
                       </button>
@@ -874,7 +874,7 @@ const Posts: React.FC = () => {
 
                     {/* Post Content */}
                     <div className="mb-5">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">{post.title}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-gray-800 transition-colors">{post.title}</h3>
                       <p className="text-base text-gray-600 leading-relaxed line-clamp-3">{post.description}</p>
                     </div>
 
@@ -884,7 +884,7 @@ const Posts: React.FC = () => {
                         {traits.map((trait, idx) => (
                           <div
                             key={idx}
-                            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-blue-100 hover:shadow-sm transition-shadow"
+                            className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 hover:shadow-sm transition-shadow"
                           >
                             {traitIcon(trait)}
                             <span>{trait}</span>
