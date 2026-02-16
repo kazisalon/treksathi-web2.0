@@ -376,6 +376,29 @@ export class TravelGuideAPI {
     }
   }
 
+  static async unlikePost(postId: string): Promise<any> {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
+
+      const response: AxiosResponse = await axios.post(
+        `/api/proxy/post/${encodeURIComponent(postId)}/unlike`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(token ? { 'x-access-token': token } : {}),
+            ...(token ? { token: token } : {}),
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   static async addComment(postId: string, comment: string): Promise<any> {
     try {
       // Try different request body formats that the API might expect

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Mail, Send, CheckCircle, Users, TrendingUp, Globe, Zap, Gift } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 const benefits = [
   {
@@ -95,15 +96,16 @@ const JoinOurCommunity = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setIsSubscribed(false)}
-                className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-xl font-medium transition-all duration-300 border border-white/30"
+                className="text-white bg-white/20 hover:bg-white/30 border border-white/30"
               >
                 Subscribe Another Email
-              </button>
-              <button className="px-6 py-3 bg-white hover:bg-gray-100 text-blue-600 rounded-xl font-semibold transition-all duration-300 shadow-lg">
+              </Button>
+              <Button variant="outline" className="bg-white hover:bg-gray-100 text-blue-600 border-none">
                 Explore Tours Now
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -171,20 +173,15 @@ const JoinOurCommunity = () => {
                     required
                   />
                 </div>
-                <button
+                <Button
                   type="submit"
-                  disabled={isLoading}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  isLoading={isLoading}
+                  icon={Send}
+                  variant="secondary"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-8 py-4 "
                 >
-                  {isLoading ? (
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      <span>Join Community</span>
-                      <Send className="w-5 h-5 ml-2" />
-                    </>
-                  )}
-                </button>
+                  Join Community
+                </Button>
               </div>
             </form>
 

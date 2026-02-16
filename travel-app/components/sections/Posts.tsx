@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Share2, Bookmark, MapPin, Calendar, User, Star, Eye, MoreHorizontal, Plus, X, Upload, Camera, Lock, LogIn, Compass, Plane, Mountain, Sun, CloudRain, Route, BadgeCheck, Clock, Navigation, TrendingUp, Award, Globe } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, MapPin, Calendar, User, Star, Eye, MoreHorizontal, Plus, X, Upload, Camera, Lock, LogIn, Compass, Plane, Mountain, Sun, CloudRain, Route, BadgeCheck, Clock, Navigation, TrendingUp, Award, Globe, Flower } from 'lucide-react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { TravelGuideAPI } from '../../lib/api';
+import Button from '@/components/ui/Button';
 
 // Comment interface
 interface Comment {
@@ -73,12 +74,12 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
           <p className="text-gray-600 mb-6 leading-relaxed">
             Sign in to share your incredible travel stories and inspire others to explore Nepal.
           </p>
-          <button
+          <Button
             onClick={() => router.push('/auth/signin')}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            className="px-8 py-4 "
           >
             Sign In to Continue
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -142,7 +143,7 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
 
       setUploadProgress(60);
 
-      const response = await TravelGuideAPI.posts.create(reqBody);
+      const response = await TravelGuideAPI.createPost(reqBody);
 
       setUploadProgress(100);
 
@@ -174,13 +175,13 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
   if (!isOpen) {
     return (
       <div className="mb-8">
-        <button
+        <Button
           onClick={() => setIsOpen(true)}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white p-6 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          icon={Plus}
+          className="w-full text-lg p-6"
         >
-          <Plus className="w-6 h-6" />
           Share Your Nepal Adventure
-        </button>
+        </Button>
       </div>
     );
   }
@@ -305,34 +306,26 @@ const CreatePost: React.FC<{ onPostCreated: () => void }> = ({ onPostCreated }) 
 
         {/* Submit Buttons */}
         <div className="flex gap-4">
-          <button
-            type="button"
+          <Button
+            variant="outline"
             onClick={() => {
               setIsOpen(false);
               resetForm();
             }}
-            className="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="flex-1"
             disabled={isSubmitting}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-            disabled={isSubmitting || formData.description.length < 10}
+            isLoading={isSubmitting}
+            disabled={formData.description.length < 10}
+            icon={Upload}
+            className="flex-1"
           >
-            {isSubmitting ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Publishing...
-              </>
-            ) : (
-              <>
-                <Upload className="w-5 h-5" />
-                Publish Adventure
-              </>
-            )}
-          </button>
+            Publish Adventure
+          </Button>
         </div>
       </form>
     </div>
@@ -417,7 +410,7 @@ const Posts: React.FC = () => {
   const fetchPosts = async () => {
     try {
       setIsLoadingMore(page > 1);
-      const response = await TravelGuideAPI.posts.getAll();
+      const response = await TravelGuideAPI.getAllPosts();
 
       if (response && Array.isArray(response)) {
         const mapped = response.map((p: any) => ({
@@ -558,9 +551,9 @@ const Posts: React.FC = () => {
     // Call API
     try {
       if (isCurrentlyLiked) {
-        await TravelGuideAPI.posts.unlike(postId);
+        await TravelGuideAPI.unlikePost(postId);
       } else {
-        await TravelGuideAPI.posts.like(postId);
+        await TravelGuideAPI.likePost(postId);
       }
     } catch (err) {
       // Revert on error
@@ -604,7 +597,7 @@ const Posts: React.FC = () => {
     setCommentText(prev => ({ ...prev, [postId]: '' }));
 
     try {
-      await TravelGuideAPI.posts.addComment(postId, comment);
+      await TravelGuideAPI.addComment(postId, comment);
       showToast('Comment added!', 'success');
     } catch (err) {
       showToast('Failed to add comment', 'error');
